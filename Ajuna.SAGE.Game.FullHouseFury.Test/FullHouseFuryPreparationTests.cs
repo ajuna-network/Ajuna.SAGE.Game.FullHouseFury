@@ -60,6 +60,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
             Assert.That(game.LevelState, Is.EqualTo(LevelState.Battle));
+            Assert.That(game.Round, Is.EqualTo(1));
 
             Assert.That(deck.DeckSize, Is.EqualTo(45));
             Assert.That(deck.IsHandSlotEmpty(0), Is.False);

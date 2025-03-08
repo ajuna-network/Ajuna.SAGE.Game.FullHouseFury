@@ -72,7 +72,10 @@
 
     public enum Suit
     {
-        Clubs, Diamonds, Hearts, Spades
+        Clubs, 
+        Diamonds, 
+        Hearts,
+        Spades
     }
 
     public enum Rank

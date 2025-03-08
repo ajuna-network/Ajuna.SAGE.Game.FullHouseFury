@@ -73,7 +73,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
         /// ........ ...XX... ........ ........
-        public ushort Health
+        public ushort Damage
         {
             get => Data.ReadValue<ushort>(11);
             set => Data?.SetValue<ushort>(11, value);
@@ -138,6 +138,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
     public partial class GameAsset
     {
+        public short Health => (short) (MaxHealth - Damage);
+
         public bool IsBossAlive => Health > 0;
 
         public void NewGame()
@@ -145,9 +147,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             GameState = GameState.Running;
             LevelState = LevelState.Preparation;
             Level = 1;
-            Round = 1;
+            Round = 0;
             MaxHealth = 100;
-            Health = MaxHealth;
+            Damage = 0;
             Discard = 3;
             HandSize = 7;
 

@@ -49,7 +49,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
             Assert.That(game.LevelState, Is.EqualTo(LevelState.Preparation));
             Assert.That(game.Level, Is.EqualTo(1));
-            Assert.That(game.Round, Is.EqualTo(1));
+            Assert.That(game.Round, Is.EqualTo(0));
         }
     }
 }

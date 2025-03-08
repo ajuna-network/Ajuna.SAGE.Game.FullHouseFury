@@ -278,6 +278,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
                 // Boons and Banes
 
+                game.Round++;
                 game.LevelState = LevelState.Battle;
 
                 deck.Draw(game.HandSize, h);
@@ -369,7 +370,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 game.AttackScore = score;
 
                 // boss attack
-                game.Health -= game.AttackScore;
+                game.Damage += game.AttackScore;
 
                 if (game.IsBossAlive)
                 {

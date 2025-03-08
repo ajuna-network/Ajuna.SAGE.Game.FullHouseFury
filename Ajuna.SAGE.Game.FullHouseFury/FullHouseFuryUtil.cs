@@ -263,5 +263,110 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
             return category;
         }
+
+        /// <summary>
+        /// Evaluates the best attack from a hand of up to 10 card slots.
+        /// The hand is represented as a byte array of length 10 where each element is either
+        /// a card index (0–51) or DeckAsset.EMPTY_SLOT (indicating an empty slot).
+        /// The function returns a BestAttack instance with the best combination of 1 to 5 cards.
+        /// </summary>
+        /// <param name="hand">An array of 10 bytes representing the hand.</param>
+        /// <returns>A BestAttack instance with the best attack combination.</returns>
+        public static BestPokerHand EvaluateAttack(byte[] hand)
+        {
+            if (hand == null)
+            {
+                throw new ArgumentNullException(nameof(hand));
+            }
+
+            if (hand.Length != 10)
+            {
+                throw new ArgumentException("Hand must be exactly 10 cards (slots).", nameof(hand));
+            }
+
+            // Get the positions that are not empty.
+            List<int> availablePositions = new List<int>();
+            for (int i = 0; i < hand.Length; i++)
+            {
+                if (hand[i] != DeckAsset.EMPTY_SLOT)
+                {
+                    availablePositions.Add(i);
+                }
+            }
+
+            if (availablePositions.Count == 0)
+            {
+                throw new ArgumentException("No cards in hand.", nameof(hand));
+            }
+
+            BestPokerHand best = null;
+
+            // Try all combination sizes from 1 to up to 5 cards (or the count of available cards).
+            int maxComboSize = Math.Min(5, availablePositions.Count);
+            for (int r = 1; r <= maxComboSize; r++)
+            {
+                foreach (var combo in Combinations(availablePositions, r))
+                {
+                    // Build the card indexes for this combination.
+                    byte[] comboCards = combo.Select(pos => hand[pos]).ToArray();
+                    ushort comboScore;
+                    PokerHand category = Evaluate(comboCards, out comboScore);
+                    BestPokerHand current = new BestPokerHand
+                    {
+                        Category = category,
+                        Score = comboScore,
+                        Positions = combo.ToArray(),
+                        CardIndexes = comboCards
+                    };
+
+                    if (best == null || CompareAttack(current, best) > 0)
+                    {
+                        best = current;
+                    }
+                }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Compares two BestAttack instances.
+        /// Returns a positive number if a is better than b, 0 if equal, negative if a is worse.
+        /// Comparison is done first on the PokerHand category (assuming higher enum value is better),
+        /// then on the numeric score.
+        /// </summary>
+        private static int CompareAttack(BestPokerHand a, BestPokerHand b)
+        {
+            int catComparison = ((int)a.Category).CompareTo((int)b.Category);
+            if (catComparison != 0)
+            {
+                return catComparison;
+            }
+
+            return a.Score.CompareTo(b.Score);
+        }
+
+        /// <summary>
+        /// Generates all combinations (of size k) from a sequence of T.
+        /// </summary>
+        public static IEnumerable<List<T>> Combinations<T>(IEnumerable<T> elements, int k)
+        {
+            if (k == 0)
+            {
+                yield return new List<T>();
+                yield break;
+            }
+
+            int i = 0;
+            foreach (T element in elements)
+            {
+                IEnumerable<T> remaining = elements.Skip(i + 1);
+                foreach (List<T> combination in Combinations(remaining, k - 1))
+                {
+                    combination.Insert(0, element);
+                    yield return combination;
+                }
+                i++;
+            }
+        }
     }
 }

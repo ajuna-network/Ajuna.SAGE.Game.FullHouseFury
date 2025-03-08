@@ -51,6 +51,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                 _ => ((int)Rank).ToString()
             };
 
+            if (rankString.Length == 0)
+            {
+                suitUnicode = "#";
+            }
+
             return $"{rankString}{suitUnicode}";
         }
     }

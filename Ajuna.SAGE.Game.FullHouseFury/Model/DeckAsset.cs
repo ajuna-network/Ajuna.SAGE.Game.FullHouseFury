@@ -250,6 +250,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             }
         }
 
+        public bool TryGetHandCard(int handPosition, out byte cardIndex)
+        {
+            if (handPosition < 0 || handPosition >= 10)
+            {
+                throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 9.");
+            }
+            cardIndex = GetHandCard(handPosition);
+            return cardIndex != EMPTY_SLOT;
+        }
 
         public bool IsHandSlotEmpty(int handPosition) => GetHandCard(handPosition) == EMPTY_SLOT;
 
