@@ -16,7 +16,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             // Create a new DeckAsset for each test.
             deckAsset = new DeckAsset(1, 1);
             // Clear the hand region to ensure consistency.
-            deckAsset.ClearHand();
+            deckAsset.EmptyHand();
             // Use a fixed seed for deterministic tests.
             random = new Random(42);
         }
@@ -86,7 +86,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         public void DeckAsset_Hand_ClearAndEmptySlots_WorksAsExpected()
         {
             // Clear the hand and verify that all 10 slots are marked as empty.
-            deckAsset.ClearHand();
+            deckAsset.EmptyHand();
             for (int i = 0; i < 10; i++)
             {
                 Assert.That(deckAsset.GetCardInHand(i), Is.EqualTo(DeckAsset.EMPTY_SLOT), $"Hand slot {i} should be empty after clearing hand.");
@@ -99,7 +99,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         public void DeckAsset_Hand_SetGetCardInHand_WorksAsExpected()
         {
             // Clear the hand before setting cards.
-            deckAsset.ClearHand();
+            deckAsset.EmptyHand();
 
             // Set specific cards in various hand slots.
             deckAsset.SetCardInHand(0, 10); // For example, card index 10.

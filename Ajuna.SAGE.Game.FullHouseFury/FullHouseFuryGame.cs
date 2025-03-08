@@ -185,14 +185,58 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
             TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, c, m) =>
             {
+                var game = new GameAsset(e.Id, b);
+                var deck = new DeckAsset(e.Id, b);
 
-
-                return new IAsset[] { };
+                return new IAsset[] { game, deck };
             };
 
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Get Create Player transition set
+        /// </summary>
+        /// <returns></returns>
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetStartTransition()
+        {
+            var identifier = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
+            byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
+            byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+
+            FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                // TODO: verify gamestate is running in rules
+            };
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var game = new GameAsset(a.ElementAt(0));
+                var deck = new DeckAsset(a.ElementAt(1));
+
+                if (game.GameState == GameState.Running)
+                {
+                    // gme is already running
+                    return Array.Empty<IAsset>();
+                }
+
+                // initialize a new game
+                game.NewGame();
+
+                // initialize a new deck
+                deck.NewDeck();
+
+                // empty hand
+                deck.EmptyHand();
+
+                return new IAsset[] { game, deck };
+            };
+
+            return (identifier, rules, fee, function);
+        }
 
     }
 }

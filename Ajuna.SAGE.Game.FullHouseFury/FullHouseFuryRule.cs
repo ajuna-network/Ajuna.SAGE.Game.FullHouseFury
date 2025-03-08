@@ -10,7 +10,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         public byte[] RuleValue { get; private set; }
 
         public readonly FullHouseFuryRuleType RuleTypeEnum => (FullHouseFuryRuleType)RuleType;
-        public readonly FullHouseFuryRuleOp RuleOpEnum => (FullHouseFuryRuleOp)(RuleOp >> 4);
+        public readonly FullHouseFuryRuleOp RuleOpEnum => (FullHouseFuryRuleOp)RuleOp;
 
         // Existing constructors using byte[] or uint as value:
         public FullHouseFuryRule(FullHouseFuryRuleType type, FullHouseFuryRuleOp operation, byte[] value)
@@ -31,7 +31,27 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         }
 
         public FullHouseFuryRule(FullHouseFuryRuleType type)
-            : this(type, FullHouseFury.FullHouseFuryRuleOp.None, Array.Empty<byte>())
+            : this(type, FullHouseFuryRuleOp.None, Array.Empty<byte>())
+        {
+        }
+
+        public FullHouseFuryRule(FullHouseFuryRuleType type, FullHouseFuryRuleOp operation, byte i0)
+            : this(type, operation, new byte[] { i0 })
+        {
+        }
+
+        public FullHouseFuryRule(FullHouseFuryRuleType type, FullHouseFuryRuleOp operation, byte i0, byte i1)
+            : this(type, operation, new byte[] { i0, i1 })
+        {
+        }
+
+        public FullHouseFuryRule(FullHouseFuryRuleType type, FullHouseFuryRuleOp operation, byte i0, byte i1, byte i2)
+            : this(type, operation, new byte[] { i0, i1, i2 })
+        {
+        }
+
+        public FullHouseFuryRule(FullHouseFuryRuleType type, FullHouseFuryRuleOp operation, byte i0, byte i1, byte i2, byte i3)
+            : this(type, operation, new byte[] { i0, i1, i2, i3 })
         {
         }
     }

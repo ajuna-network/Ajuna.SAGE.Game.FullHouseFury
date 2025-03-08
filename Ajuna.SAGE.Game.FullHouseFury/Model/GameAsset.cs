@@ -4,85 +4,93 @@ using System;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
 {
+
     /// <summary>
-    /// GameAsset stores the current game progress, including the floor level (progress),
-    /// the enemy's current health, and the available discards during combat.
-    /// The values are stored in the underlying asset's Data array at fixed offsets.
+    /// Game asset class for the FullHouseFury game.
     /// </summary>
-    public class GameAsset : BaseAsset
+    public partial class GameAsset : BaseAsset
     {
-        // Offsets for game-specific fields (assuming Data is at least 20 bytes long)
-        private const byte FLOOR_OFFSET = 8;          // Floor level stored at bytes 8-11 (4 bytes)
-        private const byte ENEMY_HEALTH_OFFSET = 12;    // Enemy health stored at bytes 12-15 (4 bytes)
-        private const byte DISCARDS_OFFSET = 16;        // Discards available stored at bytes 16-19 (4 bytes)
-        private const byte FIELD_SIZE = 4;              // Each field uses 4 bytes (uint)
 
         public GameAsset(uint ownerId, uint genesis)
             : base(ownerId, genesis)
         {
-            AssetType = AssetType.Game; // Ensure your AssetType enum includes 'Game'
-            // Initialize default values (e.g., floor 1, enemy health 100, discards available 3)
-            SetFloorLevel(1);
-            SetEnemyHealth(100);
-            SetDiscardsAvailable(3);
+            AssetType = AssetType.Game;
+            GameState = GameState.None;
+            LevelState = LevelState.None;
         }
 
         public GameAsset(IAsset asset)
             : base(asset)
         { }
 
-        /// <summary>
-        /// Gets the current floor level (game progress).
-        /// </summary>
-        public uint GetFloorLevel()
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// .......H ........ ........ ........
+        public GameState GameState
         {
-            byte[] floorBytes = Data.Read(FLOOR_OFFSET, FIELD_SIZE);
-            return BitConverter.ToUInt32(floorBytes, 0);
+            get => (GameState)Data.Read(7, ByteType.High);
+            set => Data?.Set(7, ByteType.High, (byte)value);
         }
 
-        /// <summary>
-        /// Sets the current floor level (game progress).
-        /// </summary>
-        public void SetFloorLevel(uint level)
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// .......L ........ ........ ........
+        public LevelState LevelState
         {
-            byte[] floorBytes = BitConverter.GetBytes(level);
-            Data.Set(FLOOR_OFFSET, floorBytes);
+            get => (LevelState)Data.Read(7, ByteType.Low);
+            set => Data?.Set(7, ByteType.Low, (byte)value);
         }
 
-        /// <summary>
-        /// Gets the enemy's current health.
-        /// </summary>
-        public uint GetEnemyHealth()
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ X....... ........ ........
+        public byte Level
         {
-            byte[] healthBytes = Data.Read(ENEMY_HEALTH_OFFSET, FIELD_SIZE);
-            return BitConverter.ToUInt32(healthBytes, 0);
+            get => Data.Read(8, ByteType.Full);
+            set => Data?.Set(8, ByteType.Full, value);
         }
 
-        /// <summary>
-        /// Sets the enemy's current health.
-        /// </summary>
-        public void SetEnemyHealth(uint health)
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ .XX..... ........ ........
+        public ushort MaxHealth
         {
-            byte[] healthBytes = BitConverter.GetBytes(health);
-            Data.Set(ENEMY_HEALTH_OFFSET, healthBytes);
+            get => Data.ReadValue<ushort>(9);
+            set => Data?.SetValue<ushort>(9, value);
         }
 
-        /// <summary>
-        /// Gets the number of discards available for this combat.
-        /// </summary>
-        public uint GetDiscardsAvailable()
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ...XX... ........ ........
+        public ushort Health
         {
-            byte[] discardBytes = Data.Read(DISCARDS_OFFSET, FIELD_SIZE);
-            return BitConverter.ToUInt32(discardBytes, 0);
+            get => Data.ReadValue<ushort>(11);
+            set => Data?.SetValue<ushort>(11, value);
         }
 
-        /// <summary>
-        /// Sets the number of discards available for this combat.
-        /// </summary>
-        public void SetDiscardsAvailable(uint discards)
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ .....X.. ........ ........
+        public byte Discard
         {
-            byte[] discardBytes = BitConverter.GetBytes(discards);
-            Data.Set(DISCARDS_OFFSET, discardBytes);
+            get => Data.Read(13, ByteType.Full);
+            set => Data?.Set(13, ByteType.Full, value);
         }
+    }
+
+    public partial class GameAsset
+    {
+        public bool IsBossAlive => Health > 0;
+
+        public void NewGame()
+        {
+            GameState = GameState.Running;
+            LevelState = LevelState.Preparation;
+            Level = 1;
+            MaxHealth = 100;
+            Health = MaxHealth;
+            Discard = 3;
+        }
+
     }
 }

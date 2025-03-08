@@ -52,6 +52,21 @@
         // *** DO NOT PASS 15 INDEX ***
     }
 
+    public enum  GameState
+    {
+        None = 0,
+        Running = 1,
+        Finished = 2,
+    }
+
+    public enum LevelState
+    {
+        None = 0,
+        Preparation = 1,
+        Battle = 2,
+        Score = 3,
+    }
+
     public enum Suit
     {
         Clubs, Diamonds, Hearts, Spades
