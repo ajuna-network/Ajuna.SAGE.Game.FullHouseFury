@@ -161,7 +161,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         {
             var result = new List<(FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>)>
             {
-                GetCreateGameTransition(),
+                GetCreateTransition(),
+                GetStartTransition(),
+                GetPreparationTransition(),
             };
 
             return result;
@@ -171,7 +173,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// Get Create Player transition set
         /// </summary>
         /// <returns></returns>
-        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetCreateGameTransition()
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetCreateTransition()
         {
             var identifier = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
             byte matchType = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
@@ -195,12 +197,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         }
 
         /// <summary>
-        /// Get Create Player transition set
+        /// Get Start Player transition set
         /// </summary>
         /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetStartTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
 
@@ -238,5 +240,48 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return (identifier, rules, fee, function);
         }
 
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetPreparationTransition()
+        {
+            var identifier = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
+            byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
+            byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+
+            FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                // TODO: verify gamestate is running in rules
+            };
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var game = new GameAsset(a.ElementAt(0));
+                var deck = new DeckAsset(a.ElementAt(1));
+
+                if (game.GameState != GameState.Running)
+                {
+                    // game is not running
+                    return Array.Empty<IAsset>();
+                }
+
+                if (game.LevelState != LevelState.Preparation)
+                {
+                    // levelstate is not in preparation state
+                    return Array.Empty<IAsset>();
+                }
+
+                // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
+                // Boons and Banes
+
+                game.LevelState = LevelState.Battle;
+
+                deck.Draw(game.HandSize, h);
+
+                return new IAsset[] { game, deck };
+            };
+
+            return (identifier, rules, fee, function);
+        }
     }
 }

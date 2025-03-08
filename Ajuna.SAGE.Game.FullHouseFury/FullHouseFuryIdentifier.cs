@@ -1,4 +1,5 @@
 ﻿using Ajuna.SAGE.Core.Model;
+using System;
 
 namespace Ajuna.SAGE.Game.FullHouseFury
 {
@@ -19,5 +20,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
         public static FullHouseFuryIdentifier Create(AssetType assetType, AssetSubType assetSubType)
             => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Create << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+
+        public static FullHouseFuryIdentifier Start(AssetType assetType, AssetSubType assetSubType)
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Start << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+
+        public static FullHouseFuryIdentifier Preparation(AssetType assetType, AssetSubType assetSubType)
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Preparation << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+
     }
 }

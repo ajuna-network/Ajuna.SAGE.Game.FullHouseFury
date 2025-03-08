@@ -1,7 +1,6 @@
 ﻿using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Core.Model;
 using System;
-using System.ComponentModel;
 using System.Data;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
@@ -30,6 +29,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public DeckAsset(IAsset asset)
             : base(asset)
         { }
+
+        public byte DeckSize 
+        { 
+            get => Data.Read(7, ByteType.Full); 
+            set => Data.Set(7, ByteType.Full, value);
+        }
 
         // Helpers to read and write the deck and hand regions.
         public ulong Deck
@@ -75,6 +80,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public void NewDeck()
         {
             Data.Set(DECK_OFFSET, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF });
+            DeckSize = 52;
         }
 
         public bool GetCardState(byte index)
@@ -107,21 +113,19 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             Deck = deckValue;
         }
 
-        public int CountCardsInDeck()
+        public byte AddCard(byte index)
         {
-            int count = 0;
-            ulong deckValue = Deck;
-            for (int i = 0; i < 52; i++)
+            if (GetCardState(index))
             {
-                if (((deckValue >> i) & 1UL) == 1UL)
-                {
-                    count++;
-                }
+                throw new InvalidOperationException("Card is already in the deck.");
             }
-            return count;
+
+            SetCardState(index, true);
+            DeckSize++;
+            return index;
         }
 
-        public byte RemoveCardFromDeck(byte index)
+        public byte RemoveCard(byte index)
         {
             if (!GetCardState(index))
             {
@@ -129,26 +133,30 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             }
 
             SetCardState(index, false);
+            DeckSize--;
             return index;
         }
 
-        public byte DrawRandomCard(Random random)
+        public byte DrawCard(byte randomByte)
         {
-            int availableCount = CountCardsInDeck();
-            if (availableCount == 0)
+            if (DeckSize == 0)
             {
                 throw new InvalidOperationException("Deck is empty.");
             }
 
-            int chosenIndex = random.Next(availableCount);
+            if (DeckSize <= randomByte)
+            {
+                throw new ArgumentOutOfRangeException(nameof(randomByte), "Random byte must be less than deck size.");
+            }
+
             int currentCount = 0;
             for (byte i = 0; i < 52; i++)
             {
                 if (GetCardState(i))
                 {
-                    if (currentCount == chosenIndex)
+                    if (currentCount == randomByte)
                     {
-                        RemoveCardFromDeck(i);
+                        RemoveCard(i);
                         return i;
                     }
                     currentCount++;
@@ -163,7 +171,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     /// </summary>
     public partial class DeckAsset
     {
-        public void SetCardInHand(int handPosition, byte cardIndex)
+        public void SetHandCard(int handPosition, byte cardIndex)
         {
             if (handPosition < 0 || handPosition >= 10)
             {
@@ -182,7 +190,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             Hand = handValue;
         }
 
-        public byte GetCardInHand(int handPosition)
+        public byte GetHandCard(int handPosition)
         {
             if (handPosition < 0 || handPosition >= 10)
             {
@@ -205,47 +213,46 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             Hand = empty;
         }
 
-        public bool IsHandSlotEmpty(int handPosition)
+        public void Draw(byte handSize, byte[] randomHash)
         {
-            return GetCardInHand(handPosition) == EMPTY_SLOT;
-        }
-
-        public bool IsHandSlotOccupied(int handPosition)
-        {
-            return !IsHandSlotEmpty(handPosition);
-        }
-    }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public struct Card
-    {
-        public Suit Suit { get; }
-        public Rank Rank { get; }
-
-        public readonly byte Index => (byte)((byte)Suit * 13 + (byte)Rank - 1);
-
-        public Card(Suit suit, Rank rank)
-        {
-            Suit = suit;
-            Rank = rank;
-        }
-
-        public Card(byte cardIndex)
-        {
-            if (cardIndex > 51)
+            if (handSize > 10)
             {
-                throw new ArgumentOutOfRangeException(nameof(cardIndex), "Card index must be between 0 and 51.");
+                throw new ArgumentOutOfRangeException(nameof(handSize), "Hand size cannot exceed maximum hand size (10).");
             }
-            // Use division and modulo to map card index to suit and rank.
-            Suit = (Suit)(cardIndex / 13);
-            Rank = (Rank)((cardIndex % 13) + 1);
+
+            // Count how many cards are already in hand.
+            int currentCount = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                if (!IsHandSlotEmpty(i))
+                {
+                    currentCount++;
+                }
+            }
+
+            // Fill empty slots until we reach the desired hand size.
+            for (int i = 0; i < 10 && currentCount < handSize; i++)
+            {
+                if (IsHandSlotEmpty(i))
+                {
+                    // If the deck is empty, exit early.
+                    if (DeckSize == 0)
+                    {
+                        break;
+                    }
+
+                    byte randomByte = (byte)(randomHash[i % randomHash.Length] % DeckSize);
+
+                    byte drawnCard = DrawCard(randomByte);
+                    SetHandCard(i, drawnCard);
+                    currentCount++;
+                }
+            }
         }
 
-        public override string ToString()
-        {
-            return $"{Rank} of {Suit}";
-        }
+
+        public bool IsHandSlotEmpty(int handPosition) => GetHandCard(handPosition) == EMPTY_SLOT;
+
+        public bool IsHandSlotOccupied(int handPosition) => !IsHandSlotEmpty(handPosition);
     }
 }

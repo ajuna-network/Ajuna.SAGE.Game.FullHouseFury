@@ -70,11 +70,20 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ .....X.. ........ ........
+        /// ........ .....H.. ........ ........
         public byte Discard
         {
-            get => Data.Read(13, ByteType.Full);
-            set => Data?.Set(13, ByteType.Full, value);
+            get => Data.Read(13, ByteType.High);
+            set => Data?.Set(13, ByteType.High, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ .....L.. ........ ........
+        public byte HandSize
+        {
+            get => Data.Read(13, ByteType.Low);
+            set => Data?.Set(13, ByteType.Low, value);
         }
     }
 
@@ -90,6 +99,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             MaxHealth = 100;
             Health = MaxHealth;
             Discard = 3;
+            HandSize = 7;
         }
 
     }

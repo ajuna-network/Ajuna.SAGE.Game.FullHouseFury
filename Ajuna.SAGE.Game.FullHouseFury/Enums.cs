@@ -4,6 +4,8 @@
     {
         None = 0,
         Create = 1,
+        Start = 2,
+        Preparation = 3,
         // *** DO NOT PASS 15 INDEX ***
     }
 

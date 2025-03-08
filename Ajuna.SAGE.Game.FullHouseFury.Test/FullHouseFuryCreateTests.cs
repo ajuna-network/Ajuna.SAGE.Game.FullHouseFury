@@ -6,7 +6,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 {
 
     [TestFixture]
-    public class FullHouseFuryCreateGameTests : FullHouseFuryBaseTest
+    public class FullHouseFuryCreateTests : FullHouseFuryBaseTest
     {
         private readonly FullHouseFuryIdentifier CREATE_GAME = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
 
