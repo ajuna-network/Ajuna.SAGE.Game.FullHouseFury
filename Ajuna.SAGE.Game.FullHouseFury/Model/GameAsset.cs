@@ -10,6 +10,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     /// </summary>
     public partial class GameAsset : BaseAsset
     {
+        public const int HAND_OFFSET = 16;
+        public const int HAND_REGION_SIZE = 4;
 
         public GameAsset(uint ownerId, uint genesis)
             : base(ownerId, genesis)
@@ -25,29 +27,38 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// .......H ........ ........ ........
+        /// .....H.. ........ ........ ........
         public GameState GameState
         {
-            get => (GameState)Data.Read(7, ByteType.High);
-            set => Data?.Set(7, ByteType.High, (byte)value);
+            get => (GameState)Data.Read(5, ByteType.High);
+            set => Data?.Set(5, ByteType.High, (byte)value);
         }
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// .......L ........ ........ ........
+        /// .....L.. ........ ........ ........
         public LevelState LevelState
         {
-            get => (LevelState)Data.Read(7, ByteType.Low);
-            set => Data?.Set(7, ByteType.Low, (byte)value);
+            get => (LevelState)Data.Read(5, ByteType.Low);
+            set => Data?.Set(5, ByteType.Low, (byte)value);
         }
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ X....... ........ ........
+        /// ......X. ........ ........ ........
         public byte Level
         {
-            get => Data.Read(8, ByteType.Full);
-            set => Data?.Set(8, ByteType.Full, value);
+            get => Data.Read(6, ByteType.Full);
+            set => Data?.Set(6, ByteType.Full, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// .......X ........ ........ ........
+        public byte Round
+        {
+            get => Data.Read(7, ByteType.Full);
+            set => Data?.Set(7, ByteType.Full, value);
         }
 
         /// 00000000 00111111 11112222 22222233
@@ -85,6 +96,26 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             get => Data.Read(13, ByteType.Low);
             set => Data?.Set(13, ByteType.Low, value);
         }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ XXXX.... ........
+        public uint AttackHand
+        {
+            get
+            {
+                byte[] handBytes = Data.Read(HAND_OFFSET, HAND_REGION_SIZE);
+                return BitConverter.ToUInt32(handBytes, 0);
+            }
+            set
+            {
+                byte[] handBytes = BitConverter.GetBytes(value);
+                for (int i = 0; i < HAND_REGION_SIZE; i++)
+                {
+                    Data.Set((byte)(HAND_OFFSET + i), ByteType.Full, handBytes[i]);
+                }
+            }
+        }
     }
 
     public partial class GameAsset
@@ -96,11 +127,55 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             GameState = GameState.Running;
             LevelState = LevelState.Preparation;
             Level = 1;
+            Round = 1;
             MaxHealth = 100;
             Health = MaxHealth;
             Discard = 3;
             HandSize = 7;
+
+            ClearAttackHand();
         }
 
+        public byte GetAttackHandCard(int handPosition)
+        {
+            if (handPosition < 0 || handPosition >= 4)
+            {
+                throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 4.");
+            }
+
+            uint handValue = AttackHand;
+            int bitOffset = handPosition * 6;
+            return (byte)((handValue >> bitOffset) & 0x3F);
+        }
+
+        public void SetAttackHandCard(int handPosition, byte cardIndex)
+        {
+            if (handPosition < 0 || handPosition >= 4)
+            {
+                throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 4.");
+            }
+
+            if (cardIndex > 51)
+            {
+                throw new ArgumentOutOfRangeException(nameof(cardIndex), "Card index must be between 0 and 51.");
+            }
+
+            uint handValue = AttackHand;
+            int bitOffset = handPosition * 6;
+            uint mask = 0x3FU << bitOffset;
+            handValue = (handValue & ~mask) | (((uint)cardIndex & 0x3F) << bitOffset);
+            AttackHand = handValue;
+        }
+
+        public void ClearAttackHand()
+        {
+            uint empty = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                int bitOffset = i * 6;
+                empty |= ((uint)DeckAsset.EMPTY_SLOT & 0x3F) << bitOffset;
+            }
+            AttackHand = empty;
+        }
     }
 }

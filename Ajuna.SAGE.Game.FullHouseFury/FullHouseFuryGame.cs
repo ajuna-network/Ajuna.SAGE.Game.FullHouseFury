@@ -2,6 +2,7 @@
 using Ajuna.SAGE.Core.Manager;
 using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
+using Ajuna.SAGE.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -164,6 +165,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 GetCreateTransition(),
                 GetStartTransition(),
                 GetPreparationTransition(),
+                GetBattleTransition(),
             };
 
             return result;
@@ -218,11 +220,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(a.ElementAt(0));
                 var deck = new DeckAsset(a.ElementAt(1));
+                var result = new IAsset[] { game, deck };
 
                 if (game.GameState == GameState.Running)
                 {
                     // gme is already running
-                    return Array.Empty<IAsset>();
+                    return result;
                 }
 
                 // initialize a new game
@@ -234,7 +237,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 // empty hand
                 deck.EmptyHand();
 
-                return new IAsset[] { game, deck };
+                return result;
             };
 
             return (identifier, rules, fee, function);
@@ -258,17 +261,18 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(a.ElementAt(0));
                 var deck = new DeckAsset(a.ElementAt(1));
+                var result = new IAsset[] { game, deck };
 
                 if (game.GameState != GameState.Running)
                 {
                     // game is not running
-                    return Array.Empty<IAsset>();
+                    return result;
                 }
 
                 if (game.LevelState != LevelState.Preparation)
                 {
                     // levelstate is not in preparation state
-                    return Array.Empty<IAsset>();
+                    return result;
                 }
 
                 // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
@@ -278,10 +282,118 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                 deck.Draw(game.HandSize, h);
 
-                return new IAsset[] { game, deck };
+                return result;
             };
 
             return (identifier, rules, fee, function);
+        }
+
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetBattleTransition()
+        {
+            var identifier = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+            byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
+            byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+
+            FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                // TODO: verify gamestate is running in rules
+            };
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var game = new GameAsset(a.ElementAt(0));
+                var deck = new DeckAsset(a.ElementAt(1));
+                var result = new IAsset[] { game, deck };
+
+                if (game.GameState != GameState.Running)
+                {
+                    // game is not running
+                    return result;
+                }
+
+                if (game.LevelState != LevelState.Battle)
+                {
+                    // levelstate is not in preparation state
+                    return result;
+                }
+
+                AttackHand? attackHand = c as AttackHand?;
+                if (attackHand == null)
+                {
+                    // attack hand is not provided
+                    return result;
+                }
+
+                var slots = attackHand.Value.Slots;
+                if (slots.Length == 0 || slots.Length > 5)
+                {
+                    // attack hand size min one and max five cards
+                    return result;
+                }
+
+                if (slots.Max() > 10)
+                {
+                    // only 10 hand slots available
+                    return result;
+                }
+
+                byte[] attackCards = new byte[slots.Length];
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    if (deck.IsHandSlotEmpty(slots[i]))
+                    {
+                        // hand slot is empty
+                        return result;
+                    }
+
+                    attackCards[i] = deck.GetHandCard(slots[i]);
+                }
+
+                // remove the actual played hand
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    deck.SetHandCard(slots[i], DeckAsset.EMPTY_SLOT);
+                }
+
+                // updated attack hand
+                game.ClearAttackHand();
+                for (int i = 0; i < attackCards.Length; i++)
+                {
+                    game.SetAttackHandCard(i, attackCards[i]);
+                }
+
+
+                if (game.IsBossAlive)
+                {
+                    game.LevelState = LevelState.Preparation;
+                }
+                else
+                {
+                    game.LevelState = LevelState.Score;
+                }
+
+
+                return result;
+            };
+
+            return (identifier, rules, fee, function);
+        }
+    }
+
+    public struct AttackHand
+    {
+        /// <summary>
+        /// The selected hand positions. Must contain between 1 and 5 values,
+        /// and each value must be in the range 0 to 9.
+        /// </summary>
+        public byte[] Slots { get; }
+
+        public AttackHand(byte[] slots)
+        {
+            Slots = slots;
         }
     }
 }

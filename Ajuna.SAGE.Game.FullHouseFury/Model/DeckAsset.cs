@@ -11,7 +11,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public const byte DECK_OFFSET = 8;
 
         public const byte HAND_OFFSET = 16;
-        public const byte REGION_SIZE = 8; // 8 bytes for both deck and hand regions.
+        public const byte REGION_SIZE = 8;
         public const byte EMPTY_SLOT = 63;
 
         public DeckAsset(uint ownerId, uint genesis)
@@ -178,7 +178,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                 throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 9.");
             }
 
-            if (cardIndex > 51)
+            if (cardIndex > 51 && cardIndex != EMPTY_SLOT)
             {
                 throw new ArgumentOutOfRangeException(nameof(cardIndex), "Card index must be between 0 and 51.");
             }
