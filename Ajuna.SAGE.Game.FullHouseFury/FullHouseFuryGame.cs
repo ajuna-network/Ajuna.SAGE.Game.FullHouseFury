@@ -37,9 +37,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         ///
         /// </summary>
         /// <returns></returns>
-        internal static Func<IAccount, FullHouseFuryRule, IAsset[], uint, IBalanceManager, IAssetManager, bool> GetVerifyFunction()
+        internal static Func<IAccount, FullHouseFuryRule, IAsset[], uint, object?, IBalanceManager, IAssetManager, bool> GetVerifyFunction()
         {
-            return (p, r, a, b, m, s) =>
+            return (p, r, a, b, c, m, s) =>
             {
                 switch (r.RuleTypeEnum)
                 {
@@ -183,7 +183,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
             ITransitioFee? fee = default;
 
-            TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, m) =>
+            TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, c, m) =>
             {
 
 
