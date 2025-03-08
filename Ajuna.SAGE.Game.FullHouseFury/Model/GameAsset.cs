@@ -116,6 +116,24 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                 }
             }
         }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ....H... ........
+        public PokerHand AttackType
+        {
+            get => (PokerHand)Data.Read(20, ByteType.High);
+            set => Data?.Set(20, ByteType.High, (byte)value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ .....XX. ........
+        public ushort AttackScore
+        {
+            get => Data.ReadValue<ushort>(21);
+            set => Data.SetValue<ushort>(21, value);
+        }
     }
 
     public partial class GameAsset

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
@@ -53,4 +54,5 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             return $"{rankString}{suitUnicode}";
         }
     }
+
 }

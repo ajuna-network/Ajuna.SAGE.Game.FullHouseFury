@@ -88,6 +88,11 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(new Card(game.GetAttackHandCard(0)).ToString(), Is.EqualTo("3♠"));
             Assert.That(new Card(game.GetAttackHandCard(1)).ToString(), Is.EqualTo("Q♥"));
             Assert.That(new Card(game.GetAttackHandCard(2)).ToString(), Is.EqualTo("4♠"));
+
+            Assert.That(game.AttackType, Is.EqualTo(PokerHand.HighCard));
+            Assert.That(game.AttackScore, Is.EqualTo(12));
+
+            Assert.That(game.Health, Is.EqualTo(game.MaxHealth - game.AttackScore));
         }
     }
 }

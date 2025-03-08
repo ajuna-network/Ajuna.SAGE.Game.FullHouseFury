@@ -77,6 +77,33 @@
 
     public enum Rank
     {
-        Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
+        Ace = 1, 
+        Two, 
+        Three, 
+        Four, 
+        Five, 
+        Six, 
+        Seven, 
+        Eight, 
+        Nine, 
+        Ten, 
+        Jack, 
+        Queen, 
+        King
+    }
+
+    public enum PokerHand
+    {
+        None = 0,
+        HighCard = 1,
+        Pair,
+        TwoPair,
+        ThreeOfAKind,
+        Straight,
+        Flush,
+        FullHouse,
+        FourOfAKind,
+        StraightFlush,
+        RoyalFlush
     }
 }

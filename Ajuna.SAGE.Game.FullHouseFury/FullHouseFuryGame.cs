@@ -365,6 +365,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     game.SetAttackHandCard(i, attackCards[i]);
                 }
 
+                game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, out ushort score);
+                game.AttackScore = score;
+
+                // boss attack
+                game.Health -= game.AttackScore;
 
                 if (game.IsBossAlive)
                 {
