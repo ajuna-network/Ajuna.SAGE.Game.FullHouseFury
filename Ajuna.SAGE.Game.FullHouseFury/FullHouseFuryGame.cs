@@ -282,6 +282,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 game.Round++;
                 game.LevelState = LevelState.Battle;
 
+                game.AttackType = PokerHand.None;
+                game.AttackScore = 0;
+
                 deck.Draw(game.HandSize, h);
 
                 return result;
@@ -475,28 +478,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT);
                 }
 
-                // updated attack hand
-                game.ClearAttackHand();
-                for (int i = 0; i < discardCards.Length; i++)
-                {
-                    game.SetAttackHandCard(i, discardCards[i]);
-                }
+                // reduce discard count
+                game.Discard--;
 
-                game.AttackType = FullHouseFuryUtil.Evaluate(discardCards, out ushort score);
-                game.AttackScore = score;
-
-                // boss attack
-                game.BossDamage += game.AttackScore;
-
-                if (game.IsBossAlive)
-                {
-                    game.LevelState = LevelState.Preparation;
-                }
-                else
-                {
-                    game.LevelState = LevelState.Score;
-                }
-
+                // draw new cards for the discarded ones
+                deck.Draw(game.HandSize, h);
 
                 return result;
             };
