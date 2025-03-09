@@ -58,7 +58,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
 
-            var config = new AttackHand([ 0, 1, 3 ]);
+            byte[] config = [0, 1, 3];
 
             bool resultFirst = Engine.Transition(_user, BATTLE_LEVEL, [preGame, preDeck], out IAsset[] outAssets, config);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");

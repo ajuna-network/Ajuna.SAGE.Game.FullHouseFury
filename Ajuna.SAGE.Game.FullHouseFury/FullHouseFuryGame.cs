@@ -321,14 +321,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
-                AttackHand? attackHand = c as AttackHand?;
+                byte[]? attackHand = c as byte[];
                 if (attackHand == null)
                 {
                     // attack hand is not provided
                     return result;
                 }
 
-                var slots = attackHand.Value.Slots;
+                var slots = attackHand;
                 if (slots.Length == 0 || slots.Length > 5)
                 {
                     // attack hand size min one and max five cards
@@ -389,17 +389,4 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         }
     }
 
-    public struct AttackHand
-    {
-        /// <summary>
-        /// The selected hand positions. Must contain between 1 and 5 values,
-        /// and each value must be in the range 0 to 9.
-        /// </summary>
-        public byte[] Slots { get; }
-
-        public AttackHand(byte[] slots)
-        {
-            Slots = slots;
-        }
-    }
 }

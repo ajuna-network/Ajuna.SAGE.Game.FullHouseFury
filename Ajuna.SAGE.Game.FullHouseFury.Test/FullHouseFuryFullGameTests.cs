@@ -87,7 +87,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
                         var bestAttack = FullHouseFuryUtil.EvaluateAttack(handArray);
 
                         // Create an AttackHand instance from the chosen positions.
-                        AttackHand attackHand = new AttackHand(bestAttack.Positions.Select(pos => (byte)pos).ToArray());
+                        byte[] attackHand = bestAttack.Positions.Select(pos => (byte)pos).ToArray();
 
                         bool battleResult = Engine.Transition(_user, BATTLE_LEVEL, [game, deck], out outAsset, attackHand);
                         Assert.That(battleResult, Is.True, "BATTLE_LEVEL transition should succeed.");
