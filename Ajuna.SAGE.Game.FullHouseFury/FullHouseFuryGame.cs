@@ -162,8 +162,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         {
             var result = new List<(FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>)>
             {
-                GetCreateTransition(),
                 GetStartTransition(),
+                GetPlaytTransition(),
                 GetPreparationTransition(),
                 GetBattleTransition(),
                 GetDiscardTransition(),
@@ -176,9 +176,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// Get Create Player transition set
         /// </summary>
         /// <returns></returns>
-        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetCreateTransition()
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetStartTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
             byte matchType = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
 
             FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
@@ -203,9 +203,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// Get Start Player transition set
         /// </summary>
         /// <returns></returns>
-        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetStartTransition()
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetPlaytTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
 

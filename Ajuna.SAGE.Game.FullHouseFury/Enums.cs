@@ -3,8 +3,8 @@
     public enum FullHouseFuryAction : byte
     {
         None = 0,
-        Create = 1,
-        Start = 2,
+        Start = 1,
+        Play = 2,
         Preparation = 3,
         Battle = 4,
         Discard = 5,

@@ -8,9 +8,9 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryPreparationTests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier CREATE_GAME = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier START_GAME = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREP_LEVEL = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
 
         private IAccount _user;
 
@@ -26,7 +26,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            resultFirst = Engine.Transition(_user, CREATE_GAME, [], out outAssets);
+            resultFirst = Engine.Transition(_user, START, [], out outAssets);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -34,7 +34,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preFeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
 
-            resultFirst = Engine.Transition(_user, START_GAME, [preGame, preFeck], out outAssets);
+            resultFirst = Engine.Transition(_user, PLAY, [preGame, preFeck], out outAssets);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -48,7 +48,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
 
-            bool resultFirst = Engine.Transition(_user, PREP_LEVEL, [preGame, preDeck], out IAsset[] outAssets);
+            bool resultFirst = Engine.Transition(_user, PREPARATION, [preGame, preDeck], out IAsset[] outAssets);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             // Capture key state after the first gamble.

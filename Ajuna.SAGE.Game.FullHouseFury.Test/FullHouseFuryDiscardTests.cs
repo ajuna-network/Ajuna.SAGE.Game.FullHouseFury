@@ -8,11 +8,11 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryDiscardTests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier CREATE_GAME = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier START_GAME = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREP_LEVEL = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier BATTLE_LEVEL = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier DISCARD_LEVEL = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
         private IAccount _user;
 
         [SetUp]
@@ -28,7 +28,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            resultFirst = Engine.Transition(_user, CREATE_GAME, [], out _);
+            resultFirst = Engine.Transition(_user, START, [], out _);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -36,7 +36,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
 
-            resultFirst = Engine.Transition(_user, START_GAME, [game, deck], out _);
+            resultFirst = Engine.Transition(_user, PLAY, [game, deck], out _);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -44,7 +44,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
 
-            resultFirst = Engine.Transition(_user, PREP_LEVEL, [game, deck], out IAsset[] _);
+            resultFirst = Engine.Transition(_user, PREPARATION, [game, deck], out IAsset[] _);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -68,7 +68,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             byte[] config = [0, 1, 3];
 
-            bool resultFirst = Engine.Transition(_user, DISCARD_LEVEL, [preGame, preDeck], out IAsset[] outAssets, config);
+            bool resultFirst = Engine.Transition(_user, DISCARD, [preGame, preDeck], out IAsset[] outAssets, config);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             // Capture key state after the first gamble.
