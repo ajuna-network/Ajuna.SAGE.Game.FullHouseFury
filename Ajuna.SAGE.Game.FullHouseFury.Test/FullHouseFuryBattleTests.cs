@@ -58,6 +58,8 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
 
+            var preEndurance = preGame.PlayerEndurance;
+
             byte[] config = [0, 1, 3];
 
             bool resultFirst = Engine.Transition(_user, BATTLE_LEVEL, [preGame, preDeck], out IAsset[] outAssets, config);
@@ -92,7 +94,9 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(game.AttackType, Is.EqualTo(PokerHand.HighCard));
             Assert.That(game.AttackScore, Is.EqualTo(12));
 
-            Assert.That(game.Health, Is.EqualTo(game.MaxHealth - game.AttackScore));
+            Assert.That(game.BossHealth, Is.EqualTo(game.MaxBossHealth - game.AttackScore));
+
+            Assert.That(game.PlayerEndurance, Is.EqualTo(preEndurance - 1));
         }
     }
 }

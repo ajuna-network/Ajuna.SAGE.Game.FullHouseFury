@@ -166,6 +166,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 GetStartTransition(),
                 GetPreparationTransition(),
                 GetBattleTransition(),
+                GetDiscardTransition(),
             };
 
             return result;
@@ -321,42 +322,41 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
-                byte[]? attackHand = c as byte[];
-                if (attackHand == null)
+                byte[]? positions = c as byte[];
+                if (positions == null)
                 {
                     // attack hand is not provided
                     return result;
                 }
 
-                var slots = attackHand;
-                if (slots.Length == 0 || slots.Length > 5)
+                if (positions.Length == 0 || positions.Length > 5)
                 {
                     // attack hand size min one and max five cards
                     return result;
                 }
 
-                if (slots.Max() > 10)
+                if (positions.Max() > 10)
                 {
                     // only 10 hand slots available
                     return result;
                 }
 
-                byte[] attackCards = new byte[slots.Length];
-                for (int i = 0; i < slots.Length; i++)
+                byte[] attackCards = new byte[positions.Length];
+                for (int i = 0; i < positions.Length; i++)
                 {
-                    if (deck.IsHandSlotEmpty(slots[i]))
+                    if (deck.IsHandSlotEmpty(positions[i]))
                     {
                         // hand slot is empty
                         return result;
                     }
 
-                    attackCards[i] = deck.GetHandCard(slots[i]);
+                    attackCards[i] = deck.GetHandCard(positions[i]);
                 }
 
                 // remove the actual played hand
-                for (int i = 0; i < slots.Length; i++)
+                for (int i = 0; i < positions.Length; i++)
                 {
-                    deck.SetHandCard(slots[i], DeckAsset.EMPTY_SLOT);
+                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT);
                 }
 
                 // updated attack hand
@@ -370,7 +370,123 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 game.AttackScore = score;
 
                 // boss attack
-                game.Damage += game.AttackScore;
+                game.BossDamage += game.AttackScore;
+
+                if (game.PlayerEndurance > 0)
+                {
+                    game.PlayerEndurance--;
+                }
+                else
+                {
+                    game.PlayerDamage = (ushort)Math.Min(game.PlayerDamage + game.FatigueDamage, ushort.MaxValue);
+                    game.FatigueDamage = (ushort)Math.Min(game.FatigueDamage * 2, ushort.MaxValue);
+                }
+
+                // continue playing as long both parties are alive.
+                game.LevelState = 
+                    game.IsBossAlive && game.IsPlayerAlive ? 
+                        LevelState.Preparation : 
+                        LevelState.Score;
+
+                // game is finished if player is dead
+                if (!game.IsPlayerAlive)
+                {
+                    game.GameState = GameState.Finished;
+                }
+
+                return result;
+            };
+
+            return (identifier, rules, fee, function);
+        }
+
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetDiscardTransition()
+        {
+            var identifier = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
+            byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
+            byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+
+            FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                // TODO: verify gamestate is running in rules
+            };
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var game = new GameAsset(a.ElementAt(0));
+                var deck = new DeckAsset(a.ElementAt(1));
+                var result = new IAsset[] { game, deck };
+
+                if (game.GameState != GameState.Running)
+                {
+                    // game is not running
+                    return result;
+                }
+
+                if (game.LevelState != LevelState.Battle)
+                {
+                    // levelstate is not in preparation state
+                    return result;
+                }
+
+                if (game.Discard == 0)
+                {
+                    // discard is not allowed
+                    return result;
+                }
+
+                byte[]? positions = c as byte[];
+                if (positions == null)
+                {
+                    // positions are not provided
+                    return result;
+                }
+
+                if (positions.Length == 0 || positions.Length > 10)
+                {
+                    // attack hand size min one and max five cards
+                    return result;
+                }
+
+                if (positions.Max() > 10)
+                {
+                    // only 10 hand slots available
+                    return result;
+                }
+
+                byte[] discardCards = new byte[positions.Length];
+                for (int i = 0; i < positions.Length; i++)
+                {
+                    if (deck.IsHandSlotEmpty(positions[i]))
+                    {
+                        // hand slot is empty
+                        return result;
+                    }
+
+                    discardCards[i] = deck.GetHandCard(positions[i]);
+                }
+
+                // remove the actual played hand
+                for (int i = 0; i < positions.Length; i++)
+                {
+                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT);
+                }
+
+                // updated attack hand
+                game.ClearAttackHand();
+                for (int i = 0; i < discardCards.Length; i++)
+                {
+                    game.SetAttackHandCard(i, discardCards[i]);
+                }
+
+                game.AttackType = FullHouseFuryUtil.Evaluate(discardCards, out ushort score);
+                game.AttackScore = score;
+
+                // boss attack
+                game.BossDamage += game.AttackScore;
 
                 if (game.IsBossAlive)
                 {

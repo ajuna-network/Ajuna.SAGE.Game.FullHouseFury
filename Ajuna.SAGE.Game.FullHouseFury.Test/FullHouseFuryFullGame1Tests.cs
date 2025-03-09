@@ -6,7 +6,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 {
 
     [TestFixture]
-    public class FullHouseFuryFullTests : FullHouseFuryBaseTest
+    public class FullHouseFuryFull1Tests : FullHouseFuryBaseTest
     {
         private readonly FullHouseFuryIdentifier CREATE_GAME = FullHouseFuryIdentifier.Create(AssetType.Game, AssetSubType.None);
         private readonly FullHouseFuryIdentifier START_GAME = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
@@ -43,7 +43,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
         }
 
         [Test]
-        public void Test_FullGameLoop_TillScoreLevel()
+        public void Test_FullGameLoop_TillWin_ScoreLevel()
         {
             // Retrieve current game and deck assets.
             GameAsset game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
@@ -60,7 +60,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
                 switch (game.LevelState)
                 {
                     case LevelState.Preparation:
-                        bool prepResult = Engine.Transition(_user, PREP_LEVEL, new IAsset[] { game, deck }, out outAsset);
+                        bool prepResult = Engine.Transition(_user, PREP_LEVEL, [game, deck], out outAsset);
                         Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
                         break;
 
@@ -106,9 +106,13 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
                 deck = outAsset[1] as DeckAsset;
             }
 
-            Assert.That(game.LevelState, Is.EqualTo(LevelState.Score), "Game should eventually transition to Score state.");
+            Assert.That(game.Round, Is.EqualTo(3), "Round is not correct.");
+            Assert.That(game.IsBossAlive, Is.EqualTo(false), "Boss should be alive.");
+            Assert.That(game.IsPlayerAlive, Is.EqualTo(true), "Player should be dead.");
 
-            Assert.That(game.Round, Is.EqualTo(1), "Round is not correct.");
+            Assert.That(game.GameState, Is.EqualTo(GameState.Running), "Game should eventually transition to Finished state.");
+            Assert.That(game.LevelState, Is.EqualTo(LevelState.Score), "Game should eventually transition to Score state.");
         }
+
     }
 }

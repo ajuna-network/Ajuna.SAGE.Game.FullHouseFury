@@ -65,7 +65,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             int[] rankCounts = new int[14]; // index 0 unused.
             int minRank = 14, maxRank = 0;
             int firstSuit = -1;
-            bool isFlush = true;
+            bool isFlush = cardIndexes.Length == 5;
             List<int> straightRanks = new List<int>(); // raw rank values (Ace = 1)
             List<int> kickerRanks = new List<int>();     // for kicker, treat Ace as high (14)
 
@@ -104,15 +104,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
             // Check for straight:
             bool isStraight = false;
-            if (straightRanks.Distinct().Count() == cardIndexes.Length)
+            if (cardIndexes.Length == 5 && straightRanks.Distinct().Count() == 5)
             {
-                if (maxRank - minRank == cardIndexes.Length - 1)
+                if (maxRank - minRank == 4)
                 {
                     isStraight = true;
                 }
-                // Special case: Ace-low straight (A,2,3,4,5)
-                else if (cardIndexes.Length == 5 && straightRanks.OrderBy(x => x)
-                           .SequenceEqual(new List<int> { 1, 2, 3, 4, 5 }))
+                // Special case: royal straight (A,10,J,Q,K)
+                else if (straightRanks.OrderBy(x => x).SequenceEqual(new List<int> { 1, 10, 11, 12, 13 }))
                 {
                     isStraight = true;
                 }
@@ -126,8 +125,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             if (isStraight && isFlush)
             {
                 // Royal Flush: Ace, 10, J, Q, K
-                if (cardIndexes.Length == 5 &&
-                    straightRanks.OrderBy(x => x).SequenceEqual(new List<int> { 1, 10, 11, 12, 13 }))
+                if (straightRanks.OrderBy(x => x).SequenceEqual(new List<int> { 1, 10, 11, 12, 13 }))
                 {
                     category = PokerHand.RoyalFlush;
                 }

@@ -7,6 +7,7 @@
         Start = 2,
         Preparation = 3,
         Battle = 4,
+        Discard = 5,
         // *** DO NOT PASS 15 INDEX ***
     }
 

@@ -30,5 +30,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         public static FullHouseFuryIdentifier Battle(AssetType assetType, AssetSubType assetSubType)
             => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Battle << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
 
+        public static FullHouseFuryIdentifier Discard(AssetType assetType, AssetSubType assetSubType)
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Discard << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+
     }
 }

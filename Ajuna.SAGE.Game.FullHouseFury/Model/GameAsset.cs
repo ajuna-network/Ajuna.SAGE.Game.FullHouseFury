@@ -64,7 +64,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
         /// ........ .XX..... ........ ........
-        public ushort MaxHealth
+        public ushort MaxBossHealth
         {
             get => Data.ReadValue<ushort>(9);
             set => Data?.SetValue<ushort>(9, value);
@@ -73,7 +73,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
         /// ........ ...XX... ........ ........
-        public ushort Damage
+        public ushort BossDamage
         {
             get => Data.ReadValue<ushort>(11);
             set => Data?.SetValue<ushort>(11, value);
@@ -134,13 +134,63 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             get => Data.ReadValue<ushort>(21);
             set => Data.SetValue<ushort>(21, value);
         }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ .......H ........
+        public byte MaxPlayerEndurance
+        {
+            get => Data.Read(23, ByteType.High);
+            set => Data?.Set(23, ByteType.High, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ .......L ........
+        public byte PlayerEndurance
+        {
+            get => Data.Read(23, ByteType.Low);
+            set => Data?.Set(23, ByteType.Low, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ........ XX......
+        public ushort MaxPlayerHealth
+        {
+            get => Data.ReadValue<ushort>(24);
+            set => Data?.SetValue<ushort>(24, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ........ ..XX....
+        public ushort PlayerDamage
+        {
+            get => Data.ReadValue<ushort>(26);
+            set => Data?.SetValue<ushort>(26, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ........ ....XX..
+        public ushort FatigueDamage
+        {
+            get => Data.ReadValue<ushort>(28);
+            set => Data?.SetValue<ushort>(28, value);
+        }
+
     }
 
     public partial class GameAsset
     {
-        public short Health => (short) (MaxHealth - Damage);
+        public int BossHealth => MaxBossHealth - BossDamage;
 
-        public bool IsBossAlive => Health > 0;
+        public bool IsBossAlive => BossHealth > 0;
+
+        public int PlayerHealth => MaxPlayerHealth - PlayerDamage;
+
+        public bool IsPlayerAlive => PlayerHealth > 0;
 
         public void NewGame()
         {
@@ -148,17 +198,24 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             LevelState = LevelState.Preparation;
             Level = 1;
             Round = 0;
-            MaxHealth = 100;
-            Damage = 0;
+            MaxBossHealth = 100;
+            BossDamage = 0;
+
+            // Player stats
+            MaxPlayerEndurance = 10;
+            PlayerEndurance = MaxPlayerEndurance;
             Discard = 3;
             HandSize = 7;
+            MaxPlayerHealth = 100;
+            PlayerDamage = 0;
+            FatigueDamage = 1;
 
             ClearAttackHand();
         }
 
         public byte GetAttackHandCard(int handPosition)
         {
-            if (handPosition < 0 || handPosition >= 4)
+            if (handPosition < 0 || handPosition > 4)
             {
                 throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 4.");
             }
@@ -170,7 +227,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         public void SetAttackHandCard(int handPosition, byte cardIndex)
         {
-            if (handPosition < 0 || handPosition >= 4)
+            if (handPosition < 0 || handPosition > 4)
             {
                 throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 4.");
             }

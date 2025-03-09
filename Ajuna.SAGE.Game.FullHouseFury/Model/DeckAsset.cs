@@ -7,12 +7,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 {
     public partial class DeckAsset : BaseAsset
     {
-        // Common constants and initialization.
-        public const byte DECK_OFFSET = 8;
-
-        public const byte HAND_OFFSET = 16;
-        public const byte REGION_SIZE = 8;
         public const byte EMPTY_SLOT = 63;
+
+        public const byte DECK_LIMIT_SIZE = 62;
+        public const byte HAND_LIMIT_SIZE = 10;
 
         public DeckAsset(uint ownerId, uint genesis)
             : base(ownerId, genesis)
@@ -30,43 +28,62 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             : base(asset)
         { }
 
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ......X. ........ ........ ........
+
+        public byte MaxDeckSize
+        {
+            get => Data.Read(6, ByteType.Full);
+            set => Data.Set(6, ByteType.Full, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// .......X ........ ........ ........
+
         public byte DeckSize 
         { 
             get => Data.Read(7, ByteType.Full); 
             set => Data.Set(7, ByteType.Full, value);
         }
 
-        // Helpers to read and write the deck and hand regions.
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ XXXXXXXX ........ ........
         public ulong Deck
         {
             get
             {
-                byte[] deckBytes = Data.Read(DECK_OFFSET, REGION_SIZE);
+                byte[] deckBytes = Data.Read(8, 8);
                 return BitConverter.ToUInt64(deckBytes, 0);
             }
             set
             {
                 byte[] deckBytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < REGION_SIZE; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    Data.Set((byte)(DECK_OFFSET + i), ByteType.Full, deckBytes[i]);
+                    Data.Set((byte)(8 + i), ByteType.Full, deckBytes[i]);
                 }
             }
         }
 
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ XXXXXXXX ........
         public ulong Hand
         {
             get
             {
-                byte[] handBytes = Data.Read(HAND_OFFSET, REGION_SIZE);
+                byte[] handBytes = Data.Read(16, 8);
                 return BitConverter.ToUInt64(handBytes, 0);
             }
             set
             {
                 byte[] handBytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < REGION_SIZE; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    Data.Set((byte)(HAND_OFFSET + i), ByteType.Full, handBytes[i]);
+                    Data.Set((byte)(16 + i), ByteType.Full, handBytes[i]);
                 }
             }
         }
@@ -79,13 +96,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     {
         public void NewDeck()
         {
-            Data.Set(DECK_OFFSET, new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF });
-            DeckSize = 52;
+            Deck = ulong.MaxValue;
+            MaxDeckSize = 52;
+            DeckSize = MaxDeckSize;
         }
 
         public bool GetCardState(byte index)
         {
-            if (index >= 52)
+            if (index >= MaxDeckSize)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
@@ -95,7 +113,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         public void SetCardState(byte index, bool state)
         {
-            if (index >= 52)
+            if (index >= MaxDeckSize)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
@@ -150,7 +168,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             }
 
             int currentCount = 0;
-            for (byte i = 0; i < 52; i++)
+            for (byte i = 0; i < MaxDeckSize; i++)
             {
                 if (GetCardState(i))
                 {
@@ -173,14 +191,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     {
         public void SetHandCard(int handPosition, byte cardIndex)
         {
-            if (handPosition < 0 || handPosition >= 10)
+            if (handPosition < 0 || handPosition >= HAND_LIMIT_SIZE)
             {
-                throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 9.");
+                throw new ArgumentOutOfRangeException(nameof(handPosition), $"Hand position must be between 0 and <{HAND_LIMIT_SIZE}.");
             }
 
-            if (cardIndex > 51 && cardIndex != EMPTY_SLOT)
+            if (cardIndex >= MaxDeckSize && cardIndex != EMPTY_SLOT)
             {
-                throw new ArgumentOutOfRangeException(nameof(cardIndex), "Card index must be between 0 and 51.");
+                throw new ArgumentOutOfRangeException(nameof(cardIndex), $"Card index must be between 0 and <{MaxDeckSize}.");
             }
 
             ulong handValue = Hand;
@@ -192,9 +210,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         public byte GetHandCard(int handPosition)
         {
-            if (handPosition < 0 || handPosition >= 10)
+            if (handPosition < 0 || handPosition >= HAND_LIMIT_SIZE)
             {
-                throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 9.");
+                throw new ArgumentOutOfRangeException(nameof(handPosition), $"Hand position must be between 0 and <{HAND_LIMIT_SIZE}.");
             }
 
             ulong handValue = Hand;
@@ -205,7 +223,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public void EmptyHand()
         {
             ulong empty = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < HAND_LIMIT_SIZE; i++)
             {
                 int bitOffset = i * 6;
                 empty |= ((ulong)EMPTY_SLOT & 0x3F) << bitOffset;
@@ -215,14 +233,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         public void Draw(byte handSize, byte[] randomHash)
         {
-            if (handSize > 10)
+            if (handSize > HAND_LIMIT_SIZE)
             {
                 throw new ArgumentOutOfRangeException(nameof(handSize), "Hand size cannot exceed maximum hand size (10).");
             }
 
             // Count how many cards are already in hand.
             int currentCount = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < HAND_LIMIT_SIZE; i++)
             {
                 if (!IsHandSlotEmpty(i))
                 {
@@ -231,7 +249,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             }
 
             // Fill empty slots until we reach the desired hand size.
-            for (int i = 0; i < 10 && currentCount < handSize; i++)
+            for (int i = 0; i < HAND_LIMIT_SIZE && currentCount < handSize; i++)
             {
                 if (IsHandSlotEmpty(i))
                 {
@@ -252,7 +270,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         public bool TryGetHandCard(int handPosition, out byte cardIndex)
         {
-            if (handPosition < 0 || handPosition >= 10)
+            if (handPosition < 0 || handPosition >= HAND_LIMIT_SIZE)
             {
                 throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 9.");
             }
