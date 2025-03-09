@@ -1,0 +1,84 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
+    <ui:VisualElement name="PlayScreen" style="flex-grow: 0; height: 100%; width: 100%; flex-shrink: 0; min-width: auto; min-height: auto; background-color: rgba(0, 0, 0, 0);">
+        <ui:VisualElement name="TopBound" style="flex-grow: 0; flex-shrink: 0; height: 300px; width: 100%; justify-content: center; background-image: url(&quot;project://database/Assets/Images/bar_top.png?fileID=2800000&amp;guid=846748f14336d9743bf154c2955f0cfc&amp;type=3#bar_top&quot;);" />
+        <ui:VisualElement name="FloatBody" style="flex-grow: 1; height: 100%; width: 100%; flex-shrink: 1;">
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-end; align-items: center; width: 100%; height: 100%;">
+                <ui:VisualElement name="VelBoss" style="flex-grow: 0; height: 400px; width: 100%; flex-direction: row;">
+                    <ui:VisualElement style="flex-grow: 0; width: 30%;" />
+                    <ui:VisualElement style="flex-grow: 0; width: 40%;">
+                        <ui:VisualElement name="ImgBoss" style="flex-grow: 1; height: 225px; background-image: url(&quot;project://database/Assets/Images/boss.png?fileID=2800000&amp;guid=d8d4f9ee3355f7449938d4ab647e452d&amp;type=3#boss&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:Label text="PORKI" name="TxtBossName" class="font-aeonik font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 50px; -unity-text-align: upper-center; -unity-font-style: bold;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; width: 30%;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="Spacer" style="flex-grow: 0; height: 50px; width: 100%; flex-direction: row;" />
+                <ui:VisualElement name="VelAttack" style="flex-grow: 0; height: 250px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);">
+                    <ui:VisualElement name="VelText" style="flex-grow: 0; height: 50px; justify-content: center;">
+                        <ui:Label text="ATTACK" name="TxtAttack" class="font-aeonik font-light-color" style="align-self: center; font-size: 30px; -unity-font-style: bold; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="VelHandCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center;">
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-403279020148781650&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_0&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-403279020148781650&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_0&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="VelHand" style="flex-grow: 0; height: 250px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);">
+                    <ui:VisualElement name="VelText" style="flex-grow: 0; height: 50px; justify-content: center;">
+                        <ui:Label text="HAND" name="TxtHand" class="font-aeonik font-light-color" style="align-self: center; font-size: 30px; -unity-font-style: bold; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="VelHandCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center;">
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-403279020148781650&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_0&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-5273799950186902311&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_16&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-1531750086020343998&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_24&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-5179985151802855900&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_12&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=5973334859434970411&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_22&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=2399100397618481481&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_19&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="VelDeck" style="flex-grow: 0; height: 250px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);">
+                    <ui:VisualElement name="VelText" style="flex-grow: 0; height: 50px; justify-content: center;">
+                        <ui:Label text="DECK" name="TxtDeck" class="font-aeonik font-light-color" style="align-self: center; font-size: 30px; -unity-font-style: bold; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="VelDeckCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center;">
+                        <ui:VisualElement name="VelDeck" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-6589986276051000911&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Back_D6_3&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="VelBoonsBanes" style="flex-grow: 0; height: 250px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);">
+                    <ui:VisualElement name="VelText" style="flex-grow: 0; height: 50px; flex-direction: row;">
+                        <ui:VisualElement style="flex-grow: 0; width: 50%; justify-content: center;">
+                            <ui:Label text="BOONS" name="TxtBoons" class="font-aeonik font-light-color" style="align-self: center; font-size: 30px; -unity-font-style: bold; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: auto;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; width: 50%; justify-content: center;">
+                            <ui:Label text="BANES" name="TxtBanes" class="font-aeonik font-light-color" style="align-self: center; font-size: 30px; -unity-font-style: bold; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: auto;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="VelDeckCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: flex-end; align-items: center;">
+                        <ui:VisualElement style="flex-grow: 0; width: 50%; height: 100%; align-items: center; justify-content: center;">
+                            <ui:VisualElement name="VelDeck" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-6589986276051000911&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Back_D6_3&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 0; width: 50%; height: 100%; align-items: center; justify-content: center;">
+                            <ui:VisualElement name="VelDeck" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-6589986276051000911&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Back_D6_3&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="BottomBound" style="flex-grow: 0; height: 500px; width: 100%; flex-shrink: 0; background-image: url(&quot;project://database/Assets/Images/bar_bottom.png?fileID=2800000&amp;guid=cb11aef720408ce40b60edab4c9fc8ca&amp;type=3#bar_bottom&quot;);">
+            <ui:VisualElement style="flex-grow: 1;">
+                <ui:VisualElement style="flex-grow: 0; flex-direction: row; height: 300px; align-items: center;">
+                    <ui:VisualElement style="flex-grow: 1; align-items: center;">
+                        <ui:VisualElement name="BtnDiscard" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Images/bt_blue.png?fileID=2800000&amp;guid=39ef94eefb3ca5d45b03d0136cad7cc3&amp;type=3#bt_blue&quot;); height: 200px; width: 450px;">
+                            <ui:Label text="DISCARD" name="TxtButton" class="font-aeonik font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 60px; -unity-text-align: middle-center; -unity-font-style: bold;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 1; align-items: center;">
+                        <ui:VisualElement name="BtnAttack" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Images/bt_pink2.png?fileID=2800000&amp;guid=5df3d77536056f949933a7bc57ae3c51&amp;type=3#bt_pink2&quot;); height: 200px; width: 450px;">
+                            <ui:Label text="ATTACK" name="TxtButton" class="font-aeonik font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 60px; -unity-text-align: middle-center; -unity-font-style: bold;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

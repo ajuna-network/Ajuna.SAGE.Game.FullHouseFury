@@ -1,0 +1,18 @@
+.main-bg-light {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+}
+
+.font-aeonik {
+    -unity-font-definition: url("project://database/Assets/Fonts/Aeonik-Regular%20SDF.asset?fileID=11400000&guid=d00f370ec5d4bf044b588edff61b98e4&type=2#Aeonik-Regular SDF");
+}
+
+.font-dark-color {
+    color: rgb(0, 0, 0);
+}
+
+.font-light-color {
+    color: rgb(255, 255, 255);
+}
