@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3" />
     <ui:VisualElement name="PlayScreen" style="flex-grow: 0; height: 100%; width: 100%; flex-shrink: 0; min-width: auto; min-height: auto; background-color: rgba(0, 0, 0, 0);">
-        <ui:VisualElement name="TopBound" style="flex-grow: 0; flex-shrink: 0; height: 300px; width: 100%; justify-content: center; background-image: url(&quot;project://database/Assets/Images/bar_top.png?fileID=2800000&amp;guid=846748f14336d9743bf154c2955f0cfc&amp;type=3#bar_top&quot;);">
+        <ui:VisualElement name="TopBound" style="flex-grow: 0; flex-shrink: 0; height: 300px; width: 100%; justify-content: center; background-image: url(&quot;project://database/Assets/Images/bar_top.png?fileID=2800000&amp;guid=846748f14336d9743bf154c2955f0cfc&amp;type=3#bar_top&quot;); background-color: rgba(0, 0, 0, 0.78);">
             <ui:VisualElement style="flex-grow: 1; height: 50px;" />
             <ui:VisualElement style="flex-grow: 0; height: 230px; flex-direction: row;">
                 <ui:VisualElement style="flex-grow: 0; width: 350px; height: 230px;" />
@@ -26,7 +26,7 @@
             <ui:VisualElement style="flex-grow: 0; height: 20px;" />
         </ui:VisualElement>
         <ui:VisualElement name="FloatBody" style="flex-grow: 1; height: 100%; width: 100%; flex-shrink: 1;" />
-        <ui:VisualElement name="BottomBound" style="flex-grow: 0; height: 500px; width: 100%; flex-shrink: 0; background-image: url(&quot;project://database/Assets/Images/bar_bottom.png?fileID=2800000&amp;guid=cb11aef720408ce40b60edab4c9fc8ca&amp;type=3#bar_bottom&quot;);">
+        <ui:VisualElement name="BottomBound" style="flex-grow: 0; height: 500px; width: 100%; flex-shrink: 0; background-image: url(&quot;project://database/Assets/Images/bar_bottom.png?fileID=2800000&amp;guid=cb11aef720408ce40b60edab4c9fc8ca&amp;type=3#bar_bottom&quot;); background-color: rgba(0, 0, 0, 0.78);">
             <ui:VisualElement style="flex-grow: 1;">
                 <ui:VisualElement name="VelActionButtons" style="flex-grow: 0; flex-direction: row; height: 300px; align-items: center; justify-content: center;" />
                 <ui:VisualElement style="flex-grow: 1;" />

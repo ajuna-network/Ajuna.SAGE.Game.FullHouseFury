@@ -1,10 +1,14 @@
-﻿using Ajuna.SAGE.Game.FullHouseFury;
+﻿using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Core;
+using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.Rendering.STP;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace Assets.Scripts.ScreenStates
 {
@@ -27,6 +31,7 @@ namespace Assets.Scripts.ScreenStates
         private Label _lblFatigue;
         private VisualElement _velEnduranceValue;
         private Label _lblEnduranceText;
+        private Button[] _frameButtons;
         private Label _lblBaseDamageText;
         private Label _lblDmgSignText;
         private Label _lblBaseDamage;
@@ -91,13 +96,13 @@ namespace Assets.Scripts.ScreenStates
             _lblEnduranceText = velEndurance.Q<Label>("TxtValue");
 
 
-            var frameButtons = new Button[] {
+            _frameButtons = new Button[] {
                 ButtonAction("DISCARD", PlayState.VtrBtnAction),
                 ButtonAction("ATTACK", PlayState.VtrBtnAction)
             };
-            frameButtons[0].RegisterCallback<ClickEvent>(evt => ExtrinsicDiscard());
-            frameButtons[1].RegisterCallback<ClickEvent>(evt => ExtrinsicAttack());
-            PlayState.AddFrameButtons(frameButtons);
+            _frameButtons[0].RegisterCallback<ClickEvent>(evt => ExtrinsicDiscard());
+            _frameButtons[1].RegisterCallback<ClickEvent>(evt => ExtrinsicAttack());
+            PlayState.AddFrameButtons(_frameButtons);
 
             PlayState.SetLevel(PlayState.GameAsset.Level.ToString());
             PlayState.SetRound(PlayState.GameAsset.Round.ToString());
@@ -164,7 +169,7 @@ namespace Assets.Scripts.ScreenStates
             _velHandCards.Clear();
             _velAttackCards.Clear();
 
-            foreach (var handCard in _handCards)
+            foreach (var handCard in _handCards.OrderByDescending(p => p.Card.Rank).ThenBy(p => p.Card.Suit))
             {
                 switch (handCard.HandCardState)
                 {
@@ -190,18 +195,20 @@ namespace Assets.Scripts.ScreenStates
             var currentPlayerHealth = PlayState.GameAsset.PlayerHealth;
 
             _lblBossHealthText.text = $"{currentBossHealth} / {maxBossHealth}";
-            _velBossCurrentHealthValue.style.width = new StyleLength(new Length(currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
+            _velBossCurrentHealthValue.style.width = new StyleLength(new Length((float)currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
 
             _lblPlayerHealthText.text = $"{currentPlayerHealth} / {maxPlayerHealth}";
-            _velPlayerHealthValue.style.width = new StyleLength(new Length(currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
+            _velPlayerHealthValue.style.width = new StyleLength(new Length((float)currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
 
             _lblDeckSize.text = $"{PlayState.DeckAsset.DeckSize} / {PlayState.DeckAsset.MaxDeckSize}";
             _lblDiscards.text = $"{PlayState.GameAsset.Discard}";
             _lblFatigue.text = $"{PlayState.GameAsset.FatigueDamage}";
 
-            var playerEndurance = (int)PlayState.GameAsset.PlayerEndurance;
-            var maxPlayerEndurance = (int)PlayState.GameAsset.MaxPlayerEndurance;
-            Debug.Log($"playerEndurance: {playerEndurance}, maxPlayerEndurance: {maxPlayerEndurance}");
+            // discard button
+            _frameButtons[0].SetEnabled(PlayState.GameAsset.Discard > 0);
+
+            var playerEndurance = PlayState.GameAsset.PlayerEndurance;
+            var maxPlayerEndurance = PlayState.GameAsset.MaxPlayerEndurance;
             _lblEnduranceText.text = $"{playerEndurance} / {maxPlayerEndurance}";
             _velEnduranceValue.style.width = new StyleLength(new Length((float)playerEndurance / maxPlayerEndurance * 100, LengthUnit.Percent));
 
@@ -217,9 +224,11 @@ namespace Assets.Scripts.ScreenStates
                 _lblDmgSignText.style.display = DisplayStyle.Flex;
                 _lblBaseDamage.style.display = DisplayStyle.Flex;
                 _lblBaseDamageText.style.display = DisplayStyle.Flex;
+                _frameButtons[1].SetEnabled(true);
             } 
             else
             {
+                _frameButtons[1].SetEnabled(false);
                 _lblDmgSignText.style.display = DisplayStyle.None;
                 _lblBaseDamage.style.display = DisplayStyle.None;
                 _lblBaseDamageText.style.display = DisplayStyle.None;
@@ -230,12 +239,44 @@ namespace Assets.Scripts.ScreenStates
 
         private void ExtrinsicDiscard()
         {
-            throw new NotImplementedException();
+            var discardHand = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => (byte)p.Index).ToArray();
+            if (discardHand == null || discardHand.Length == 0)
+            {
+                Debug.Log("No cards selected for discard");
+                return;
+            }
+
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.DISCARD, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] outAssets, discardHand);
+
+            if (resultFirst)
+            {
+                FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Battle);
+            }
+            else
+            {
+                Debug.LogError("Failed to transition to START");
+            }
         }
 
         private void ExtrinsicAttack()
         {
-            throw new NotImplementedException();
+            var attackHand = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => (byte)p.Index).ToArray();
+            if (attackHand == null ||attackHand.Length == 0)
+            {
+                Debug.Log("No cards selected for attack");
+                return;
+            }
+
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.BATTLE, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] outAssets, attackHand);
+
+            if (resultFirst)
+            {
+                FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Preparation);
+            }
+            else
+            {
+                Debug.LogError("Failed to transition to START");
+            }
         }
     }
 }
