@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
+    <ui:VisualElement name="VelPreparation" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-end; align-items: center; width: 100%; height: 100%;" />
+</ui:UXML>

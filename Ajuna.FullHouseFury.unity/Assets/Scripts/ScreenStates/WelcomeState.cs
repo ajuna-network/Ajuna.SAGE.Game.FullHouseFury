@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Core;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace Assets.Scripts.ScreenStates
 {
     public class WelcomeState : ScreenBaseState
     {
         private Button _btnStart;
+
         private VisualElement _velLogo;
 
         public WelcomeState(FlowController _flowController)
@@ -36,7 +41,16 @@ namespace Assets.Scripts.ScreenStates
 
         private void OnClickBtnStart(ClickEvent evt)
         {
-            FlowController.ChangeScreenState(ScreenState.Menu);
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.START, new IAsset[] { }, out IAsset[] _);
+
+            if (resultFirst)
+            {
+                FlowController.ChangeScreenState(ScreenState.Menu);
+            } 
+            else
+            {
+                Debug.LogError("Failed to transition to START");
+            }
         }
     }
 }

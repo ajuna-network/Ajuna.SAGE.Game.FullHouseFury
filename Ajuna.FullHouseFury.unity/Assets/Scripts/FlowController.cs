@@ -1,5 +1,11 @@
+using Ajuna.SAGE.Core;
+using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Game.FullHouseFury;
+using Ajuna.SAGE.Game.FullHouseFury.Model;
 using Assets.Scripts.ScreenStates;
+using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -15,11 +21,20 @@ namespace Assets.Scripts
 
     public enum ScreenSubState
     {
-        Dashboard,
+        None,
+        Preparation,
+        Battle,
+        Score,
     }
 
     public class FlowController : MonoBehaviour
     {
+        public readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
+        public readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
+        public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
+        public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+        public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
+
         internal readonly RandomNumberGenerator Random = RandomNumberGenerator.Create();
 
         public Vector2 ScrollOffset { get; set; }
@@ -30,10 +45,27 @@ namespace Assets.Scripts
 
         public ScreenState CurrentState { get; private set; }
 
+        public ScreenSubState CurrentSubState { get; private set; }
+
         private ScreenBaseState _currentState;
         private ScreenBaseState _currentSubState;
         private readonly Dictionary<ScreenState, ScreenBaseState> _stateDictionary = new();
         private readonly Dictionary<ScreenState, Dictionary<ScreenSubState, ScreenBaseState>> _subStateDictionary = new();
+
+        /// <summary>
+        /// The blockchain info provider
+        /// </summary>
+        public IBlockchainInfoProvider BlockchainInfoProvider { get; private set; }
+
+        /// <summary>
+        /// The game engine
+        /// </summary>
+        public Engine<FullHouseFuryIdentifier, FullHouseFuryRule> Engine { get; private set; }
+
+        /// <summary>
+        /// The user account
+        /// </summary>
+        public IAccount User { get; private set; }
 
         private void Awake()
         {
@@ -48,7 +80,8 @@ namespace Assets.Scripts
 
             var mainScreenSubStates = new Dictionary<ScreenSubState, ScreenBaseState>
             {
-                { ScreenSubState.Dashboard, new MainDashboardSubState(this, playState) },
+                { ScreenSubState.Preparation, new PlayPreparationSubState(this, playState) },
+                { ScreenSubState.Battle, new PlayBattleSubState(this, playState) },
             };
 
             _subStateDictionary.Add(ScreenState.Play, mainScreenSubStates);
@@ -70,8 +103,23 @@ namespace Assets.Scripts
                 return;
             }
 
+            // initialize game engine
+            BlockchainInfoProvider = new BlockchainInfoProvider(1234);
+            Engine = FullHouseFuryGame.Create(BlockchainInfoProvider);
+            User = Engine.AccountManager.Account(Engine.AccountManager.Create());
+            User.Balance.Deposit(1_000_000);
+
+            // update block number
+            InvokeRepeating(nameof(UpdatedBlocknumber), 0f, 6f);
+
             // call insital flow state
             ChangeScreenState(ScreenState.Welcome);
+        }
+
+        private void UpdatedBlocknumber()
+        {
+            BlockchainInfoProvider.CurrentBlockNumber++;
+            Debug.Log($"Blocknumber: {BlockchainInfoProvider.CurrentBlockNumber}");
         }
 
         /// <summary>
@@ -89,6 +137,7 @@ namespace Assets.Scripts
         internal void ChangeScreenState(ScreenState newScreenState)
         {
             CurrentState = newScreenState;
+            CurrentSubState = ScreenSubState.None;
 
             // exit current state if any
             _currentState?.ExitState();
@@ -113,6 +162,8 @@ namespace Assets.Scripts
         {
             if (_subStateDictionary.ContainsKey(parentState) && _subStateDictionary[parentState].ContainsKey(newSubState))
             {
+                CurrentSubState = newSubState;
+
                 // exit current sub state if any
                 _currentSubState?.ExitState();
 
@@ -122,6 +173,32 @@ namespace Assets.Scripts
                 // enter current sub state
                 _currentSubState.EnterState();
             }
+            else
+            {
+                Debug.LogWarning($"Substate {newSubState} not found for state {parentState}");
+            }
+        }
+
+        /// <summary>
+        /// Get the asset of the user
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="user"></param>
+        /// <param name="type"></param>
+        /// <param name="subType"></param>
+        /// <returns></returns>
+        public T GetAsset<T>(IAccount user, AssetType type, AssetSubType subType) where T : BaseAsset
+        {
+            BaseAsset? result = Engine.AssetManager
+                .AssetOf(user)
+                .Select(p => (BaseAsset)p)
+                .Where(p => p.AssetType == type && p.AssetSubType == subType)
+                .FirstOrDefault();
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<T>());
+            var typedResult = result as T;
+            Assert.That(typedResult, Is.Not.Null);
+            return typedResult;
         }
     }
 }
