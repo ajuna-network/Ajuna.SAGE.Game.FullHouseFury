@@ -2,6 +2,9 @@
 
 Full House Fury: The Tower of Cards is a roguelike game that blends traditional dungeon-crawling with the strategic depth of poker. In this game, players ascend a mysterious tower, battling bosses and navigating levels by drawing and playing cards. Each combat round begins with a fresh draw from a standard 52-card deck. The player's poker hand is evaluated to determine the damage dealt to the enemy. The twist? The game state is managed in a compact, bit-level representation that tracks both the deck and the player's hand.
 
+![image](https://github.com/user-attachments/assets/442b8d8e-35e4-4ac6-b684-c40f585ab038)
+(ref. UI for testing)
+
 ## Gameplay Overview
 
 - **Deck Management:**  
