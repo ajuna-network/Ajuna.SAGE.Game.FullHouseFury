@@ -16,3 +16,7 @@
 .font-light-color {
     color: rgb(255, 255, 255);
 }
+
+.font-silkscreen {
+    -unity-font-definition: url("project://database/Assets/Fonts/Silkscreen-Bold%20SDF.asset?fileID=11400000&guid=4e87c6eb4882cba43995f31c23bcc3ca&type=2#Silkscreen-Bold SDF");
+}

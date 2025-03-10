@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Assets.Scripts
@@ -26,6 +27,14 @@ namespace Assets.Scripts
             elementInstance.style.width = new Length(widthPerc, LengthUnit.Percent);
             elementInstance.style.height = new Length(heightPerc, LengthUnit.Percent);
             return elementInstance;
+        }
+
+        internal Button ButtonAction(string name, VisualTreeAsset vtrBtnAction)
+        {
+            var templateContainer = vtrBtnAction.Instantiate();
+            var _btnAction = templateContainer.Q<Button>("BtnAction");
+            _btnAction.text = name;
+            return _btnAction;
         }
 
     }

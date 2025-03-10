@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Game.FullHouseFury.Model;
+using Ajuna.SAGE.Game.FullHouseFury;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -36,7 +38,19 @@ namespace Assets.Scripts.ScreenStates
 
         private void OnClickBtnPlay(ClickEvent evt)
         {
-            FlowController.ChangeScreenState(ScreenState.Play);
+            var preGame = FlowController.GetAsset<GameAsset>(FlowController.User, AssetType.Game, AssetSubType.None);
+            var preFeck = FlowController.GetAsset<DeckAsset>(FlowController.User, AssetType.Deck, AssetSubType.None);
+
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.PLAY, new IAsset[] { preGame, preFeck }, out IAsset[] outAssets);
+
+            if (resultFirst)
+            {
+                FlowController.ChangeScreenState(ScreenState.Play);
+            }
+            else
+            {
+                Debug.LogError("Failed to transition to PLAY");
+            }
         }
     }
 }
