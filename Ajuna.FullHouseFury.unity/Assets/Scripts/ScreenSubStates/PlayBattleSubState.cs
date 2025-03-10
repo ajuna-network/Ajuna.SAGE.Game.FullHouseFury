@@ -99,6 +99,9 @@ namespace Assets.Scripts.ScreenStates
             frameButtons[1].RegisterCallback<ClickEvent>(evt => ExtrinsicAttack());
             PlayState.AddFrameButtons(frameButtons);
 
+            PlayState.SetLevel(PlayState.GameAsset.Level.ToString());
+            PlayState.SetRound(PlayState.GameAsset.Round.ToString());
+
             floatBody.Add(elementInstance);
 
             LoadHandCards();

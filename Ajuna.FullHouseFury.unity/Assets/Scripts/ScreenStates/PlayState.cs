@@ -18,8 +18,12 @@ namespace Assets.Scripts.ScreenStates
 
         internal VisualTreeAsset VtrBtnAction { get; }
 
+        private VisualElement _topBound;
         private VisualElement _bottomBound;
         private VisualElement _velActionButtons;
+
+        private Label _txtLevel;
+        private Label _txtRound;
 
         internal GameAsset GameAsset { get; private set; }
 
@@ -43,6 +47,13 @@ namespace Assets.Scripts.ScreenStates
             instance.style.width = new Length(100, LengthUnit.Percent);
             instance.style.height = new Length(98, LengthUnit.Percent);
 
+            _topBound = instance.Q<VisualElement>("TopBound");
+            var velLevel = _topBound.Q<VisualElement>("VelLevel");
+            _txtLevel = velLevel.Q<Label>("TxtLevel");
+
+            var velRound = _topBound.Q<VisualElement>("VelRound");
+            _txtRound = velRound.Q<Label>("TxtRound");
+
             _bottomBound = instance.Q<VisualElement>("BottomBound");
             _velActionButtons = _bottomBound.Q<VisualElement>("VelActionButtons");
 
@@ -58,9 +69,14 @@ namespace Assets.Scripts.ScreenStates
             Debug.Log($"[{this.GetType().Name}] ExitState");
         }
 
-        private void OnClickBtnAttack(ClickEvent evt)
+        public void SetLevel(string level)
         {
-            Debug.Log($"Clicked on Attack!");
+            _txtLevel.text = level;
+        }
+
+        public void SetRound(string round)
+        {
+            _txtRound.text = round;
         }
 
         internal void LoadAssets()

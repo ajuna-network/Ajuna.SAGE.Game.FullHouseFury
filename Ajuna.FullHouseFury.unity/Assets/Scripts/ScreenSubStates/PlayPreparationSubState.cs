@@ -31,7 +31,19 @@ namespace Assets.Scripts
                 ButtonAction("BATTLE", PlayState.VtrBtnAction)
             };
             frameButtons[0].RegisterCallback<ClickEvent>(evt => ExtrinsicPreparation());
+            
             PlayState.AddFrameButtons(frameButtons);
+
+            if (PlayState.GameAsset != null)
+            {
+                PlayState.SetLevel(PlayState.GameAsset.Level.ToString());
+                PlayState.SetRound(PlayState.GameAsset.Round.ToString());
+            }
+            else
+            {
+                PlayState.SetLevel("-");
+                PlayState.SetRound("-");
+            }
 
             floatBody.Add(elementInstance);
         }
