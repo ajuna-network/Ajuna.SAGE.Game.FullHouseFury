@@ -82,6 +82,7 @@ namespace Assets.Scripts
             {
                 { ScreenSubState.Preparation, new PlayPreparationSubState(this, playState) },
                 { ScreenSubState.Battle, new PlayBattleSubState(this, playState) },
+                { ScreenSubState.Score, new PlayScoreSubState(this, playState) },
             };
 
             _subStateDictionary.Add(ScreenState.Play, mainScreenSubStates);
