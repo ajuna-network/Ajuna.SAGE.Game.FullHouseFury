@@ -104,7 +104,9 @@ namespace Assets.Scripts
             }
 
             // initialize game engine
-            BlockchainInfoProvider = new BlockchainInfoProvider(1234);
+            var randomSeed = UnityEngine.Random.Range(0, int.MaxValue);
+            Debug.Log($"Random Seed: {randomSeed}");
+            BlockchainInfoProvider = new BlockchainInfoProvider(randomSeed);
             Engine = FullHouseFuryGame.Create(BlockchainInfoProvider);
             User = Engine.AccountManager.Account(Engine.AccountManager.Create());
             User.Balance.Deposit(1_000_000);

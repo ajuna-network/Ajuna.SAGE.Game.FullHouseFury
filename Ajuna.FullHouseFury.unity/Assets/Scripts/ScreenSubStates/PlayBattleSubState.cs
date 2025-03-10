@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Game.FullHouseFury.Model;
+﻿using Ajuna.SAGE.Game.FullHouseFury;
+using Ajuna.SAGE.Game.FullHouseFury.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,22 @@ namespace Assets.Scripts.ScreenStates
     public class PlayBattleSubState : ScreenBaseState
     {
         private VisualElement _velAttackCards, _velHandCards;
-
+        private Label _lblPokerHandText;
         private List<HandCard> _handCards = new List<HandCard>();
+
+        private Label _txtBossName;
+        private VisualElement _velBossCurrentHealthValue;
+        private Label _lblBossHealthText;
+        
+        private Label _txtPlayerName;
+        private VisualElement _velPlayerHealthValue;
+        private Label _lblPlayerHealthText;
+
+        private Label _lblDeckSize;
+        private Label _lblDiscards;
+        private Label _lblFatigue;
+        private VisualElement _velEnduranceValue;
+        private Label _lblEnduranceText;
 
         public PlayState PlayState => ParentState as PlayState;
 
@@ -35,6 +50,35 @@ namespace Assets.Scripts.ScreenStates
 
             _velAttackCards = elementInstance.Q<VisualElement>("VelAttackCards");
             _velHandCards = elementInstance.Q<VisualElement>("VelHandCards");
+
+            var velPokerHand = elementInstance.Q<VisualElement>("VelPokerHand");
+            _lblPokerHandText = velPokerHand.Q<Label>("TxtPokerHand");
+ 
+            var velBoss = elementInstance.Q<VisualElement>("VelBoss");
+            _txtBossName = velBoss.Q<Label>("TxtBossName");
+            _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
+            _lblBossHealthText = velBoss.Q<Label>("TxtValue");
+            _txtBossName.text = "BOSS";
+
+            var velPlayer = elementInstance.Q<VisualElement>("VelPlayer");
+            _txtPlayerName = velPlayer.Q<Label>("TxtPlayerName");
+            _velPlayerHealthValue = velPlayer.Q<VisualElement>("VelCurrentValue");
+            _lblPlayerHealthText = velPlayer.Q<Label>("TxtValue");
+            _txtPlayerName.text = "PLAYER";
+
+            var velDeckSize = velPlayer.Q<VisualElement>("VelDeckSize");
+            _lblDeckSize = velDeckSize.Q<Label>("TxtValue");
+
+            var velDiscards = velPlayer.Q<VisualElement>("VelDiscards");
+            _lblDiscards = velDiscards.Q<Label>("TxtValue");
+
+            var velFatigue = velPlayer.Q<VisualElement>("VelFatigue");
+            _lblFatigue = velFatigue.Q<Label>("TxtValue");
+
+            var velEndurance = velPlayer.Q<VisualElement>("VelEndurance");
+            _velEnduranceValue = velEndurance.Q<VisualElement>("VelCurrentValue");
+            _lblEnduranceText = velEndurance.Q<Label>("TxtValue");
+
 
             var frameButtons = new Button[] {
                 ButtonAction("DISCARD", PlayState.VtrBtnAction),
@@ -130,6 +174,34 @@ namespace Assets.Scripts.ScreenStates
 
             var maxPlayerHealth = PlayState.GameAsset.MaxPlayerHealth;
             var currentPlayerHealth = PlayState.GameAsset.PlayerHealth;
+
+            _lblBossHealthText.text = $"{currentBossHealth} / {maxBossHealth}";
+            _velBossCurrentHealthValue.style.width = new StyleLength(new Length(currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
+
+            _lblPlayerHealthText.text = $"{currentPlayerHealth} / {maxPlayerHealth}";
+            _velPlayerHealthValue.style.width = new StyleLength(new Length(currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
+
+            _lblDeckSize.text = $"{PlayState.DeckAsset.DeckSize} / {PlayState.DeckAsset.MaxDeckSize}";
+            _lblDiscards.text = $"{PlayState.GameAsset.Discard}";
+            _lblFatigue.text = $"{PlayState.GameAsset.FatigueDamage}";
+
+            var playerEndurance = (int)PlayState.GameAsset.PlayerEndurance;
+            var maxPlayerEndurance = (int)PlayState.GameAsset.MaxPlayerEndurance;
+            Debug.Log($"playerEndurance: {playerEndurance}, maxPlayerEndurance: {maxPlayerEndurance}");
+            _lblEnduranceText.text = $"{playerEndurance} / {maxPlayerEndurance}";
+            _velEnduranceValue.style.width = new StyleLength(new Length((float)playerEndurance / maxPlayerEndurance * 100, LengthUnit.Percent));
+
+            if (_velAttackCards.childCount > 0)
+            {
+                var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => p.Card.Index).ToArray();
+                var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score);
+                _lblPokerHandText.text = evaluation.ToString();
+            } 
+            else
+            {
+                _lblPokerHandText.text = "";
+            }
+
         }
 
         private void ExtrinsicDiscard()
