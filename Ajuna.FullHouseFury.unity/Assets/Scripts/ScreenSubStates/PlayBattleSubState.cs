@@ -27,6 +27,9 @@ namespace Assets.Scripts.ScreenStates
         private Label _lblFatigue;
         private VisualElement _velEnduranceValue;
         private Label _lblEnduranceText;
+        private Label _lblBaseDamageText;
+        private Label _lblDmgSignText;
+        private Label _lblBaseDamage;
 
         public PlayState PlayState => ParentState as PlayState;
 
@@ -59,6 +62,14 @@ namespace Assets.Scripts.ScreenStates
             _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
             _lblBossHealthText = velBoss.Q<Label>("TxtValue");
             _txtBossName.text = "BOSS";
+
+            var velDamage = velBoss.Q<VisualElement>("VelDamage");
+            _lblDmgSignText = velDamage.Q<Label>("TxtDmgSign");
+            _lblDmgSignText.style.display = DisplayStyle.None;
+            _lblBaseDamage = velDamage.Q<Label>("TxtBaseDamage");
+            _lblBaseDamage.style.display = DisplayStyle.None;
+            _lblBaseDamageText = velDamage.Q<Label>("TxtBaseDamageText");
+            _lblBaseDamageText.style.display = DisplayStyle.None;
 
             var velPlayer = elementInstance.Q<VisualElement>("VelPlayer");
             _txtPlayerName = velPlayer.Q<Label>("TxtPlayerName");
@@ -196,9 +207,19 @@ namespace Assets.Scripts.ScreenStates
                 var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => p.Card.Index).ToArray();
                 var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score);
                 _lblPokerHandText.text = evaluation.ToString();
+                
+                _lblDmgSignText.text = "+";
+                _lblBaseDamage.text = score.ToString();
+
+                _lblDmgSignText.style.display = DisplayStyle.Flex;
+                _lblBaseDamage.style.display = DisplayStyle.Flex;
+                _lblBaseDamageText.style.display = DisplayStyle.Flex;
             } 
             else
             {
+                _lblDmgSignText.style.display = DisplayStyle.None;
+                _lblBaseDamage.style.display = DisplayStyle.None;
+                _lblBaseDamageText.style.display = DisplayStyle.None;
                 _lblPokerHandText.text = "";
             }
 
