@@ -269,37 +269,25 @@ namespace Assets.Scripts.ScreenStates
 
             bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.BATTLE, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] outAssets, attackHand);
 
-            if (resultFirst)
-            {
-                PlayState.LoadAssets();
-
-                switch (PlayState.GameAsset.LevelState)
-                {
-                    case LevelState.Preparation:
-                        resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.PREPARATION, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] _);
-
-                        if (resultFirst)
-                        {
-                            FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Battle);
-                        }
-                        else
-                        {
-                            Debug.LogError("Failed to transition to PREPARATION");
-                        }
-                        break;
-
-                    case LevelState.Score:
-                        FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Score);
-                        break;
-
-                    default:
-                        Debug.LogError($"Wrong LevelState {PlayState.GameAsset.LevelState}!");
-                        return;
-                }
-            }
-            else
+            if (!resultFirst)
             {
                 Debug.LogError("Failed to transition to START");
+                return;
+            }
+
+            switch (PlayState.GameAsset.LevelState)
+            {
+                case LevelState.Battle:
+                    FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Battle);
+                    return;
+
+                case LevelState.Score:
+                    FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Score);
+                    return;
+
+                default:
+                    Debug.LogError($"Wrong LevelState {PlayState.GameAsset.LevelState}!");
+                    return;
             }
         }
     }

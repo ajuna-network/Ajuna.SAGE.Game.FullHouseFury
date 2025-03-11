@@ -58,14 +58,13 @@ namespace Assets.Scripts
         {
             bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.PREPARATION, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] _);
 
-            if (resultFirst)
+            if (!resultFirst)
             {
-                FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Battle);
+                Debug.LogWarning("Wasn't successfull in executing the ExtrinsicPreparation!"); 
+                return;
             }
-            else
-            {
-                Debug.LogError("Failed to transition to START");
-            }
+
+            FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Battle);
         }
     }
 }

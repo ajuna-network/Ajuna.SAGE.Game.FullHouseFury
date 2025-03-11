@@ -1,8 +1,12 @@
-﻿using Ajuna.SAGE.Game.FullHouseFury;
+﻿using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Core;
+using Ajuna.SAGE.Game.FullHouseFury;
 using Assets.Scripts.ScreenStates;
 using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UIElements;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace Assets.Scripts
 {
@@ -54,7 +58,7 @@ namespace Assets.Scripts
             var frameButtons = new Button[] {
                 ButtonAction("NEXT", PlayState.VtrBtnAction),
             };
-            frameButtons[0].RegisterCallback<ClickEvent>(evt => ExtrinsicNext());
+            frameButtons[0].RegisterCallback<ClickEvent>(evt => ExtrinsicScore());
             PlayState.AddFrameButtons(frameButtons);
 
             UpdateBattleStats();
@@ -66,18 +70,28 @@ namespace Assets.Scripts
         public override void ExitState()
         {
             Debug.Log($"[{this.GetType().Name}][SUB] ExitState");
+            if (PlayState.GameAsset.GameState == GameState.Finished)
+            {
+                FlowController.VelContainer.RemoveAt(1);
+            }
         }
 
-        private void ExtrinsicNext()
+        private void ExtrinsicScore()
         {
-            if (PlayState.GameAsset.GameState == GameState.Running)
-            {
-                FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Preparation);
-            }
-            else
+            if (PlayState.GameAsset.GameState != GameState.Running)
             {
                 FlowController.ChangeScreenState(ScreenState.Menu);
+                return;
             }
+
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.SCORE, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] _);
+            if (!resultFirst)
+            {
+                Debug.LogWarning("Wasn't successfull in executing the ExtrinsicScore!");
+                return;
+            }
+
+            FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Preparation);
         }
 
         private void UpdateBattleStats()

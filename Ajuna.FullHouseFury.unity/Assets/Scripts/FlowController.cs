@@ -34,6 +34,7 @@ namespace Assets.Scripts
         public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
         public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
         public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
+        public readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Score(AssetType.Game, AssetSubType.None);
 
         internal readonly RandomNumberGenerator Random = RandomNumberGenerator.Create();
 
