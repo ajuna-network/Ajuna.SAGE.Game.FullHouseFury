@@ -231,13 +231,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             Hand = empty;
         }
 
-        public void Draw(byte handSize, byte[] randomHash)
+        /// <summary>
+        /// Count how many cards are already in hand.
+        /// </summary>
+        /// <returns></returns>
+        public int HandCardsCount()
         {
-            if (handSize > HAND_LIMIT_SIZE)
-            {
-                throw new ArgumentOutOfRangeException(nameof(handSize), "Hand size cannot exceed maximum hand size (10).");
-            }
-
             // Count how many cards are already in hand.
             int currentCount = 0;
             for (int i = 0; i < HAND_LIMIT_SIZE; i++)
@@ -247,6 +246,24 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                     currentCount++;
                 }
             }
+            return currentCount;
+        }
+
+        /// <summary>
+        /// Draw cards from the deck and fill empty slots in hand, up to the actual hand size.
+        /// </summary>
+        /// <param name="handSize"></param>
+        /// <param name="randomHash"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void Draw(byte handSize, byte[] randomHash)
+        {
+            if (handSize > HAND_LIMIT_SIZE)
+            {
+                throw new ArgumentOutOfRangeException(nameof(handSize), "Hand size cannot exceed maximum hand size (10).");
+            }
+
+            // Count how many cards are already in hand.
+            int currentCount = HandCardsCount();
 
             // Fill empty slots until we reach the desired hand size.
             for (int i = 0; i < HAND_LIMIT_SIZE && currentCount < handSize; i++)

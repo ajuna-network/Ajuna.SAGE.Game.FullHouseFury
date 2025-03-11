@@ -57,8 +57,8 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             bool prepResult = Engine.Transition(_user, PREPARATION, [game, deck], out outAsset);
             Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
 
-            // Loop until game.LevelState becomes Score or deck is exhausted.
-            while (game.LevelState != LevelState.Score && deck.DeckSize > 0)
+            // Loop until game.LevelState becomes Score
+            while (game.LevelState != LevelState.Score)
             {
                 game = outAsset[0] as GameAsset;
                 deck = outAsset[1] as DeckAsset;

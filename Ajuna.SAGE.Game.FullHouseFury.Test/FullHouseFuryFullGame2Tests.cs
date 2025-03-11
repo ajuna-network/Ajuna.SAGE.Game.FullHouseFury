@@ -4,7 +4,6 @@ using Ajuna.SAGE.Game.FullHouseFury.Model;
 
 namespace Ajuna.SAGE.Core.HeroJam.Test
 {
-
     [TestFixture]
     public class FullHouseFuryFull2Tests : FullHouseFuryBaseTest
     {
@@ -55,38 +54,26 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
 
-            // Loop until game.LevelState becomes Score or deck is exhausted.
-            while (game.LevelState != LevelState.Score && deck.DeckSize > 0)
+            IAsset[] outAsset = null;
+
+            bool prepResult = Engine.Transition(_user, PREPARATION, [game, deck], out outAsset);
+            Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
+
+            // Loop until game.LevelState becomes Score
+            while (game.LevelState != LevelState.Score)
             {
-                IAsset[] outAsset = null;
+                game = outAsset[0] as GameAsset;
+                deck = outAsset[1] as DeckAsset;
 
-                switch (game.LevelState)
-                {
-                    case LevelState.Preparation:
-                        bool prepResult = Engine.Transition(_user, PREPARATION, [game, deck], out outAsset);
-                        Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
-                        break;
+                // take the first card from the hand to play
+                byte[] attackHand = [0];
 
-                    case LevelState.Battle:
-
-                        // take the first card from the hand to play
-                        byte[] attackHand = [0];
-
-                        bool battleResult = Engine.Transition(_user, BATTLE, [game, deck], out outAsset, attackHand);
-                        Assert.That(battleResult, Is.True, "BATTLE_LEVEL transition should succeed.");
-                        break;
-
-                    default:
-                        Assert.Fail("Unexpected LevelState.");
-                        break;
-                }
+                bool battleResult = Engine.Transition(_user, BATTLE, [game, deck], out outAsset, attackHand);
+                Assert.That(battleResult, Is.True, "BATTLE_LEVEL transition should succeed.");
 
                 BlockchainInfoProvider.CurrentBlockNumber++;
 
                 Assert.That(outAsset, Is.Not.Null);
-
-                game = outAsset[0] as GameAsset;
-                deck = outAsset[1] as DeckAsset;
             }
 
             Assert.That(game.Round, Is.EqualTo(17), "Round is not correct.");

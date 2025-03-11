@@ -371,14 +371,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT);
                 }
 
-                // updated attack hand
-                game.ClearAttackHand();
-                game.AttackScore = 0;
+                // clear attack
+                game.ClearAttack();
+
+                // set attack
                 for (int i = 0; i < attackCards.Length; i++)
                 {
                     game.SetAttackHandCard(i, attackCards[i]);
                 }
-
                 game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, out ushort score);
                 game.AttackScore = score;
 
@@ -411,8 +411,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     game.LevelState = LevelState.Score;
                 }
 
-                // game is finished if player is dead
-                if (!game.IsPlayerAlive)
+                // game is finished if player is dead, or he has no more cards to draw
+                if (!game.IsPlayerAlive || ((deck.DeckSize + deck.HandCardsCount()) == 0))
                 {
                     game.GameState = GameState.Finished;
                 }
@@ -423,6 +423,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Discard cards from the hand
+        /// </summary>
+        /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetDiscardTransition()
         {
             var identifier = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
@@ -537,11 +541,25 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
+                // clear attack
+                game.ClearAttack();
+
                 // next level
                 game.Level = (byte)Math.Min(game.Level + 1, byte.MaxValue);
 
                 // set next boss
                 game.MaxBossHealth = (ushort)(Math.Pow(game.Level, 2) * 100);
+                game.BossDamage = 0;
+
+                // don't reset player health
+                //game.MaxPlayerHealth = 100;
+                //game.PlayerDamage = 0;
+
+                // reset player endurance
+                game.PlayerEndurance = game.MaxPlayerEndurance;
+
+                // empty hand
+                deck.EmptyHand();
 
                 // reset deck
                 deck.NewDeck();
