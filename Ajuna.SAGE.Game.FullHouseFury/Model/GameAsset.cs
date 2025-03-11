@@ -210,7 +210,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             PlayerDamage = 0;
             FatigueDamage = 1;
 
-            ClearAttackHand();
+            ClearAttack();
         }
 
         public byte GetAttackHandCard(int handPosition)
@@ -244,8 +244,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             AttackHand = handValue;
         }
 
-        public void ClearAttackHand()
+        public void ClearAttack()
         {
+            AttackScore = 0;
+            AttackType = PokerHand.None;
+
             uint empty = 0;
             for (int i = 0; i < 5; i++)
             {

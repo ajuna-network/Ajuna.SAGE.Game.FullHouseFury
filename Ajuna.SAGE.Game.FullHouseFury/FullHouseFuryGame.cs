@@ -167,6 +167,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 GetPreparationTransition(),
                 GetBattleTransition(),
                 GetDiscardTransition(),
+                GetScoreTransition(),
             };
 
             return result;
@@ -276,10 +277,18 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
-                // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
-                // Boons and Banes
+                if (game.Level > 1)
+                {
+                    // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
+                    // Boons and Banes
+                }
 
-                game.Round++;
+
+
+
+
+
+                game.Round = 1; // reset round
                 game.LevelState = LevelState.Battle;
 
                 game.AttackType = PokerHand.None;
@@ -362,13 +371,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT);
                 }
 
-                // updated attack hand
-                game.ClearAttackHand();
+                // clear attack
+                game.ClearAttack();
+
+                // set attack
                 for (int i = 0; i < attackCards.Length; i++)
                 {
                     game.SetAttackHandCard(i, attackCards[i]);
                 }
-
                 game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, out ushort score);
                 game.AttackScore = score;
 
@@ -386,13 +396,23 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 }
 
                 // continue playing as long both parties are alive.
-                game.LevelState = 
-                    game.IsBossAlive && game.IsPlayerAlive ? 
-                        LevelState.Preparation : 
-                        LevelState.Score;
+                if (game.IsBossAlive && game.IsPlayerAlive)
+                {
+                    game.LevelState = LevelState.Battle;
 
-                // game is finished if player is dead
-                if (!game.IsPlayerAlive)
+                    // next round
+                    game.Round = (byte)Math.Min(game.Round + 1, byte.MaxValue);
+
+                    // draw new cards for the played ones
+                    deck.Draw(game.HandSize, h);
+                }
+                else
+                {
+                    game.LevelState = LevelState.Score;
+                }
+
+                // game is finished if player is dead, or he has no more cards to draw
+                if (!game.IsPlayerAlive || ((deck.DeckSize + deck.HandCardsCount()) == 0))
                 {
                     game.GameState = GameState.Finished;
                 }
@@ -403,6 +423,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Discard cards from the hand
+        /// </summary>
+        /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetDiscardTransition()
         {
             var identifier = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
@@ -425,19 +449,16 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                 if (game.GameState != GameState.Running)
                 {
-                    // game is not running
                     return result;
                 }
 
                 if (game.LevelState != LevelState.Battle)
                 {
-                    // levelstate is not in preparation state
                     return result;
                 }
 
                 if (game.Discard == 0)
                 {
-                    // discard is not allowed
                     return result;
                 }
 
@@ -483,6 +504,68 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                 // draw new cards for the discarded ones
                 deck.Draw(game.HandSize, h);
+
+                return result;
+            };
+
+            return (identifier, rules, fee, function);
+        }
+
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetScoreTransition()
+        {
+            var identifier = FullHouseFuryIdentifier.Score(AssetType.Game, AssetSubType.None);
+            byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
+            byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+
+            FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                // TODO: verify gamestate is running in rules
+            };
+
+            ITransitioFee? fee = default;
+
+            TransitionFunction<FullHouseFuryRule> function = (e, r, f, a, h, b, c, m) =>
+            {
+                var game = new GameAsset(a.ElementAt(0));
+                var deck = new DeckAsset(a.ElementAt(1));
+                var result = new IAsset[] { game, deck };
+
+                if (game.GameState != GameState.Running)
+                {
+                    return result;
+                }
+
+                if (game.LevelState != LevelState.Score)
+                {
+                    return result;
+                }
+
+                // clear attack
+                game.ClearAttack();
+
+                // next level
+                game.Level = (byte)Math.Min(game.Level + 1, byte.MaxValue);
+
+                // set next boss
+                game.MaxBossHealth = (ushort)(Math.Pow(game.Level, 2) * 100);
+                game.BossDamage = 0;
+
+                // don't reset player health
+                //game.MaxPlayerHealth = 100;
+                //game.PlayerDamage = 0;
+
+                // reset player endurance
+                game.PlayerEndurance = game.MaxPlayerEndurance;
+
+                // empty hand
+                deck.EmptyHand();
+
+                // reset deck
+                deck.NewDeck();
+
+                // restart with preparation
+                game.LevelState = LevelState.Preparation;
 
                 return result;
             };
