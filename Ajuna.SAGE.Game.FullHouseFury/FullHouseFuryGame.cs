@@ -279,7 +279,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
                 // Boons and Banes
 
-                game.Round++;
+                game.Round = 1; // reset round
                 game.LevelState = LevelState.Battle;
 
                 game.AttackType = PokerHand.None;
@@ -364,6 +364,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                 // updated attack hand
                 game.ClearAttackHand();
+                game.AttackScore = 0;
                 for (int i = 0; i < attackCards.Length; i++)
                 {
                     game.SetAttackHandCard(i, attackCards[i]);
@@ -386,10 +387,20 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 }
 
                 // continue playing as long both parties are alive.
-                game.LevelState = 
-                    game.IsBossAlive && game.IsPlayerAlive ? 
-                        LevelState.Preparation : 
-                        LevelState.Score;
+                if (game.IsBossAlive && game.IsPlayerAlive)
+                {
+                    game.LevelState = LevelState.Battle;
+
+                    // next round
+                    game.Round = (byte)Math.Min(game.Round + 1, byte.MaxValue);
+
+                    // draw new cards for the played ones
+                    deck.Draw(game.HandSize, h);
+                }
+                else
+                {
+                    game.LevelState = LevelState.Score;
+                }
 
                 // game is finished if player is dead
                 if (!game.IsPlayerAlive)

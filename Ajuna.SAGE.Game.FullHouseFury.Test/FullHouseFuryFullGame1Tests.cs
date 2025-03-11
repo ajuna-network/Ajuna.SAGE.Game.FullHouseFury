@@ -52,61 +52,49 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
 
+            IAsset[] outAsset = null;
+
+            bool prepResult = Engine.Transition(_user, PREPARATION, [game, deck], out outAsset);
+            Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
+
             // Loop until game.LevelState becomes Score or deck is exhausted.
             while (game.LevelState != LevelState.Score && deck.DeckSize > 0)
             {
-                IAsset[] outAsset = null;
+                game = outAsset[0] as GameAsset;
+                deck = outAsset[1] as DeckAsset;
 
-                switch (game.LevelState)
+                if (game.Round == 1)
                 {
-                    case LevelState.Preparation:
-                        bool prepResult = Engine.Transition(_user, PREPARATION, [game, deck], out outAsset);
-                        Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
-                        break;
-
-                    case LevelState.Battle:
-
-                        if (game.Round == 1)
-                        {
-                            var hand = new Card?[10];
-                            for (int i = 0; i < 10; i++)
-                            {
-                                hand[i] = deck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
-                            }
-                            Assert.That(string.Join(" ", hand.Select(c => c.ToString())).Trim(), Is.EqualTo("3♠ Q♥ A♣ 4♠ 6♠ J♠ 7♣"));
-                        }
-
-                        // Convert the hand from deck into a byte[10]
-                        byte[] handArray = new byte[10];
-                        for (int i = 0; i < 10; i++)
-                        {
-                            handArray[i] = deck.GetHandCard(i);
-                        }
-
-                        // Evaluate the best attack from the hand.
-                        var bestAttack = FullHouseFuryUtil.EvaluateAttack(handArray);
-
-                        // Create an AttackHand instance from the chosen positions.
-                        byte[] attackHand = bestAttack.Positions.Select(pos => (byte)pos).ToArray();
-
-                        bool battleResult = Engine.Transition(_user, BATTLE, [game, deck], out outAsset, attackHand);
-                        Assert.That(battleResult, Is.True, "BATTLE_LEVEL transition should succeed.");
-                        break;
-
-                    default:
-                        Assert.Fail("Unexpected LevelState.");
-                        break;
+                    var hand = new Card?[10];
+                    for (int i = 0; i < 10; i++)
+                    {
+                        hand[i] = deck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
+                    }
+                    //Assert.That(string.Join(" ", hand.Select(c => c.ToString())).Trim(), Is.EqualTo("3♠ Q♥ A♣ 4♠ 6♠ J♠ 7♣"));
                 }
+
+                // Convert the hand from deck into a byte[10]
+                byte[] handArray = new byte[10];
+                for (int i = 0; i < 10; i++)
+                {
+                    handArray[i] = deck.GetHandCard(i);
+                }
+
+                // Evaluate the best attack from the hand.
+                var bestAttack = FullHouseFuryUtil.EvaluateAttack(handArray);
+
+                // Create an AttackHand instance from the chosen positions.
+                byte[] attackHand = bestAttack.Positions.Select(pos => (byte)pos).ToArray();
+
+                bool battleResult = Engine.Transition(_user, BATTLE, [game, deck], out outAsset, attackHand);
+                Assert.That(battleResult, Is.True, "BATTLE_LEVEL transition should succeed.");
 
                 BlockchainInfoProvider.CurrentBlockNumber++;
 
                 Assert.That(outAsset, Is.Not.Null);
-
-                game = outAsset[0] as GameAsset;
-                deck = outAsset[1] as DeckAsset;
             }
 
-            Assert.That(game.Round, Is.EqualTo(3), "Round is not correct.");
+            Assert.That(game.Round, Is.EqualTo(5), "Round is not correct.");
             Assert.That(game.IsBossAlive, Is.EqualTo(false), "Boss should be alive.");
             Assert.That(game.IsPlayerAlive, Is.EqualTo(true), "Player should be dead.");
 

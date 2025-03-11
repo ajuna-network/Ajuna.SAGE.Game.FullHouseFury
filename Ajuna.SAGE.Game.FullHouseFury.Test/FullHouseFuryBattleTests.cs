@@ -58,6 +58,8 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
 
+            Assert.That(preDeck.DeckSize, Is.EqualTo(45));
+
             var preEndurance = preGame.PlayerEndurance;
 
             byte[] config = [0, 1, 3];
@@ -73,13 +75,13 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(deck, Is.Not.Null);
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
-            Assert.That(game.LevelState, Is.EqualTo(LevelState.Preparation));
+            Assert.That(game.LevelState, Is.EqualTo(LevelState.Battle));
 
-            Assert.That(deck.DeckSize, Is.EqualTo(45));
-            Assert.That(deck.IsHandSlotEmpty(0), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(1), Is.True);
+            Assert.That(deck.DeckSize, Is.EqualTo(42));
+            Assert.That(deck.IsHandSlotEmpty(0), Is.False);
+            Assert.That(deck.IsHandSlotEmpty(1), Is.False);
             Assert.That(deck.IsHandSlotEmpty(2), Is.False);
-            Assert.That(deck.IsHandSlotEmpty(3), Is.True);
+            Assert.That(deck.IsHandSlotEmpty(3), Is.False);
             Assert.That(deck.IsHandSlotEmpty(4), Is.False);
             Assert.That(deck.IsHandSlotEmpty(5), Is.False);
             Assert.That(deck.IsHandSlotEmpty(6), Is.False);
