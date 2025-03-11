@@ -3,7 +3,6 @@ using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using Assets.Scripts.ScreenStates;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -198,10 +197,7 @@ namespace Assets.Scripts
                 .Select(p => (BaseAsset)p)
                 .Where(p => p.AssetType == type && p.AssetSubType == subType)
                 .FirstOrDefault();
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<T>());
             var typedResult = result as T;
-            Assert.That(typedResult, Is.Not.Null);
             return typedResult;
         }
     }
