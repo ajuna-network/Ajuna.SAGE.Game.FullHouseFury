@@ -189,18 +189,18 @@ namespace Assets.Scripts.ScreenStates
         private void UpdateBattleStats()
         {
             var maxBossHealth = PlayState.GameAsset.MaxBossHealth;
-            var currentBossHealth = PlayState.GameAsset.BossHealth;
+            var currentBossHealth = PlayState.GameAsset.BossHealth > 0 ? PlayState.GameAsset.BossHealth : 0;
 
             var maxPlayerHealth = PlayState.GameAsset.MaxPlayerHealth;
-            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth;
+            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth > 0 ? PlayState.GameAsset.PlayerHealth : 0;
 
-            _lblBossHealthText.text = $"{currentBossHealth} / {maxBossHealth}";
+            _lblBossHealthText.text = $"{currentBossHealth}";
             _velBossCurrentHealthValue.style.width = new StyleLength(new Length((float)currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
 
-            _lblPlayerHealthText.text = $"{currentPlayerHealth} / {maxPlayerHealth}";
+            _lblPlayerHealthText.text = $"{currentPlayerHealth}";
             _velPlayerHealthValue.style.width = new StyleLength(new Length((float)currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
 
-            _lblDeckSize.text = $"{PlayState.DeckAsset.DeckSize} / {PlayState.DeckAsset.MaxDeckSize}";
+            _lblDeckSize.text = $"{PlayState.DeckAsset.DeckSize}/{PlayState.DeckAsset.MaxDeckSize}";
             _lblDiscards.text = $"{PlayState.GameAsset.Discard}";
             _lblFatigue.text = $"{PlayState.GameAsset.FatigueDamage}";
 
@@ -209,7 +209,7 @@ namespace Assets.Scripts.ScreenStates
 
             var playerEndurance = PlayState.GameAsset.PlayerEndurance;
             var maxPlayerEndurance = PlayState.GameAsset.MaxPlayerEndurance;
-            _lblEnduranceText.text = $"{playerEndurance} / {maxPlayerEndurance}";
+            _lblEnduranceText.text = $"{playerEndurance}/{maxPlayerEndurance}";
             _velEnduranceValue.style.width = new StyleLength(new Length((float)playerEndurance / maxPlayerEndurance * 100, LengthUnit.Percent));
 
             if (_velAttackCards.childCount > 0)

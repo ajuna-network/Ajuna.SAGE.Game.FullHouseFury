@@ -1,4 +1,5 @@
 ﻿using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using Assets.Scripts.ScreenStates;
 using UnityEngine;
@@ -8,6 +9,12 @@ namespace Assets.Scripts
 {
     public class PlayPreparationSubState : ScreenBaseState
     {
+        private Label _txtBossName;
+        private Label _txtLevelName;
+
+        private VisualElement _velBossCurrentHealthValue;
+        private Label _lblBossHealthText;
+
         public PlayState PlayState => ParentState as PlayState;
 
         public PlayPreparationSubState(FlowController flowController, ScreenBaseState parent)
@@ -27,6 +34,15 @@ namespace Assets.Scripts
 
             TemplateContainer elementInstance = ElementInstance("UI/Frames/PreparationFrame");
 
+            var velLevel = elementInstance.Q<VisualElement>("VelLevel");
+            _txtBossName = velLevel.Q<Label>("TxtBossName");
+            _txtLevelName = velLevel.Q<Label>("TxtLevelName");
+
+            var velBoss = elementInstance.Q<VisualElement>("VelBoss");
+            _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
+            _lblBossHealthText = velBoss.Q<Label>("TxtValue");
+            _txtBossName.text = "C.COX";
+
             var frameButtons = new Button[] {
                 ButtonAction("BATTLE", PlayState.VtrBtnAction)
             };
@@ -45,6 +61,8 @@ namespace Assets.Scripts
                 PlayState.SetRound("-");
             }
 
+            UpdateBattleStats();
+
             floatBody.Add(elementInstance);
         }
 
@@ -53,6 +71,23 @@ namespace Assets.Scripts
             Debug.Log($"[{this.GetType().Name}][SUB] ExitState");
         }
 
+        private void UpdateBattleStats()
+        {
+            _txtLevelName.text = $"Lvl. {PlayState.GameAsset.Level}";
+
+            var maxBossHealth = PlayState.GameAsset.MaxBossHealth;
+            var currentBossHealth = PlayState.GameAsset.BossHealth > 0 ? PlayState.GameAsset.BossHealth : 0;
+
+            //var maxPlayerHealth = PlayState.GameAsset.MaxPlayerHealth;
+            //var currentPlayerHealth = PlayState.GameAsset.PlayerHealth > 0 ? PlayState.GameAsset.PlayerHealth : 0;
+
+            _lblBossHealthText.text = $"{currentBossHealth}";
+            _velBossCurrentHealthValue.style.width = new StyleLength(new Length((float)currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
+
+            //_lblPlayerHealthText.text = $"{currentPlayerHealth}";
+            //_velPlayerHealthValue.style.width = new StyleLength(new Length((float)currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
+
+        }
 
         private void ExtrinsicPreparation()
         {

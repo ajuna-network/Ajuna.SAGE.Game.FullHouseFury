@@ -99,15 +99,15 @@ namespace Assets.Scripts
             _lblResult.text = PlayState.GameAsset.GameState == GameState.Running ? "YOU WON!" : "YOU LOST!";
 
             var maxBossHealth = PlayState.GameAsset.MaxBossHealth;
-            var currentBossHealth = PlayState.GameAsset.BossHealth;
+            var currentBossHealth = PlayState.GameAsset.BossHealth > 0 ? PlayState.GameAsset.BossHealth : 0;
 
             var maxPlayerHealth = PlayState.GameAsset.MaxPlayerHealth;
-            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth;
+            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth > 0 ? PlayState.GameAsset.PlayerHealth : 0;
 
-            _lblBossHealthText.text = $"{currentBossHealth} / {maxBossHealth}";
+            _lblBossHealthText.text = $"{currentBossHealth}";
             _velBossCurrentHealthValue.style.width = new StyleLength(new Length((float)currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
 
-            _lblPlayerHealthText.text = $"{currentPlayerHealth} / {maxPlayerHealth}";
+            _lblPlayerHealthText.text = $"{currentPlayerHealth}";
             _velPlayerHealthValue.style.width = new StyleLength(new Length((float)currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
         }
     }

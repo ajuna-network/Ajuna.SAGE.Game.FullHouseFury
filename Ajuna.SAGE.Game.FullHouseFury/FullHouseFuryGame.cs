@@ -163,7 +163,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             var result = new List<(FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>)>
             {
                 GetStartTransition(),
-                GetPlaytTransition(),
+                GetPlayTransition(),
                 GetPreparationTransition(),
                 GetBattleTransition(),
                 GetDiscardTransition(),
@@ -204,7 +204,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// Get Start Player transition set
         /// </summary>
         /// <returns></returns>
-        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetPlaytTransition()
+        private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetPlayTransition()
         {
             var identifier = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
@@ -284,15 +284,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 }
 
 
-
-
-
-
                 game.Round = 1; // reset round
                 game.LevelState = LevelState.Battle;
 
-                game.AttackType = PokerHand.None;
-                game.AttackScore = 0;
+                game.ClearAttack();
 
                 deck.Draw(game.HandSize, h);
 
