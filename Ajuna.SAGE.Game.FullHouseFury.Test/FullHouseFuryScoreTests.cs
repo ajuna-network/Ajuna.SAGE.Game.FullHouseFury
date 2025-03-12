@@ -90,6 +90,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
             Assert.That(game.LevelState, Is.EqualTo(LevelState.Preparation));
@@ -122,6 +123,14 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(game.BossDamage, Is.EqualTo(0));
 
             Assert.That(game.Level, Is.EqualTo(2));
+
+            // verify that the boon and bane are set
+            Assert.That(towr.GetBoonAndBane(0).boon, Is.EqualTo(BonusType.DeckRefill));
+            Assert.That(towr.GetBoonAndBane(0).bane, Is.EqualTo(MalusType.VulnerableState));
+            Assert.That(towr.GetBoonAndBane(1).boon, Is.EqualTo(BonusType.ZealousCharge));
+            Assert.That(towr.GetBoonAndBane(1).bane, Is.EqualTo(MalusType.SpadeHealsOpponent));
+            Assert.That(towr.GetBoonAndBane(2).boon, Is.EqualTo(BonusType.InspiringPresence));
+            Assert.That(towr.GetBoonAndBane(2).bane, Is.EqualTo(MalusType.ReducedEndurance));
         }
 
     }

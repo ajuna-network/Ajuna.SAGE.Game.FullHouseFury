@@ -287,6 +287,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                 if (game.Level > 1)
                 {
+                    byte? position = c as byte?;
+                    // no position is provided, we use random position.
+                    if (position == null)
+                    {
+                        // take one of the 3 positions [0, 1, 2]
+                        position = (byte)(h[0] % 3);
+                    }
+
                     // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
                     // Boons and Banes
                 }
@@ -572,6 +580,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                 // reset deck
                 deck.New();
+
+                // set of 3 boons and banes combos, to choose from in preparation
+                for(int i = 0; i < 3; i++)
+                {
+                    var valBoon = (BonusType)((h[(i * 2) + 0] % 32) + 1);
+                    var valBane = (MalusType)((h[(i * 2) + 1] % 32) + 1);
+                    towr.SetBoonAndBane(i, valBoon, valBane);
+                }
 
                 // restart with preparation
                 game.LevelState = LevelState.Preparation;

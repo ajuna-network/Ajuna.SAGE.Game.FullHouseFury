@@ -23,6 +23,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
+        /// ........ ....XXXX ........ ........
+        public uint BoonsAndBanes
+        {
+            get => BitConverter.ToUInt32(Data.Read(12, 4), 0);
+            set => Data.Set(12, BitConverter.GetBytes(value));
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
         /// ........ ........ XXXX.... ........
         public uint SingleBoons
         {
@@ -62,10 +71,53 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     {
         public void New()
         {
+            SetBoonAndBane(0, BonusType.None, MalusType.None);
+            SetBoonAndBane(1, BonusType.None, MalusType.None);
+            SetBoonAndBane(2, BonusType.None, MalusType.None);
+
             SingleBoons = 0;
             MultiBoons = 0;
             SingleBanes = 0;
             MultiBanes = 0;
+        }
+
+        public (BonusType boon, MalusType bane) GetBoonAndBane(int position)
+        {
+            if (position < 0 || position > 2)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position), "Boons and banes position must be between 0 and <3.");
+            }
+
+            uint boonsAndBanes = BoonsAndBanes;
+            int bitOffset = (position * 2) * 6;
+
+            var boon = (BonusType)((boonsAndBanes >> bitOffset) & 0x3F);
+            var bane = (MalusType)((boonsAndBanes >> (bitOffset + 6)) & 0x3F);
+
+            return (boon, bane);
+        }
+
+        public void SetBoonAndBane(int position, BonusType boon, MalusType bane)
+        {
+            if (position < 0 || position > 2)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position), $"Boons and banes position must be between 0 and <3.");
+            }
+
+            uint boonsAndBanes = BoonsAndBanes;
+            int bitOffset = (position * 2) * 6;
+
+            // Clear existing boon and bane values at the position
+            uint boonMask = 0x3FU << bitOffset;
+            uint baneMask = 0x3FU << (bitOffset + 6);
+
+            boonsAndBanes &= ~(boonMask | baneMask); // Clear bits
+
+            // Set new boon and bane values
+            boonsAndBanes |= ((uint)boon & 0x3F) << bitOffset;
+            boonsAndBanes |= ((uint)bane & 0x3F) << (bitOffset + 6);
+
+            BoonsAndBanes = boonsAndBanes;
         }
 
         public void SetBoon(byte boonIndex, byte value)
