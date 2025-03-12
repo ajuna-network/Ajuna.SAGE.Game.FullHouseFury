@@ -34,9 +34,11 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             // Capture key state after the first gamble.
             var game = outAssets[0] as GameAsset;
             var deck = outAssets[1] as DeckAsset;
+            var towr = outAssets[2] as TowerAsset;
 
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
         }
     }
 }

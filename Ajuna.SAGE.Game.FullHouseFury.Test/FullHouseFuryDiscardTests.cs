@@ -25,26 +25,23 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             bool resultFirst = false;
             GameAsset game = null;
             DeckAsset deck = null;
+            TowerAsset towr = null;
+            IAsset[] inAsset = [];
+            IAsset[] outAsset = [];
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            resultFirst = Engine.Transition(_user, START, [], out _);
+            resultFirst = Engine.Transition(_user, START, [], out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-
-            resultFirst = Engine.Transition(_user, PLAY, [game, deck], out _);
+            resultFirst = Engine.Transition(_user, PLAY, inAsset = outAsset, out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-
-            resultFirst = Engine.Transition(_user, PREPARATION, [game, deck], out IAsset[] _);
+            resultFirst = Engine.Transition(_user, PREPARATION, inAsset = outAsset, out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -57,6 +54,8 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
+            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            IAsset[] inAsset = [preGame, preDeck, preTowr];
 
             var preHand = new Card?[10];
             for (int i = 0; i < 10; i++)
@@ -68,15 +67,17 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             byte[] config = [0, 1, 3];
 
-            bool resultFirst = Engine.Transition(_user, DISCARD, [preGame, preDeck], out IAsset[] outAssets, config);
+            bool resultFirst = Engine.Transition(_user, DISCARD, inAsset, out IAsset[] outAssets, config);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             // Capture key state after the first gamble.
             var game = outAssets[0] as GameAsset;
             var deck = outAssets[1] as DeckAsset;
+            var towr = outAssets[2] as TowerAsset;
 
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
 
             var hand = new Card?[10];
             for (int i = 0; i < 10; i++)

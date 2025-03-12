@@ -193,8 +193,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(e.Id, b);
                 var deck = new DeckAsset(e.Id, b);
+                var towr = new TowerAsset(e.Id, b);
 
-                return new IAsset[] { game, deck };
+                return new IAsset[] { game, deck, towr };
             };
 
             return (identifier, rules, fee, function);
@@ -209,10 +210,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             var identifier = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+            byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
 
             FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 3u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt, towrAt),
                 // TODO: verify gamestate is running in rules
             };
 
@@ -222,7 +224,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(a.ElementAt(0));
                 var deck = new DeckAsset(a.ElementAt(1));
-                var result = new IAsset[] { game, deck };
+                var towr = new TowerAsset(a.ElementAt(2));
+                var result = new IAsset[] { game, deck, towr };
 
                 if (game.GameState == GameState.Running)
                 {
@@ -231,10 +234,13 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 }
 
                 // initialize a new game
-                game.NewGame();
+                game.New();
 
                 // initialize a new deck
-                deck.NewDeck();
+                deck.New();
+
+                // initialize a new tower
+                towr.New();
 
                 // empty hand
                 deck.EmptyHand();
@@ -250,10 +256,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             var identifier = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+            byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
 
             FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 3u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt, towrAt),
                 // TODO: verify gamestate is running in rules
             };
 
@@ -263,7 +270,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(a.ElementAt(0));
                 var deck = new DeckAsset(a.ElementAt(1));
-                var result = new IAsset[] { game, deck };
+                var towr = new TowerAsset(a.ElementAt(2));
+                var result = new IAsset[] { game, deck, towr };
 
                 if (game.GameState != GameState.Running)
                 {
@@ -302,10 +310,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             var identifier = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+            byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
 
             FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 3u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt, towrAt),
                 // TODO: verify gamestate is running in rules
             };
 
@@ -315,7 +324,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(a.ElementAt(0));
                 var deck = new DeckAsset(a.ElementAt(1));
-                var result = new IAsset[] { game, deck };
+                var towr = new TowerAsset(a.ElementAt(2));
+                var result = new IAsset[] { game, deck, towr };
 
                 if (game.GameState != GameState.Running)
                 {
@@ -427,10 +437,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             var identifier = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+            byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
 
             FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 3u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt, towrAt),
                 // TODO: verify gamestate is running in rules
             };
 
@@ -440,7 +451,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(a.ElementAt(0));
                 var deck = new DeckAsset(a.ElementAt(1));
-                var result = new IAsset[] { game, deck };
+                var towr = new TowerAsset(a.ElementAt(2));
+                var result = new IAsset[] { game, deck, towr };
 
                 if (game.GameState != GameState.Running)
                 {
@@ -511,10 +523,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             var identifier = FullHouseFuryIdentifier.Score(AssetType.Game, AssetSubType.None);
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
+            byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
 
             FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 2u),
-                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetCount, FullHouseFuryRuleOp.EQ, 3u),
+                new FullHouseFuryRule(FullHouseFuryRuleType.AssetTypesAt, FullHouseFuryRuleOp.Composite, gameAt, deckAt, towrAt),
                 // TODO: verify gamestate is running in rules
             };
 
@@ -524,7 +537,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 var game = new GameAsset(a.ElementAt(0));
                 var deck = new DeckAsset(a.ElementAt(1));
-                var result = new IAsset[] { game, deck };
+                var towr = new TowerAsset(a.ElementAt(2));
+                var result = new IAsset[] { game, deck, towr };
 
                 if (game.GameState != GameState.Running)
                 {
@@ -557,7 +571,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 deck.EmptyHand();
 
                 // reset deck
-                deck.NewDeck();
+                deck.New();
 
                 // restart with preparation
                 game.LevelState = LevelState.Preparation;

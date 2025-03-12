@@ -141,7 +141,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         public void DeckAsset_DrawAllCards_ExhaustsDeck()
         {
             // Ensure deck is new.
-            deckAsset.NewDeck();
+            deckAsset.New();
             Assert.That(deckAsset.DeckSize, Is.EqualTo(52));
 
             // Draw all 52 cards.
@@ -163,7 +163,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         public void DeckAsset_Draw_Hand_FillsHandProperly()
         {
             // Reset deck and hand.
-            deckAsset.NewDeck();
+            deckAsset.New();
             deckAsset.EmptyHand();
             int initialDeckSize = deckAsset.DeckSize; // Should be 52
             int targetHandSize = 10;
@@ -194,7 +194,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         [Test]
         public void DeckAsset_AddCard_IncreasesDeckSize()
         {
-            deckAsset.NewDeck();
+            deckAsset.New();
             // Remove a specific card.
             byte removed = deckAsset.RemoveCard(10);
             Assert.That(deckAsset.DeckSize, Is.EqualTo(51), "Deck size should be 51 after removal.");

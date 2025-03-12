@@ -29,22 +29,27 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
         }
 
         [Test]
-        public void Test_StartGame()
+        public void Test_PlayGame()
         {
             Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(3));
 
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            var preFeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
+            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
+            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            var inAssets = new IAsset[] { preGame, preDeck, preTowr };
 
-            bool resultFirst = Engine.Transition(_user, PLAY, [preGame, preFeck], out IAsset[] outAssets);
+
+            bool resultFirst = Engine.Transition(_user, PLAY, inAssets, out IAsset[] outAssets);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             // Capture key state after the first gamble.
             var game = outAssets[0] as GameAsset;
             var deck = outAssets[1] as DeckAsset;
+            var towr = outAssets[2] as TowerAsset;
 
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
             Assert.That(game.LevelState, Is.EqualTo(LevelState.Preparation));

@@ -18,7 +18,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             AssetType = AssetType.Deck;
 
             // Initialize deck region: first 52 bits set to 1.
-            NewDeck();
+            New();
 
             // Initialize hand region: all slots empty.
             EmptyHand();
@@ -94,7 +94,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     /// </summary>
     public partial class DeckAsset
     {
-        public void NewDeck()
+        public void New()
         {
             Deck = ulong.MaxValue;
             MaxDeckSize = 52;

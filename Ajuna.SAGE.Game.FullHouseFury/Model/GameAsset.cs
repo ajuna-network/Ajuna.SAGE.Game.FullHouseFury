@@ -102,19 +102,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// ........ ........ XXXX.... ........
         public uint AttackHand
         {
-            get
-            {
-                byte[] handBytes = Data.Read(HAND_OFFSET, HAND_REGION_SIZE);
-                return BitConverter.ToUInt32(handBytes, 0);
-            }
-            set
-            {
-                byte[] handBytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < HAND_REGION_SIZE; i++)
-                {
-                    Data.Set((byte)(HAND_OFFSET + i), ByteType.Full, handBytes[i]);
-                }
-            }
+            get => BitConverter.ToUInt32(Data.Read(HAND_OFFSET, HAND_REGION_SIZE), 0);
+            set => Data.Set(HAND_OFFSET, BitConverter.GetBytes(value));
         }
 
         /// 00000000 00111111 11112222 22222233
@@ -192,7 +181,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         public bool IsPlayerAlive => PlayerHealth > 0;
 
-        public void NewGame()
+        public void New()
         {
             GameState = GameState.Running;
             LevelState = LevelState.Preparation;
