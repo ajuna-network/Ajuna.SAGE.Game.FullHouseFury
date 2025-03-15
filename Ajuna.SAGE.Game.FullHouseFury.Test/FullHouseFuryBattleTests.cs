@@ -1,7 +1,6 @@
 ﻿using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
-using Ajuna.SAGE.Model;
 
 namespace Ajuna.SAGE.Core.HeroJam.Test
 {
@@ -9,10 +8,10 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryBattleTests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start();
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play();
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation();
+        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle();
 
         private IAccount _user;
 

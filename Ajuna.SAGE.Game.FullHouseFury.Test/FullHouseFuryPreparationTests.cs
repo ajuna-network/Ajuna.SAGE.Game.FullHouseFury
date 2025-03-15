@@ -8,9 +8,9 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryPreparationTests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start();
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play();
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation();
 
         private IAccount _user;
 

@@ -104,7 +104,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         public void SetSingleBane_ValidValue_Works()
         {
             towerAsset.SingleBanes = 0;
-            towerAsset.SetBanes(7, 1); // For banes, index 7 (0-31) should be 0 or 1.
+            towerAsset.SetBane(7, 1); // For banes, index 7 (0-31) should be 0 or 1.
             uint expected = (uint)(1 << 7);
             Assert.That(towerAsset.SingleBanes, Is.EqualTo(expected), "Bit 7 should be set in SingleBanes.");
         }
@@ -112,7 +112,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         [Test]
         public void SetSingleBane_InvalidValue_ThrowsException()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => towerAsset.SetBanes(15, 2));
+            Assert.Throws<ArgumentOutOfRangeException>(() => towerAsset.SetBane(15, 2));
         }
 
         #endregion
@@ -123,7 +123,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         public void SetMultiBane_ValidValues_Works()
         {
             towerAsset.MultiBanes = 0;
-            towerAsset.SetBanes(34, 2); // For banes, index 34 => offset = 34 - 32 = 2.
+            towerAsset.SetBane(34, 2); // For banes, index 34 => offset = 34 - 32 = 2.
             uint multi = towerAsset.MultiBanes;
             uint mask = (uint)(3 << 2);
             uint expected = (uint)(2 << 2);
@@ -133,7 +133,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         [Test]
         public void SetMultiBane_InvalidValue_ThrowsException()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => towerAsset.SetBanes(45, 4));
+            Assert.Throws<ArgumentOutOfRangeException>(() => towerAsset.SetBane(45, 4));
         }
 
         #endregion
@@ -145,8 +145,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         {
             towerAsset.SingleBanes = 0;
             towerAsset.MultiBanes = 0;
-            towerAsset.SetBanes(1, 1);   // Set single bane at index 1.
-            towerAsset.SetBanes(34, 2);  // Set multi bane at index 34 (offset = 2).
+            towerAsset.SetBane(1, 1);   // Set single bane at index 1.
+            towerAsset.SetBane(34, 2);  // Set multi bane at index 34 (offset = 2).
 
             byte[] banes = towerAsset.GetAllBanes();
             // For single banes, index 1 should be 1.

@@ -6,7 +6,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 {
 
     [TestFixture]
-    public class FullHouseFuryScoreTests : FullHouseFuryBaseTest
+    public class FullHouseFuryBoonAndBaneTests : FullHouseFuryBaseTest
     {
         private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start();
         private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play();
@@ -63,10 +63,13 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
                 Assert.That(outAsset, Is.Not.Null);
             }
+
+            resultFirst = Engine.Transition(_user, SCORE, inAsset = outAsset, out outAsset);
+            Assert.That(resultFirst, Is.True, "transition result should succeed.");
         }
 
         [Test]
-        public void Test_ScoreLevel()
+        public void Test_Preparation_Level2()
         {
             Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(10));
 
@@ -75,12 +78,26 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
             IAsset[] inAsset = [preGame, preDeck, preTowr];
 
-            Assert.That(preGame.Level, Is.EqualTo(1));
-            Assert.That(preGame.LevelState, Is.EqualTo(LevelState.Score));
+            Assert.That(preGame.Level, Is.EqualTo(2));
+            Assert.That(preGame.LevelState, Is.EqualTo(LevelState.Preparation));
             Assert.That(preGame.Round, Is.EqualTo(5));
-            Assert.That(preDeck.DeckSize, Is.EqualTo(39));
+            Assert.That(preDeck.DeckSize, Is.EqualTo(52));
 
-            bool resultFirst = Engine.Transition(_user, SCORE, inAsset, out IAsset[] outAssets);
+            Assert.That(preTowr.GetBoonAndBane(0).boon, Is.EqualTo(BonusType.DeckRefill));
+            Assert.That(preTowr.GetBoonAndBane(0).bane, Is.EqualTo(MalusType.VulnerableState));
+            Assert.That(preTowr.GetBoonAndBane(1).boon, Is.EqualTo(BonusType.ZealousCharge));
+            Assert.That(preTowr.GetBoonAndBane(1).bane, Is.EqualTo(MalusType.SpadeHealsOpponent));
+            Assert.That(preTowr.GetBoonAndBane(2).boon, Is.EqualTo(BonusType.InspiringPresence));
+            Assert.That(preTowr.GetBoonAndBane(2).bane, Is.EqualTo(MalusType.ReducedEndurance));
+
+
+            // choice is 2
+            byte? choice = 2;
+
+            var choosenBoon = preTowr.GetBoonAndBane(2).boon;
+            var choosenBane = preTowr.GetBoonAndBane(2).bane;
+
+            bool resultFirst = Engine.Transition(_user, PREPARATION, inAsset, out IAsset[] outAssets, choice);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             // Capture key state after the first gamble.
@@ -93,45 +110,45 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(towr, Is.Not.Null);
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
-            Assert.That(game.LevelState, Is.EqualTo(LevelState.Preparation));
+            Assert.That(game.LevelState, Is.EqualTo(LevelState.Battle));
 
-            // deck is reset
-            Assert.That(deck.DeckSize, Is.EqualTo(deck.MaxDeckSize));
-            
-            // hand is reset
-            Assert.That(deck.HandCardsCount(), Is.EqualTo(0));
-            Assert.That(deck.IsHandSlotEmpty(0), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(1), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(2), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(3), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(4), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(5), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(6), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(7), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(8), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(9), Is.True);
+            Assert.That(preTowr.GetBoonAndBane(0).boon, Is.EqualTo(BonusType.None));
+            Assert.That(preTowr.GetBoonAndBane(0).bane, Is.EqualTo(MalusType.None));
+            Assert.That(preTowr.GetBoonAndBane(1).boon, Is.EqualTo(BonusType.None));
+            Assert.That(preTowr.GetBoonAndBane(1).bane, Is.EqualTo(MalusType.None));
+            Assert.That(preTowr.GetBoonAndBane(2).boon, Is.EqualTo(BonusType.None));
+            Assert.That(preTowr.GetBoonAndBane(2).bane, Is.EqualTo(MalusType.None));
 
-            // atack is reset
-            Assert.That(game.AttackType, Is.EqualTo(PokerHand.None));
-            Assert.That(game.AttackScore, Is.EqualTo(0));
+            // verify that the boon and bane are a assigned correctly
 
-            // player is partially reset
-            Assert.That(game.PlayerEndurance, Is.EqualTo(game.MaxPlayerEndurance));
+            var allBoons = towr.GetAllBoons();
+            for (int i = 0; i < allBoons.Length; i++)
+            {
+                var val = allBoons[i];
 
-            // new boss is set
-            Assert.That(game.BossHealth, Is.GreaterThan(200));
-            Assert.That(game.BossDamage, Is.EqualTo(0));
+                if (i == (int)choosenBoon)
+                {
+                    Assert.That(val, Is.EqualTo(1));
+                }
+                else
+                {
+                    Assert.That(val, Is.EqualTo(0));
+                }
+            }
 
-            Assert.That(game.Level, Is.EqualTo(2));
-
-            // verify that the boon and bane are set
-            Assert.That(towr.GetBoonAndBane(0).boon, Is.EqualTo(BonusType.DeckRefill));
-            Assert.That(towr.GetBoonAndBane(0).bane, Is.EqualTo(MalusType.VulnerableState));
-            Assert.That(towr.GetBoonAndBane(1).boon, Is.EqualTo(BonusType.ZealousCharge));
-            Assert.That(towr.GetBoonAndBane(1).bane, Is.EqualTo(MalusType.SpadeHealsOpponent));
-            Assert.That(towr.GetBoonAndBane(2).boon, Is.EqualTo(BonusType.InspiringPresence));
-            Assert.That(towr.GetBoonAndBane(2).bane, Is.EqualTo(MalusType.ReducedEndurance));
+            var allBanes = towr.GetAllBanes();
+            for (int i = 0; i < allBanes.Length; i++)
+            {
+                var val = allBanes[i];
+                if (i == (int)choosenBane)
+                {
+                    Assert.That(val, Is.EqualTo(1));
+                }
+                else
+                {
+                    Assert.That(val, Is.EqualTo(0));
+                }
+            }
         }
-
     }
 }

@@ -18,23 +18,23 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         {
         }
 
-        public static FullHouseFuryIdentifier Start(AssetType assetType, AssetSubType assetSubType)
-            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Start << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+        public static FullHouseFuryIdentifier Start()
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Start);
 
-        public static FullHouseFuryIdentifier Play(AssetType assetType, AssetSubType assetSubType)
-            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Play << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+        public static FullHouseFuryIdentifier Play()
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Play);
 
-        public static FullHouseFuryIdentifier Preparation(AssetType assetType, AssetSubType assetSubType)
-            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Preparation << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+        public static FullHouseFuryIdentifier Preparation()
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Preparation);
 
-        public static FullHouseFuryIdentifier Battle(AssetType assetType, AssetSubType assetSubType)
-            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Battle << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+        public static FullHouseFuryIdentifier Battle()
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Battle);
 
-        public static FullHouseFuryIdentifier Discard(AssetType assetType, AssetSubType assetSubType)
-            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Discard << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+        public static FullHouseFuryIdentifier Discard()
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Discard);
 
-        public static FullHouseFuryIdentifier Score(AssetType assetType, AssetSubType assetSubType)
-            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Score << 4 | (byte)AssetType.None, (byte)(((byte)assetType << 4) + (byte)assetSubType));
+        public static FullHouseFuryIdentifier Score()
+            => new FullHouseFuryIdentifier((byte)FullHouseFuryAction.Score);
 
     }
 }

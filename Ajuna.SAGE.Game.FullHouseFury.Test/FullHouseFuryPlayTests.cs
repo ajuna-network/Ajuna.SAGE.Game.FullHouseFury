@@ -8,8 +8,8 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryPlayTests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start();
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play();
 
         private IAccount _user;
 

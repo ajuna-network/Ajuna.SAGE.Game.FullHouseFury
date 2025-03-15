@@ -8,10 +8,10 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryFull1Tests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start();
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play();
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation();
+        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle();
 
         private IAccount _user;
 
@@ -49,7 +49,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             GameAsset game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             DeckAsset deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
             TowerAsset towr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
-            
+
             IAsset[] inAsset = [game, deck, towr];
             IAsset[] outAsset = null;
 

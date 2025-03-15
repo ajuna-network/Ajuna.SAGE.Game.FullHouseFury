@@ -179,7 +179,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetStartTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Start();
             byte matchType = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
 
             FullHouseFuryRule[] rules = new FullHouseFuryRule[] {
@@ -207,7 +207,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetPlayTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Play();
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
             byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
@@ -253,7 +253,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetPreparationTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Preparation();
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
             byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
@@ -327,7 +327,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetBattleTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Battle();
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
             byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
@@ -454,7 +454,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetDiscardTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Discard();
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
             byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
@@ -540,7 +540,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetScoreTransition()
         {
-            var identifier = FullHouseFuryIdentifier.Score(AssetType.Game, AssetSubType.None);
+            var identifier = FullHouseFuryIdentifier.Score();
             byte gameAt = FullHouseFuryUtil.MatchType(AssetType.Game, AssetSubType.None);
             byte deckAt = FullHouseFuryUtil.MatchType(AssetType.Deck, AssetSubType.None);
             byte towrAt = FullHouseFuryUtil.MatchType(AssetType.Tower, AssetSubType.None);
