@@ -245,8 +245,8 @@ namespace Assets.Scripts.ScreenStates
                 Debug.Log("No cards selected for discard");
                 return;
             }
-
-            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.DISCARD, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] outAssets, discardHand);
+            var inAsset = new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset, PlayState.TowrAsset };
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.DISCARD, inAsset, out IAsset[] outAssets, discardHand);
 
             if (resultFirst)
             {
@@ -267,7 +267,8 @@ namespace Assets.Scripts.ScreenStates
                 return;
             }
 
-            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.BATTLE, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] outAssets, attackHand);
+            var inAsset = new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset, PlayState.TowrAsset };
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.BATTLE, inAsset, out IAsset[] outAssets, attackHand);
 
             if (!resultFirst)
             {

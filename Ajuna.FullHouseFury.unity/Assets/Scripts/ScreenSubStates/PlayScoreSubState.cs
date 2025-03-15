@@ -84,7 +84,8 @@ namespace Assets.Scripts
                 return;
             }
 
-            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.SCORE, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] _);
+            var inAsset = new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset, PlayState.TowrAsset };
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.SCORE, inAsset, out IAsset[] _);
             if (!resultFirst)
             {
                 Debug.LogWarning("Wasn't successfull in executing the ExtrinsicScore!");

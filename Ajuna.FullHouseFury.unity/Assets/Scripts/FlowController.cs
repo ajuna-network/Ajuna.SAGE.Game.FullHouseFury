@@ -28,12 +28,12 @@ namespace Assets.Scripts
 
     public class FlowController : MonoBehaviour
     {
-        public readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Score(AssetType.Game, AssetSubType.None);
+        public readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start();
+        public readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play();
+        public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation();
+        public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle();
+        public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard();
+        public readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Score();
 
         internal readonly RandomNumberGenerator Random = RandomNumberGenerator.Create();
 

@@ -39,9 +39,11 @@ namespace Assets.Scripts.ScreenStates
         private void OnClickBtnPlay(ClickEvent evt)
         {
             var preGame = FlowController.GetAsset<GameAsset>(FlowController.User, AssetType.Game, AssetSubType.None);
-            var preFeck = FlowController.GetAsset<DeckAsset>(FlowController.User, AssetType.Deck, AssetSubType.None);
+            var preDeck = FlowController.GetAsset<DeckAsset>(FlowController.User, AssetType.Deck, AssetSubType.None);
+            var preTowr = FlowController.GetAsset<TowerAsset>(FlowController.User, AssetType.Tower, AssetSubType.None);
+            var inAssets = new IAsset[] { preGame, preDeck, preTowr };
 
-            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.PLAY, new IAsset[] { preGame, preFeck }, out IAsset[] outAssets);
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.PLAY, inAssets, out IAsset[] outAssets);
 
             if (resultFirst)
             {

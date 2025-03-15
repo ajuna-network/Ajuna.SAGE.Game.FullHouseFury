@@ -20,8 +20,8 @@ namespace Assets.Scripts.ScreenStates
         private Label _txtRound;
 
         internal GameAsset GameAsset { get; private set; }
-
         internal DeckAsset DeckAsset { get; private set; }
+        internal TowerAsset TowrAsset { get; private set; }
 
         public PlayState(FlowController _flowController)
             : base(_flowController)
@@ -77,6 +77,7 @@ namespace Assets.Scripts.ScreenStates
         {
             GameAsset = FlowController.GetAsset<GameAsset>(FlowController.User, AssetType.Game, AssetSubType.None);
             DeckAsset = FlowController.GetAsset<DeckAsset>(FlowController.User, AssetType.Deck, AssetSubType.None);
+            TowrAsset = FlowController.GetAsset<TowerAsset>(FlowController.User, AssetType.Tower, AssetSubType.None);
         }
 
         internal void AddFrameButtons(Button[] frameButtons)
