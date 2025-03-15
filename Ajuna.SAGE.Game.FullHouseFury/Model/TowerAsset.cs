@@ -1,6 +1,7 @@
-﻿using Ajuna.SAGE.Core;
-using Ajuna.SAGE.Core.Model;
+﻿using Ajuna.SAGE.Core.Model;
 using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
 {
@@ -71,14 +72,19 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     {
         public void New()
         {
-            SetBoonAndBane(0, BonusType.None, MalusType.None);
-            SetBoonAndBane(1, BonusType.None, MalusType.None);
-            SetBoonAndBane(2, BonusType.None, MalusType.None);
+            ClearChoices();
 
             SingleBoons = 0;
             MultiBoons = 0;
             SingleBanes = 0;
             MultiBanes = 0;
+        }
+
+        public void ClearChoices()
+        {
+            SetBoonAndBane(0, BonusType.None, MalusType.None);
+            SetBoonAndBane(1, BonusType.None, MalusType.None);
+            SetBoonAndBane(2, BonusType.None, MalusType.None);
         }
 
         public (BonusType boon, MalusType bane) GetBoonAndBane(int position)
@@ -120,6 +126,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             BoonsAndBanes = boonsAndBanes;
         }
 
+        public byte GetBoon(byte index, out bool isMaxed) 
+            => GetAttribute(SingleBoons, MultiBoons, index, out isMaxed);
+
         public void SetBoon(byte boonIndex, byte value)
         {
             if (boonIndex < 32)
@@ -158,7 +167,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             return boons;
         }
 
-        public void SetBanes(byte index, byte value)
+        public byte GetBane(byte index, out bool isMaxed) 
+            => GetAttribute(SingleBanes, MultiBanes, index, out isMaxed);
+
+        public void SetBane(byte index, byte value)
         {
             if (index < 32)
             {
@@ -196,6 +208,29 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             }
 
             return banes;
+        }
+    }
+    public partial class TowerAsset
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private byte GetAttribute(uint singleValue, uint multiValue, byte index, out bool isMaxed)
+        {
+            if (index < 32)
+            {
+                var value = (byte)((singleValue >> index) & 1);
+                isMaxed = value > 0;
+                return value;
+            }
+            else if (index < 48)
+            {
+                var value = (byte)((multiValue >> (index - 32)) & 3);
+                isMaxed = value > 2;
+                return value;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("GetAttribute index must be between 0 and 47.");
+            }
         }
     }
 }

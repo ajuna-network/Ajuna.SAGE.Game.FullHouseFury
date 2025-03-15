@@ -289,21 +289,33 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 {
                     byte? position = c as byte?;
                     // no position is provided, we use random position.
-                    if (position == null)
+                    if (position == null || position > 2)
                     {
                         // take one of the 3 positions [0, 1, 2]
                         position = (byte)(h[0] % 3);
                     }
 
-                    // TODO: implement preparation logic, like special stuff, buy cards, equipe special abilities, etc.
-                    // Boons and Banes
-                }
+                    var choice = towr.GetBoonAndBane(position.Value);
 
+                    var currentBoon = towr.GetBoon((byte)choice.boon, out bool isMaxedBoon);
+                    if (!isMaxedBoon)
+                    {
+                        towr.SetBoon((byte)choice.boon, (byte)(currentBoon + 1));
+                    }
+
+                    var currentBane = towr.GetBane((byte)choice.bane, out bool isMaxedBane);
+                    if (!isMaxedBane)
+                    {
+                        towr.SetBane((byte)choice.bane, (byte)(currentBane + 1));
+                    }
+                }
 
                 game.Round = 1; // reset round
                 game.LevelState = LevelState.Battle;
 
                 game.ClearAttack();
+
+                towr.ClearChoices();
 
                 deck.Draw(game.HandSize, h);
 

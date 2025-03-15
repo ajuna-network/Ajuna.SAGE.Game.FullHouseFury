@@ -1,8 +1,8 @@
 ﻿using Ajuna.SAGE.Game.FullHouseFury.Model;
-using System.Collections.Generic;
 using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
 
@@ -33,7 +33,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <summary>
         /// Evaluates a poker hand (up to 5 cards provided as card indexes 0–51)
         /// and returns its ranking while also outputting a numeric score calculated as:
-        /// 
+        ///
         /// - HighCard: factor 1 × (highest card's value, with Ace = 14) + ((1-1)^2 * 10)
         /// - Pair: factor 2 × (rank of the pair) + ((2-1)^2 * 10)
         /// - TwoPair: factor 3 × (highest pair's rank) + ((3-1)^2 * 10)
@@ -174,6 +174,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 case PokerHand.HighCard:
                     kicker = kickerRanks.Max(); // only highest card counts.
                     break;
+
                 case PokerHand.Pair:
                     // Find the pair rank (highest pair if more than one, though with 5 cards you can only have one pair).
                     for (int r = 13; r >= 1; r--)
@@ -185,6 +186,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                         }
                     }
                     break;
+
                 case PokerHand.TwoPair:
                     // Use the highest pair rank.
                     for (int r = 13; r >= 1; r--)
@@ -196,6 +198,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                         }
                     }
                     break;
+
                 case PokerHand.ThreeOfAKind:
                     for (int r = 13; r >= 1; r--)
                     {
@@ -206,11 +209,13 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                         }
                     }
                     break;
+
                 case PokerHand.Straight:
                 case PokerHand.Flush:
                 case PokerHand.StraightFlush:
                     kicker = kickerRanks.Max();
                     break;
+
                 case PokerHand.FullHouse:
                     // Use the rank of the triple part.
                     for (int r = 13; r >= 1; r--)
@@ -222,6 +227,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                         }
                     }
                     break;
+
                 case PokerHand.FourOfAKind:
                     for (int r = 13; r >= 1; r--)
                     {
@@ -232,9 +238,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                         }
                     }
                     break;
+
                 case PokerHand.RoyalFlush:
                     kicker = 14; // Ace is highest.
                     break;
+
                 default:
                     kicker = 0;
                     break;
@@ -257,7 +265,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             };
 
             // New scoring: score = (factor * kicker) + ((factor - 1)^2 * 10)
-            score = (ushort) (factor * kicker + (Math.Pow(factor - 1, 2) * 10));
+            score = (ushort)(factor * kicker + (Math.Pow(factor - 1, 2) * 10));
 
             return category;
         }
@@ -365,6 +373,88 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 }
                 i++;
             }
+        }
+
+        public static string[]? GetBonusInfo(BonusType bonusType)
+        {
+            return bonusType switch
+            {
+                BonusType.None => null,
+                BonusType.DeckRefill => new string[] { "Deck Refill", "At the start of each combat round, the deck is fully or partially refilled." },
+                BonusType.ExtraEndurance => new string[] { "Extra Endurance", "Increase the player's maximum endurance by +1." },
+                BonusType.HeartHeal => new string[] { "Heart Heal", "Each Heart card in your hand heals the player for 5 HP." },
+                BonusType.DamageBoost => new string[] { "Damage Boost", "Increase overall damage output by 20%." },
+                BonusType.ExtraCardDraw => new string[] { "Extra Card Draw", "Increase the hand size by one extra card during the attack phase." },
+                BonusType.FaceCardBonus => new string[] { "Face Card Bonus", "If your attack hand consists solely of face cards (J, Q, K), your poker hand score is multiplied by 2." },
+                BonusType.SuitDiversityBonus => new string[] { "Suit Diversity Bonus", "Your poker hand score is multiplied by the number of different suits present in your hand." },
+                BonusType.LuckyDraw => new string[] { "Lucky Draw", "Increases the chance to draw high cards." },
+                BonusType.CriticalStrikeChance => new string[] { "Critical Strike Chance", "Increases chance for critical hit damage." },
+                BonusType.RapidRecovery => new string[] { "Rapid Recovery", "Reduces cooldown between rounds." },
+                BonusType.ShieldOfValor => new string[] { "Shield of Valor", "Grants temporary damage reduction for one round." },
+                BonusType.MysticInsight => new string[] { "Mystic Insight", "Reveals one additional card from the deck." },
+                BonusType.ArcaneSurge => new string[] { "Arcane Surge", "Boosts attack score by a flat bonus." },
+                BonusType.RighteousFury => new string[] { "Righteous Fury", "Increases damage output when below half health." },
+                BonusType.BlessedAura => new string[] { "Blessed Aura", "Heals a small amount each round." },
+                BonusType.FortunesFavor => new string[] { "Fortune's Favor", "Slightly increases overall hand evaluation score." },
+                BonusType.NimbleFingers => new string[] { "Nimble Fingers", "Allows an extra card swap per round." },
+                BonusType.EagleEye => new string[] { "Eagle Eye", "Improves card selection accuracy." },
+                BonusType.UnyieldingSpirit => new string[] { "Unyielding Spirit", "Prevents endurance loss once per game." },
+                BonusType.DivineIntervention => new string[] { "Divine Intervention", "Randomly nullifies one enemy effect." },
+                BonusType.ZealousCharge => new string[] { "Zealous Charge", "Increases attack speed for the next round." },
+                BonusType.RelentlessAssault => new string[] { "Relentless Assault", "Increases consecutive attack bonus." },
+                BonusType.VitalStrike => new string[] { "Vital Strike", "Boosts damage for high-value cards." },
+                BonusType.PurityOfHeart => new string[] { "Purity of Heart", "Reduces negative effects from banes." },
+                BonusType.CelestialGuidance => new string[] { "Celestial Guidance", "Improves probability of drawing rare cards." },
+                BonusType.SwiftReflexes => new string[] { "Swift Reflexes", "Reduces chance of fatigue damage." },
+                BonusType.InspiringPresence => new string[] { "Inspiring Presence", "Boosts team morale, increasing score slightly." },
+                BonusType.Serendipity => new string[] { "Serendipity", "Randomly upgrades one card's value each round." },
+                BonusType.ArcaneWisdom => new string[] { "Arcane Wisdom", "Grants extra strategic information about the deck." },
+                BonusType.MajesticRoar => new string[] { "Majestic Roar", "Boosts your hand's overall score by a flat bonus." },
+                BonusType.FortuitousWinds => new string[] { "Fortuitous Winds", "Increases overall card quality by a small margin." },
+                BonusType.StalwartResolve => new string[] { "Stalwart Resolve", "Improves defense, slightly increasing healing effectiveness." },
+                _ => null,
+            };
+        }
+
+        public static string[]? GetMalusInfo(MalusType malusType)
+        {
+            return malusType switch
+            {
+                MalusType.None => null,
+                MalusType.HalvedDamage => new string[] { "Halved Damage", "All damage output is reduced by 50%." },
+                MalusType.SpadeHealsOpponent => new string[] { "Spade Heals Opponent", "Each Spade card played heals the opponent for 3 HP." },
+                MalusType.ReducedEndurance => new string[] { "Reduced Endurance", "Decrease the player's maximum endurance by 1." },
+                MalusType.IncreasedFatigueRate => new string[] { "Increased Fatigue Rate", "Fatigue damage increases at an accelerated exponential rate." },
+                MalusType.LowerCardValue => new string[] { "Lower Card Value", "All card values are reduced by 20%, weakening potential hands." },
+                MalusType.NumberCardPenalty => new string[] { "Number Card Penalty", "If your attack hand contains any number cards (2–10), your poker hand score is halved." },
+                MalusType.UniformSuitPenalty => new string[] { "Uniform Suit Penalty", "If your attack hand consists of only one suit, your poker hand score is reduced by 50%." },
+                MalusType.Misfortune => new string[] { "Misfortune", "Increases chance of drawing low cards." },
+                MalusType.SluggishRecovery => new string[] { "Sluggish Recovery", "Increases endurance consumption." },
+                MalusType.CursedDraw => new string[] { "Cursed Draw", "Reduces the quality of drawn cards." },
+                MalusType.WeakStrike => new string[] { "Weak Strike", "Decreases your damage output by 10%." },
+                MalusType.UnluckyTiming => new string[] { "Unlucky Timing", "Delays the next round's attack." },
+                MalusType.BlightedAura => new string[] { "Blighted Aura", "Increases chance for negative card effects." },
+                MalusType.CrumblingDeck => new string[] { "Crumbling Deck", "Decreases deck refill efficiency." },
+                MalusType.DiminishedInsight => new string[] { "Diminished Insight", "Loses one extra card from hand randomly." },
+                MalusType.VulnerableState => new string[] { "Vulnerable State", "Increases damage taken from boss by 20%." },
+                MalusType.RecklessPlay => new string[] { "Reckless Play", "Increases chance of self-inflicted fatigue damage." },
+                MalusType.WeakenedSpirit => new string[] { "Weakened Spirit", "Reduces overall hand score by 10%." },
+                MalusType.GrimFate => new string[] { "Grim Fate", "Decreases chance for critical hits." },
+                MalusType.SlipperyFingers => new string[] { "Slippery Fingers", "Increases likelihood of misplays." },
+                MalusType.BloodCurse => new string[] { "Blood Curse", "Transfers 5% of your damage to the opponent." },
+                MalusType.Despair => new string[] { "Despair", "Lowers your damage boost effects by 20%." },
+                MalusType.FracturedWill => new string[] { "Fractured Will", "Reduces extra endurance benefits." },
+                MalusType.EnervatingPresence => new string[] { "Enervating Presence", "Decreases your overall card evaluation score." },
+                MalusType.MisalignedFocus => new string[] { "Misaligned Focus", "Increases the chance of drawing duplicate cards." },
+                MalusType.HeavyBurden => new string[] { "Heavy Burden", "Reduces the effectiveness of healing boons." },
+                MalusType.StumblingStep => new string[] { "Stumbling Step", "Slightly reduces the chance for bonus attacks." },
+                MalusType.DimmedVision => new string[] { "Dimmed Vision", "Lowers your probability of drawing high cards." },
+                MalusType.FadingResolve => new string[] { "Fading Resolve", "Decreases your strategic planning by a small margin." },
+                MalusType.ToxicMiasma => new string[] { "Toxic Miasma", "Every drawn Heart card now inflicts minor damage on you." },
+                MalusType.CursedFate => new string[] { "Cursed Fate", "Reduces the effectiveness of any boons by 10%." },
+                MalusType.SourLuck => new string[] { "Sour Luck", "Increases the probability of drawing detrimental cards." },
+                _ => null,
+            };
         }
     }
 }
