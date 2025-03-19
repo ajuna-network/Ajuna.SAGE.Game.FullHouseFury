@@ -91,17 +91,17 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             game.GetAttackHand(0, out byte cardIndex, out byte rarity);
             var card = new Card(cardIndex, rarity);
             Assert.That(card.ToString(), Is.EqualTo("3♠"));
-            Assert.That(card.Rarity, Is.EqualTo(Rarity.Common));
+            Assert.That(card.Rarity, Is.EqualTo(RarityType.Common));
             
             game.GetAttackHand(1, out cardIndex, out rarity);
             card = new Card(cardIndex, rarity);
             Assert.That(new Card(cardIndex, rarity).ToString(), Is.EqualTo("9♠"));
-            Assert.That(card.Rarity, Is.EqualTo(Rarity.Common));
+            Assert.That(card.Rarity, Is.EqualTo(RarityType.Common));
 
             game.GetAttackHand(2, out cardIndex, out rarity);
             card = new Card(cardIndex, rarity);
             Assert.That(new Card(cardIndex, rarity).ToString(), Is.EqualTo("2♠"));
-            Assert.That(card.Rarity, Is.EqualTo(Rarity.Common));
+            Assert.That(card.Rarity, Is.EqualTo(RarityType.Common));
 
             Assert.That(game.AttackType, Is.EqualTo(PokerHand.HighCard));
             Assert.That(game.AttackScore, Is.EqualTo(9));

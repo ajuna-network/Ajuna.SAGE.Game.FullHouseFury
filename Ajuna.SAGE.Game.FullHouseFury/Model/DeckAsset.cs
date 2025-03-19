@@ -398,9 +398,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                     byte drawnCard = DrawCard(randCardIndex);
 
                     var rarityPerc = (double)randB / byte.MaxValue;
-                    
+                    var rarity = GetRarity(rarityPerc);
 
-                    SetHandCard(i, drawnCard, 0);
+                    SetHandCard(i, drawnCard, (byte)rarity);
                     newCards[currentHandSize - startHandSize] = drawnCard;
                     currentHandSize++;
                 }
@@ -481,26 +481,28 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     /// </summary>
     public partial class DeckAsset
     {
-        public byte GetRarity(Rarity rarity)
+        public byte GetRarity(RarityType rarity)
         {
             switch (rarity)
             {
-                case Rarity.Common:
+                case RarityType.Common:
                     return 0;
-                case Rarity.Uncommon:
+                case RarityType.Uncommon:
                     return (byte)((0b0000_0011 & DrawRarity) >> 0);
-                case Rarity.Rare:
+                case RarityType.Rare:
                     return (byte)((0b0000_1100 & DrawRarity) >> 2);
-                case Rarity.Epic:
+                case RarityType.Epic:
                     return (byte)((0b0011_0000 & DrawRarity) >> 4);
-                case Rarity.Legendary:
+                case RarityType.Legendary:
                     return (byte)((0b1100_0000 & DrawRarity) >> 6);
+                case RarityType.Mythical:
+                    return 0;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rarity), "Invalid rarity value.");
             }
         }
 
-        public byte SetRarity(Rarity rarity, byte value)
+        public byte SetRarity(RarityType rarity, byte value)
         {
             if (value > 3)
             {
@@ -509,11 +511,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
             return rarity switch
             {
-                Rarity.Common => 0,
-                Rarity.Uncommon => (byte)(DrawRarity | value),
-                Rarity.Rare => (byte)(DrawRarity | (value << 2)),
-                Rarity.Epic => (byte)(DrawRarity | (value << 4)),
-                Rarity.Legendary => (byte)(DrawRarity | (value << 6)),
+                RarityType.Common => 0,
+                RarityType.Uncommon => (byte)(DrawRarity | value),
+                RarityType.Rare => (byte)(DrawRarity | (value << 2)),
+                RarityType.Epic => (byte)(DrawRarity | (value << 4)),
+                RarityType.Legendary => (byte)(DrawRarity | (value << 6)),
                 _ => throw new ArgumentOutOfRangeException(nameof(rarity), "Invalid rarity value."),
             };
         }
@@ -521,20 +523,22 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public byte[] GetRarityPercs()
         {
             return new byte[] {
-                GetRarity(Rarity.Common),
-                (byte)(4 * GetRarity(Rarity.Uncommon)),
-                (byte)(3 * GetRarity(Rarity.Rare)),
-                (byte)(2 * GetRarity(Rarity.Epic)),
-                (byte)(1 * GetRarity(Rarity.Legendary))
+                0,
+                GetRarity(RarityType.Common),
+                (byte)(4 * GetRarity(RarityType.Uncommon)),
+                (byte)(3 * GetRarity(RarityType.Rare)),
+                (byte)(2 * GetRarity(RarityType.Epic)),
+                (byte)(1 * GetRarity(RarityType.Legendary)),
+                0
             };
         }
 
-        public Rarity GetRarity(double rarityValue)
+        public RarityType GetRarity(double rarityValue)
         {
             var rarityPercs = GetRarityPercs();
 
             var rarityPercCum = 0;
-            foreach (Rarity rarity in Enum.GetValues(typeof(Rarity)))
+            foreach (RarityType rarity in Enum.GetValues(typeof(RarityType)))
             {
                 rarityPercCum += rarityPercs[(int)rarity];
                 if (rarityValue < rarityPercCum)
@@ -543,7 +547,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                 }
             }
 
-            return Rarity.Common;
+            return RarityType.Common;
         }
     }
 }

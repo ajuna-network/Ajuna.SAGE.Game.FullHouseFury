@@ -552,7 +552,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 // remove the actual played hand
                 for (int i = 0; i < positions.Length; i++)
                 {
-                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT, (byte)Rarity.Common);
+                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT, 0);
                 }
 
                 // reduce discard count

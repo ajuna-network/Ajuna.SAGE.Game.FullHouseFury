@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using System.Security.Cryptography;
+using Ajuna.SAGE.Core;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
 {
@@ -103,13 +104,13 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             deckAsset.EmptyHand();
 
             // Set specific cards in various hand slots.
-            deckAsset.SetHandCard(0, 10, 0); // For example, card index 10.
+            deckAsset.SetHandCard(0, 10, 1); // For example, card index 10.
             deckAsset.SetHandCard(5, 25, 1); // For example, card index 25.
             deckAsset.SetHandCard(7, 51, 2); // For example, last valid card index.
 
             deckAsset.GetHandCard(0, out byte cardIndex, out byte rarity);
             Assert.That(cardIndex, Is.EqualTo(10), "Hand slot 0 should have card index 10.");
-            Assert.That(rarity, Is.EqualTo(0), "Hand slot 0 should have rarity 0.");
+            Assert.That(rarity, Is.EqualTo(1), "Hand slot 0 should have rarity 0.");
 
             deckAsset.GetHandCard(5, out cardIndex, out rarity);
             Assert.That(cardIndex, Is.EqualTo(25), "Hand slot 5 should have card index 25.");
@@ -130,15 +131,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             // Accessing an invalid hand slot should throw an exception.
             Assert.That(() => deckAsset.GetHandCard(-1, out _, out _), Throws.TypeOf<ArgumentOutOfRangeException>());
             Assert.That(() => deckAsset.GetHandCard(8, out _, out _), Throws.TypeOf<ArgumentOutOfRangeException>());
-            Assert.That(() => deckAsset.SetHandCard(-1, 10, 0), Throws.TypeOf<ArgumentOutOfRangeException>());
-            Assert.That(() => deckAsset.SetHandCard(8, 10, 0), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.SetHandCard(-1, 10, 1), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.SetHandCard(8, 10, 1), Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
         public void DeckAsset_Hand_InvalidCardIndex_ThrowsException()
         {
             // Setting a card with an invalid card index should throw an exception.
-            Assert.That(() => deckAsset.SetHandCard(0, 52, 0), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.SetHandCard(0, 52, 1), Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         #endregion
@@ -230,26 +231,28 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
                 deckAsset.DrawRarity = bytes[0];
                 byte[] rarityPercs = deckAsset.GetRarityPercs();
 
-                Assert.That(deckAsset.GetRarity(Rarity.Common), Is.EqualTo(0));
-                Assert.That(deckAsset.GetRarity(Rarity.Uncommon), Is.LessThanOrEqualTo(3));
-                Assert.That(deckAsset.GetRarity(Rarity.Rare), Is.LessThanOrEqualTo(3));
-                Assert.That(deckAsset.GetRarity(Rarity.Epic), Is.LessThanOrEqualTo(3));
-                Assert.That(deckAsset.GetRarity(Rarity.Legendary), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(RarityType.Common), Is.EqualTo(0));
+                Assert.That(deckAsset.GetRarity(RarityType.Uncommon), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(RarityType.Rare), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(RarityType.Epic), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(RarityType.Legendary), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(RarityType.Mythical), Is.LessThanOrEqualTo(0));
 
                 int totalProb = rarityPercs.Sum(b => b);
                 // Expected total: Uncommon (4*3=12) + Rare (3*3=9) + Epic (2*3=6) + Legendary (1*3=3) = 30.
                 //Assert.AreEqual(30, totalProb, "Total probability should equal 255.");
 
                 // Calculate expected relative frequencies.
-                double expectedUncommon = ((double)rarityPercs[(int)Rarity.Uncommon]) / 100;
-                double expectedRare = ((double)rarityPercs[(int)Rarity.Rare]) / 100;
-                double expectedEpic = ((double)rarityPercs[(int)Rarity.Epic]) / 100;
-                double expectedLegendary = ((double)rarityPercs[(int)Rarity.Legendary]) / 100;
                 double expectedCommon = ((double)(100.0 - totalProb)) / 100;
+                double expectedUncommon = ((double)rarityPercs[(int)RarityType.Uncommon]) / 100;
+                double expectedRare = ((double)rarityPercs[(int)RarityType.Rare]) / 100;
+                double expectedEpic = ((double)rarityPercs[(int)RarityType.Epic]) / 100;
+                double expectedLegendary = ((double)rarityPercs[(int)RarityType.Legendary]) / 100;
+                double expectedMythical = ((double)rarityPercs[(int)RarityType.Mythical]) / 100;
 
                 const int iterations = 10000;
-                var counts = new Dictionary<Rarity, int>();
-                foreach (Rarity rarity in Enum.GetValues(typeof(Rarity)))
+                var counts = new Dictionary<RarityType, int>();
+                foreach (RarityType rarity in Enum.GetValues(typeof(RarityType)))
                 {
                     counts[rarity] = 0;
                 }
@@ -259,15 +262,16 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
                 {
                     random.NextBytes(bytes);
                     double value = ((double)bytes[0] * 100) / byte.MaxValue;
-                    Rarity rarity = deckAsset.GetRarity(value);
+                    RarityType rarity = deckAsset.GetRarity(value);
                     counts[rarity]++;
                 }
 
-                double freqUncommon = counts[Rarity.Uncommon] / (double)iterations;
-                double freqRare = counts[Rarity.Rare] / (double)iterations;
-                double freqEpic = counts[Rarity.Epic] / (double)iterations;
-                double freqLegendary = counts[Rarity.Legendary] / (double)iterations;
-                double freqCommon = counts[Rarity.Common] / (double)iterations;
+                double freqCommon = counts[RarityType.Common] / (double)iterations;
+                double freqUncommon = counts[RarityType.Uncommon] / (double)iterations;
+                double freqRare = counts[RarityType.Rare] / (double)iterations;
+                double freqEpic = counts[RarityType.Epic] / (double)iterations;
+                double freqLegendary = counts[RarityType.Legendary] / (double)iterations;
+                double freqMythical = counts[RarityType.Mythical] / (double)iterations;
 
                 // Assert: Check that observed frequencies are within tolerances.
                 Assert.That(freqCommon, Is.EqualTo(expectedCommon).Within(0.05), "Common frequency should be 0.");
@@ -275,8 +279,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
                 Assert.That(freqRare, Is.EqualTo(expectedRare).Within(0.05), "Rare frequency out of tolerance.");
                 Assert.That(freqEpic, Is.EqualTo(expectedEpic).Within(0.05), "Epic frequency out of tolerance.");
                 Assert.That(freqLegendary, Is.EqualTo(expectedLegendary).Within(0.05), "Legendary frequency should be 0.");
+                Assert.That(freqMythical, Is.EqualTo(0).Within(0.05), "Mythical frequency should be 0.");
+
             }
         }
-
     }
 }

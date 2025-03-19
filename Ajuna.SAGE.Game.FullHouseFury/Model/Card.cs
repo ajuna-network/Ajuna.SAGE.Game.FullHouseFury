@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ajuna.SAGE.Core;
+using System;
 using System.ComponentModel;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
@@ -10,7 +11,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     {
         public Suit Suit { get; }
         public Rank Rank { get; }
-        public Rarity Rarity { get; }
+        public RarityType Rarity { get; }
 
         public readonly byte Index => (byte)((byte)Suit * 13 + (byte)Rank - 1);
 
@@ -18,7 +19,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         {
             Suit = suit;
             Rank = rank;
-            Rarity = Rarity.Common;
+            Rarity = RarityType.Common;
         }
 
         public Card(byte cardIndex, byte rarity)
@@ -36,7 +37,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             // Use division and modulo to map card index to suit and rank.
             Suit = (Suit)(cardIndex / 13);
             Rank = (Rank)((cardIndex % 13) + 1);
-            Rarity = (Rarity)rarity;
+            Rarity = (RarityType)rarity;
         }
 
         public override string ToString()
