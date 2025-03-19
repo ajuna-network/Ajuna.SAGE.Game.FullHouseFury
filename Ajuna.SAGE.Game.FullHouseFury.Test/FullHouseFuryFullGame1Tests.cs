@@ -69,19 +69,19 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
                 if (game.Round == 1)
                 {
-                    var hand = new Card?[10];
-                    for (int i = 0; i < 10; i++)
+                    var hand = new Card?[DeckAsset.HAND_LIMIT_SIZE];
+                    for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
                     {
-                        hand[i] = deck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
+                        hand[i] = deck.TryGetHandCard(i, out byte cardIndex, out byte rarity) && cardIndex != DeckAsset.EMPTY_SLOT ? new Card(cardIndex, rarity) : null;
                     }
                     //Assert.That(string.Join(" ", hand.Select(c => c.ToString())).Trim(), Is.EqualTo("3♠ Q♥ A♣ 4♠ 6♠ J♠ 7♣"));
                 }
 
                 // Convert the hand from deck into a byte[10]
-                byte[] handArray = new byte[10];
-                for (int i = 0; i < 10; i++)
+                byte[] handArray = new byte[DeckAsset.HAND_LIMIT_SIZE];
+                for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
                 {
-                    handArray[i] = deck.GetHandCard(i);
+                    handArray[i] = deck.GetHandCard(i, out _, out _);
                 }
 
                 // Evaluate the best attack from the hand.
@@ -98,7 +98,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
                 Assert.That(outAsset, Is.Not.Null);
             }
 
-            Assert.That(game.Round, Is.EqualTo(5), "Round is not correct.");
+            Assert.That(game.Round, Is.EqualTo(7), "Round is not correct.");
             Assert.That(game.IsBossAlive, Is.EqualTo(false), "Boss should be alive.");
             Assert.That(game.IsPlayerAlive, Is.EqualTo(true), "Player should be dead.");
 

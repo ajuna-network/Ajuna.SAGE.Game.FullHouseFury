@@ -87,15 +87,24 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(deck.IsHandSlotEmpty(5), Is.False);
             Assert.That(deck.IsHandSlotEmpty(6), Is.False);
             Assert.That(deck.IsHandSlotEmpty(7), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(8), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(9), Is.True);
 
-            Assert.That(new Card(game.GetAttackHandCard(0)).ToString(), Is.EqualTo("3♠"));
-            Assert.That(new Card(game.GetAttackHandCard(1)).ToString(), Is.EqualTo("Q♥"));
-            Assert.That(new Card(game.GetAttackHandCard(2)).ToString(), Is.EqualTo("4♠"));
+            game.GetAttackHand(0, out byte cardIndex, out byte rarity);
+            var card = new Card(cardIndex, rarity);
+            Assert.That(card.ToString(), Is.EqualTo("3♠"));
+            Assert.That(card.Rarity, Is.EqualTo(Rarity.Common));
+            
+            game.GetAttackHand(1, out cardIndex, out rarity);
+            card = new Card(cardIndex, rarity);
+            Assert.That(new Card(cardIndex, rarity).ToString(), Is.EqualTo("9♠"));
+            Assert.That(card.Rarity, Is.EqualTo(Rarity.Common));
+
+            game.GetAttackHand(2, out cardIndex, out rarity);
+            card = new Card(cardIndex, rarity);
+            Assert.That(new Card(cardIndex, rarity).ToString(), Is.EqualTo("2♠"));
+            Assert.That(card.Rarity, Is.EqualTo(Rarity.Common));
 
             Assert.That(game.AttackType, Is.EqualTo(PokerHand.HighCard));
-            Assert.That(game.AttackScore, Is.EqualTo(12));
+            Assert.That(game.AttackScore, Is.EqualTo(9));
 
             Assert.That(game.BossHealth, Is.EqualTo(game.MaxBossHealth - game.AttackScore));
 

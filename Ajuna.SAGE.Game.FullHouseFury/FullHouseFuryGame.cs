@@ -1,6 +1,8 @@
 ﻿using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Core.Manager;
 using Ajuna.SAGE.Core.Model;
+using Ajuna.SAGE.Game.FullHouseFury.Effects;
+using Ajuna.SAGE.Game.FullHouseFury.Manager;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using Ajuna.SAGE.Model;
 using System;
@@ -285,6 +287,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
+                // initiate the effects manager
+                var fxManager = new FxManager(towr);
+
                 if (game.Level > 1)
                 {
                     byte? position = c as byte?;
@@ -301,12 +306,20 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     if (!isMaxedBoon)
                     {
                         towr.SetBoon((byte)choice.boon, (byte)(currentBoon + 1));
+                        if (EffectsRegistry.BoonEffects.TryGetValue(choice.boon, out var effect))
+                        {
+                            effect.Add(game, deck, towr, 1, new ModifyContext(currentBoon, 1));
+                        }
                     }
 
                     var currentBane = towr.GetBane((byte)choice.bane, out bool isMaxedBane);
                     if (!isMaxedBane)
                     {
                         towr.SetBane((byte)choice.bane, (byte)(currentBane + 1));
+                        if (EffectsRegistry.BaneEffects.TryGetValue(choice.bane, out var effect))
+                        {
+                            effect.Add(game, deck, towr, 1, new ModifyContext(currentBane, 1));
+                        }
                     }
                 }
 
@@ -317,7 +330,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                 towr.ClearChoices();
 
-                deck.Draw(game.HandSize, h);
+                deck.Draw(game.HandSize, h, out byte[] cards);
+                fxManager.TriggerEvent(GameEvent.OnDraw, game, deck, towr, cards);
 
                 return result;
             };
@@ -387,13 +401,16 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                         return result;
                     }
 
-                    attackCards[i] = deck.GetHandCard(positions[i]);
+                    attackCards[i] = deck.GetHandCard(positions[i], out _, out _);
                 }
+
+                // initiate the effects manager
+                var fxManager = new FxManager(towr);
 
                 // remove the actual played hand
                 for (int i = 0; i < positions.Length; i++)
                 {
-                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT);
+                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT, 0);
                 }
 
                 // clear attack
@@ -402,13 +419,17 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 // set attack
                 for (int i = 0; i < attackCards.Length; i++)
                 {
-                    game.SetAttackHandCard(i, attackCards[i]);
+                    game.SetAttackHand(i, attackCards[i]);
                 }
                 game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, out ushort score);
                 game.AttackScore = score;
 
+                // on attack event
+                fxManager.TriggerEvent(GameEvent.OnAttack, game, deck, towr, new AttackContext(game.AttackType, game.AttackScore, attackCards));
+
                 // boss attack
                 game.BossDamage += game.AttackScore;
+                //fxManager.TriggerEvent(GameEvent.OnBossDamage, game, deck, towr, game.AttackScore);
 
                 if (game.PlayerEndurance > 0)
                 {
@@ -417,7 +438,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 else
                 {
                     game.PlayerDamage = (ushort)Math.Min(game.PlayerDamage + game.FatigueDamage, ushort.MaxValue);
+                    //fxManager.TriggerEvent(GameEvent.OnPlayerDamage, game, deck, towr, game.FatigueDamage);
+
                     game.FatigueDamage = (ushort)Math.Min(game.FatigueDamage * 2, ushort.MaxValue);
+
                 }
 
                 // continue playing as long both parties are alive.
@@ -427,9 +451,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                     // next round
                     game.Round = (byte)Math.Min(game.Round + 1, byte.MaxValue);
+                    fxManager.TriggerEvent(GameEvent.OnRoundStart, game, deck, towr, game.Round);
 
                     // draw new cards for the played ones
-                    deck.Draw(game.HandSize, h);
+                    deck.Draw(game.HandSize, h, out byte[] cards);
+                    fxManager.TriggerEvent(GameEvent.OnDraw, game, deck, towr, cards);
                 }
                 else
                 {
@@ -508,6 +534,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
+                // initiate the effects manager
+                var fxManager = new FxManager(towr);
+
                 byte[] discardCards = new byte[positions.Length];
                 for (int i = 0; i < positions.Length; i++)
                 {
@@ -517,20 +546,22 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                         return result;
                     }
 
-                    discardCards[i] = deck.GetHandCard(positions[i]);
+                    discardCards[i] = deck.GetHandCard(positions[i], out _, out _);
                 }
 
                 // remove the actual played hand
                 for (int i = 0; i < positions.Length; i++)
                 {
-                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT);
+                    deck.SetHandCard(positions[i], DeckAsset.EMPTY_SLOT, (byte)Rarity.Common);
                 }
 
                 // reduce discard count
                 game.Discard--;
+                fxManager.TriggerEvent(GameEvent.OnDiscard, game, deck, towr, game.Discard);
 
                 // draw new cards for the discarded ones
-                deck.Draw(game.HandSize, h);
+                deck.Draw(game.HandSize, h, out byte[] cards);
+                fxManager.TriggerEvent(GameEvent.OnDraw, game, deck, towr, cards);
 
                 return result;
             };
@@ -570,11 +601,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
+                // initiate the effects manager
+                var fxManager = new FxManager(towr);
+
                 // clear attack
                 game.ClearAttack();
 
                 // next level
                 game.Level = (byte)Math.Min(game.Level + 1, byte.MaxValue);
+                fxManager.TriggerEvent(GameEvent.OnLevelStart, game, deck, towr, game.Level);
 
                 // set next boss
                 game.MaxBossHealth = (ushort)(Math.Pow(game.Level, 2) * 100);

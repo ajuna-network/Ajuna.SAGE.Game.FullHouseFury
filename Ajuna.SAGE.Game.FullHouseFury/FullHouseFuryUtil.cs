@@ -48,9 +48,19 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <param name="cardIndexes">An array of card indexes (max 5).</param>
         /// <param name="score">The computed score (higher is better).</param>
         /// <returns>The PokerHand ranking.</returns>
-        public static PokerHand Evaluate(byte[] cardIndexes, out ushort score)
+        public static PokerHand Evaluate(byte[] attackHand, out ushort score)
         {
             score = 0;
+
+            var cardIndexes = new byte[attackHand.Length];
+            var rarities = new byte[attackHand.Length];
+            for (int i = 0; i < attackHand.Length; i++)
+            {
+                DecodeCardByte(attackHand[i], out byte cardIndex, out byte rarity);
+                cardIndexes[i] = cardIndex;
+                rarities[i] = rarity;
+            }
+
             if (cardIndexes == null)
             {
                 throw new ArgumentNullException(nameof(cardIndexes));
@@ -271,12 +281,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         }
 
         /// <summary>
-        /// Evaluates the best attack from a hand of up to 10 card slots.
-        /// The hand is represented as a byte array of length 10 where each element is either
+        /// Evaluates the best attack from a hand of up to 8 card slots.
+        /// The hand is represented as a byte array of length 8 where each element is either
         /// a card index (0–51) or DeckAsset.EMPTY_SLOT (indicating an empty slot).
         /// The function returns a BestAttack instance with the best combination of 1 to 5 cards.
         /// </summary>
-        /// <param name="hand">An array of 10 bytes representing the hand.</param>
+        /// <param name="hand">An array of 8 bytes representing the hand.</param>
         /// <returns>A BestAttack instance with the best attack combination.</returns>
         public static BestPokerHand EvaluateAttack(byte[] hand)
         {
@@ -285,9 +295,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 throw new ArgumentNullException(nameof(hand));
             }
 
-            if (hand.Length != 10)
+            if (hand.Length != DeckAsset.HAND_LIMIT_SIZE)
             {
-                throw new ArgumentException("Hand must be exactly 10 cards (slots).", nameof(hand));
+                throw new ArgumentException($"Hand must be exactly {DeckAsset.HAND_LIMIT_SIZE} cards (slots).", nameof(hand));
             }
 
             // Get the positions that are not empty.
@@ -422,7 +432,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 MalusType.None => null,
                 MalusType.HalvedDamage => new string[] { "Halved Damage", "All damage output is reduced by 50%." },
-                MalusType.SpadeHealsOpponent => new string[] { "Spade Heals Opponent", "Each Spade card played heals the opponent for 3 HP." },
+                MalusType.SpadeHeal => new string[] { "Spade Heals Opponent", "Each Spade card played heals the opponent for 3 HP." },
                 MalusType.ReducedEndurance => new string[] { "Reduced Endurance", "Decrease the player's maximum endurance by 1." },
                 MalusType.IncreasedFatigueRate => new string[] { "Increased Fatigue Rate", "Fatigue damage increases at an accelerated exponential rate." },
                 MalusType.LowerCardValue => new string[] { "Lower Card Value", "All card values are reduced by 20%, weakening potential hands." },
@@ -455,6 +465,29 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 MalusType.SourLuck => new string[] { "Sour Luck", "Increases the probability of drawing detrimental cards." },
                 _ => null,
             };
+        }
+
+        /// <summary>
+        /// Decodes a card byte into its card index and rarity.
+        /// </summary>
+        /// <param name="encodedCard"></param>
+        /// <param name="cardIndex"></param>
+        /// <param name="rarity"></param>
+        public static void DecodeCardByte(byte encodedCard, out byte cardIndex, out byte rarity)
+        {
+            cardIndex = (byte)(encodedCard & 0x3F);
+            rarity = (byte)((encodedCard >> 6) & 0x03);
+        }
+
+        /// <summary>
+        /// Encodes a card index and rarity into a single byte.
+        /// </summary>
+        /// <param name="cardIndex"></param>
+        /// <param name="rarity"></param>
+        /// <returns></returns>
+        public static byte EncodeCardByte(byte cardIndex, byte rarity)
+        {
+            return (byte)((cardIndex & 0b0011_1111) | ((rarity & 0b0000_0011) << 6));
         }
     }
 }

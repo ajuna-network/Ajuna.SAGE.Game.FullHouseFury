@@ -74,8 +74,6 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(deck.IsHandSlotEmpty(5), Is.False);
             Assert.That(deck.IsHandSlotEmpty(6), Is.False);
             Assert.That(deck.IsHandSlotEmpty(7), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(8), Is.True);
-            Assert.That(deck.IsHandSlotEmpty(9), Is.True);
         }
     }
 }

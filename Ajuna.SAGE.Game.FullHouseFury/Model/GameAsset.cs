@@ -1,6 +1,7 @@
 ﻿using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Core.Model;
 using System;
+using System.Net.Sockets;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
 {
@@ -10,9 +11,6 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     /// </summary>
     public partial class GameAsset : BaseAsset
     {
-        public const int HAND_OFFSET = 16;
-        public const int HAND_REGION_SIZE = 4;
-
         public GameAsset(uint ownerId, uint genesis)
             : base(ownerId, genesis)
         {
@@ -99,62 +97,53 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ ........ XXXX.... ........
-        public uint AttackHand
+        /// ........ ........ XXXXX... ........
+        private byte[] AttackHand
         {
-            get => BitConverter.ToUInt32(Data.Read(HAND_OFFSET, HAND_REGION_SIZE), 0);
-            set => Data.Set(HAND_OFFSET, BitConverter.GetBytes(value));
+            get => Data.Read(16, 5);
+            set => Data.Set(16, value);
         }
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ....H... ........
+        /// ........ ........ .....H.. ........
         public PokerHand AttackType
         {
-            get => (PokerHand)Data.Read(20, ByteType.High);
-            set => Data?.Set(20, ByteType.High, (byte)value);
+            get => (PokerHand)Data.Read(21, ByteType.High);
+            set => Data?.Set(21, ByteType.High, (byte)value);
         }
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ ........ .....XX. ........
+        /// ........ ........ ......XX ........
         public ushort AttackScore
         {
-            get => Data.ReadValue<ushort>(21);
-            set => Data.SetValue<ushort>(21, value);
+            get => Data.ReadValue<ushort>(22);
+            set => Data.SetValue<ushort>(22, value);
         }
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ ........ .......H ........
+        /// ........ ........ ........ .H......
         public byte MaxPlayerEndurance
         {
-            get => Data.Read(23, ByteType.High);
-            set => Data?.Set(23, ByteType.High, value);
+            get => Data.Read(25, ByteType.High);
+            set => Data?.Set(25, ByteType.High, value);
         }
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
-        /// ........ ........ .......L ........
+        /// ........ ........ ........ .L......
         public byte PlayerEndurance
         {
-            get => Data.Read(23, ByteType.Low);
-            set => Data?.Set(23, ByteType.Low, value);
-        }
-
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ XX......
-        public ushort MaxPlayerHealth
-        {
-            get => Data.ReadValue<ushort>(24);
-            set => Data?.SetValue<ushort>(24, value);
+            get => Data.Read(25, ByteType.Low);
+            set => Data?.Set(25, ByteType.Low, value);
         }
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
         /// ........ ........ ........ ..XX....
-        public ushort PlayerDamage
+        public ushort MaxPlayerHealth
         {
             get => Data.ReadValue<ushort>(26);
             set => Data?.SetValue<ushort>(26, value);
@@ -163,12 +152,20 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
         /// ........ ........ ........ ....XX..
-        public ushort FatigueDamage
+        public ushort PlayerDamage
         {
             get => Data.ReadValue<ushort>(28);
             set => Data?.SetValue<ushort>(28, value);
         }
 
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
+        /// ........ ........ ........ ......XX
+        public ushort FatigueDamage
+        {
+            get => Data.ReadValue<ushort>(30);
+            set => Data?.SetValue<ushort>(30, value);
+        }
     }
 
     public partial class GameAsset
@@ -202,35 +199,50 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             ClearAttack();
         }
 
-        public byte GetAttackHandCard(int handPosition)
+        /// <summary>
+        /// Get the card at the specified position in the attack hand.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="cardIndex"></param>
+        /// <param name="rarity"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void GetAttackHand(int position, out byte cardIndex, out byte rarity)
         {
-            if (handPosition < 0 || handPosition > 4)
+            if (position < 0 || position > 4)
             {
-                throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 4.");
+                throw new ArgumentOutOfRangeException(nameof(position), "Position must be between 0 and 4.");
             }
 
-            uint handValue = AttackHand;
-            int bitOffset = handPosition * 6;
-            return (byte)((handValue >> bitOffset) & 0x3F);
+            FullHouseFuryUtil.DecodeCardByte(AttackHand[position], out cardIndex, out rarity);
         }
 
-        public void SetAttackHandCard(int handPosition, byte cardIndex)
+        /// <summary>
+        /// Set the card at the specified position in the attack hand.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="cardIndex"></param>
+        /// <param name="rarity"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void SetAttackHand(int position, byte cardIndex, byte rarity)
         {
-            if (handPosition < 0 || handPosition > 4)
-            {
-                throw new ArgumentOutOfRangeException(nameof(handPosition), "Hand position must be between 0 and 4.");
-            }
-
             if (cardIndex > 51)
             {
                 throw new ArgumentOutOfRangeException(nameof(cardIndex), "Card index must be between 0 and 51.");
             }
 
-            uint handValue = AttackHand;
-            int bitOffset = handPosition * 6;
-            uint mask = 0x3FU << bitOffset;
-            handValue = (handValue & ~mask) | (((uint)cardIndex & 0x3F) << bitOffset);
-            AttackHand = handValue;
+            SetAttackHand(position, FullHouseFuryUtil.EncodeCardByte(cardIndex, rarity));
+        }
+
+        public void SetAttackHand(int position, byte encodedCard)
+        {
+            if (position < 0 || position > 4)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position), "Position must be between 0 and 4.");
+            }
+
+            var hand = AttackHand;
+            hand[position] = encodedCard;
+            AttackHand = hand;
         }
 
         public void ClearAttack()
@@ -238,13 +250,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             AttackScore = 0;
             AttackType = PokerHand.None;
 
-            uint empty = 0;
             for (int i = 0; i < 5; i++)
             {
-                int bitOffset = i * 6;
-                empty |= ((uint)DeckAsset.EMPTY_SLOT & 0x3F) << bitOffset;
+                SetAttackHand(i, FullHouseFuryUtil.EncodeCardByte(DeckAsset.EMPTY_SLOT, 0));
             }
-            AttackHand = empty;
         }
     }
+
 }

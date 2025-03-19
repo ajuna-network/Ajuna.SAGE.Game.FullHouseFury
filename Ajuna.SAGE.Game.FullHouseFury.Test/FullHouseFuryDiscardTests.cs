@@ -57,12 +57,12 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
             IAsset[] inAsset = [preGame, preDeck, preTowr];
 
-            var preHand = new Card?[10];
-            for (int i = 0; i < 10; i++)
+            var preHand = new Card?[DeckAsset.HAND_LIMIT_SIZE];
+            for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
-                preHand[i] = preDeck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
+                preHand[i] = preDeck.TryGetHandCard(i, out byte cardIndex, out byte rarity) && cardIndex != DeckAsset.EMPTY_SLOT ? new Card(cardIndex, 0) : null;
             }
-            var preHandString = "3♠ Q♥ A♣ 4♠ 6♠ J♠ 7♣";
+            var preHandString = "3♠ 9♠ J♥ 2♠ 7♣ K♥ A♥";
             Assert.That(string.Join(" ", preHand.Select(c => c.ToString())).Trim(), Is.EqualTo(preHandString));
 
             byte[] config = [0, 1, 3];
@@ -79,10 +79,10 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(deck, Is.Not.Null);
             Assert.That(towr, Is.Not.Null);
 
-            var hand = new Card?[10];
-            for (int i = 0; i < 10; i++)
+            var hand = new Card?[DeckAsset.HAND_LIMIT_SIZE];
+            for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
-                hand[i] = deck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
+                hand[i] = deck.TryGetHandCard(i, out byte cardIndex, out byte rarity) && cardIndex != DeckAsset.EMPTY_SLOT ? new Card(cardIndex, rarity) : null;
             }
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
@@ -95,7 +95,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             var handString = string.Join(" ", hand.Select(c => c.ToString())).Trim();
             Assert.That(handString, Is.Not.EqualTo(preHandString));
-            Assert.That(handString, Is.EqualTo("3♦ 6♥ A♣ 8♠ 6♠ J♠ 7♣"));    
+            Assert.That(handString, Is.EqualTo("2♦ 2♣ J♥ Q♠ 7♣ K♥ A♥"));    
 
         }
     }

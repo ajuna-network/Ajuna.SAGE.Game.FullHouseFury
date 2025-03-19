@@ -64,12 +64,31 @@
         Finished = 2,
     }
 
+    public enum GameEvent
+    {
+        None = 0,
+        OnLevelStart,
+        OnRoundStart,
+        OnAttack,
+        OnDraw,
+        OnDiscard
+    }
+
     public enum LevelState
     {
         None = 0,
         Preparation = 1,
         Battle = 2,
         Score = 3,
+    }
+
+    public enum Rarity
+    {
+        Common = 0,
+        Uncommon = 1,
+        Rare = 2,
+        Epic = 3,
+        Legendary = 4
     }
 
     public enum Suit
@@ -159,7 +178,7 @@
     {
         None = 0,
         HalvedDamage = 1,
-        SpadeHealsOpponent = 2,
+        SpadeHeal = 2,
         ReducedEndurance = 3,
         IncreasedFatigueRate = 4,
         LowerCardValue = 5,

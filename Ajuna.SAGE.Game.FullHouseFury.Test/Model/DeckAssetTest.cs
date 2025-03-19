@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
+using System.Security.Cryptography;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
 {
@@ -87,11 +88,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         {
             // Clear the hand and verify that all 10 slots are marked as empty.
             deckAsset.EmptyHand();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
-                Assert.That(deckAsset.GetHandCard(i), Is.EqualTo(DeckAsset.EMPTY_SLOT), $"Hand slot {i} should be empty after clearing hand.");
+                deckAsset.GetHandCard(i, out byte cardIndex, out byte rarity);
+                Assert.That(cardIndex, Is.EqualTo(DeckAsset.EMPTY_SLOT), $"Hand slot {i} should be empty after clearing hand.");
                 Assert.That(deckAsset.IsHandSlotEmpty(i), Is.True, $"Hand slot {i} should be empty.");
-                Assert.That(deckAsset.IsHandSlotOccupied(i), Is.False, $"Hand slot {i} should not be occupied.");
             }
         }
 
@@ -102,17 +103,24 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             deckAsset.EmptyHand();
 
             // Set specific cards in various hand slots.
-            deckAsset.SetHandCard(0, 10); // For example, card index 10.
-            deckAsset.SetHandCard(5, 25); // For example, card index 25.
-            deckAsset.SetHandCard(9, 51); // For example, last valid card index.
+            deckAsset.SetHandCard(0, 10, 0); // For example, card index 10.
+            deckAsset.SetHandCard(5, 25, 1); // For example, card index 25.
+            deckAsset.SetHandCard(7, 51, 2); // For example, last valid card index.
 
-            // Retrieve them and verify.
-            Assert.That(deckAsset.GetHandCard(0), Is.EqualTo(10), "Hand slot 0 should have card index 10.");
-            Assert.That(deckAsset.GetHandCard(5), Is.EqualTo(25), "Hand slot 5 should have card index 25.");
-            Assert.That(deckAsset.GetHandCard(9), Is.EqualTo(51), "Hand slot 9 should have card index 51.");
+            deckAsset.GetHandCard(0, out byte cardIndex, out byte rarity);
+            Assert.That(cardIndex, Is.EqualTo(10), "Hand slot 0 should have card index 10.");
+            Assert.That(rarity, Is.EqualTo(0), "Hand slot 0 should have rarity 0.");
+
+            deckAsset.GetHandCard(5, out cardIndex, out rarity);
+            Assert.That(cardIndex, Is.EqualTo(25), "Hand slot 5 should have card index 25.");
+            Assert.That(rarity, Is.EqualTo(1), "Hand slot 5 should have rarity 1.");
+
+            deckAsset.GetHandCard(7, out cardIndex, out rarity);
+            Assert.That(cardIndex, Is.EqualTo(51), "Hand slot 7 should have card index 51.");
+            Assert.That(rarity, Is.EqualTo(2), "Hand slot 7 should have rarity 2.");
 
             // Check occupancy status.
-            Assert.That(deckAsset.IsHandSlotOccupied(0), Is.True, "Hand slot 0 should be occupied.");
+            Assert.That(deckAsset.IsHandSlotEmpty(0), Is.False, "Hand slot 0 should be occupied.");
             Assert.That(deckAsset.IsHandSlotEmpty(1), Is.True, "Hand slot 1 should be empty.");
         }
 
@@ -120,17 +128,17 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         public void DeckAsset_Hand_InvalidSlot_ThrowsException()
         {
             // Accessing an invalid hand slot should throw an exception.
-            Assert.That(() => deckAsset.GetHandCard(-1), Throws.TypeOf<ArgumentOutOfRangeException>());
-            Assert.That(() => deckAsset.GetHandCard(10), Throws.TypeOf<ArgumentOutOfRangeException>());
-            Assert.That(() => deckAsset.SetHandCard(-1, 10), Throws.TypeOf<ArgumentOutOfRangeException>());
-            Assert.That(() => deckAsset.SetHandCard(10, 10), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.GetHandCard(-1, out _, out _), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.GetHandCard(8, out _, out _), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.SetHandCard(-1, 10, 0), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.SetHandCard(8, 10, 0), Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         [Test]
         public void DeckAsset_Hand_InvalidCardIndex_ThrowsException()
         {
             // Setting a card with an invalid card index should throw an exception.
-            Assert.That(() => deckAsset.SetHandCard(0, 52), Throws.TypeOf<ArgumentOutOfRangeException>());
+            Assert.That(() => deckAsset.SetHandCard(0, 52, 0), Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
         #endregion
@@ -166,7 +174,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             deckAsset.New();
             deckAsset.EmptyHand();
             int initialDeckSize = deckAsset.DeckSize; // Should be 52
-            int targetHandSize = 10;
+            int targetHandSize = 8;
 
             // Create a deterministic random hash (32 bytes) for testing.
             byte[] randomHash = new byte[32];
@@ -176,14 +184,16 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             }
 
             // Draw cards into the hand.
-            deckAsset.Draw((byte)targetHandSize, randomHash);
+            deckAsset.Draw((byte)targetHandSize, randomHash, out byte[] _);
 
             // Verify that exactly targetHandSize hand slots are occupied.
             int countInHand = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
                 if (!deckAsset.IsHandSlotEmpty(i))
+                {
                     countInHand++;
+                }
             }
             Assert.That(countInHand, Is.EqualTo(targetHandSize), "Hand should be filled with the target number of cards.");
 
@@ -206,6 +216,67 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
         }
 
         #endregion
+
+        [Test]
+        public void TestGetRarityProbabilityDistribution_ForDrawRarity_xtimes()
+        {
+            Random random = new();
+            var bytes = new byte[1];
+
+            for (int times = 0; times < 1000; times++)
+            {
+                random.NextBytes(bytes);
+
+                deckAsset.DrawRarity = bytes[0];
+                byte[] rarityPercs = deckAsset.GetRarityPercs();
+
+                Assert.That(deckAsset.GetRarity(Rarity.Common), Is.EqualTo(0));
+                Assert.That(deckAsset.GetRarity(Rarity.Uncommon), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(Rarity.Rare), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(Rarity.Epic), Is.LessThanOrEqualTo(3));
+                Assert.That(deckAsset.GetRarity(Rarity.Legendary), Is.LessThanOrEqualTo(3));
+
+                int totalProb = rarityPercs.Sum(b => b);
+                // Expected total: Uncommon (4*3=12) + Rare (3*3=9) + Epic (2*3=6) + Legendary (1*3=3) = 30.
+                //Assert.AreEqual(30, totalProb, "Total probability should equal 255.");
+
+                // Calculate expected relative frequencies.
+                double expectedUncommon = ((double)rarityPercs[(int)Rarity.Uncommon]) / 100;
+                double expectedRare = ((double)rarityPercs[(int)Rarity.Rare]) / 100;
+                double expectedEpic = ((double)rarityPercs[(int)Rarity.Epic]) / 100;
+                double expectedLegendary = ((double)rarityPercs[(int)Rarity.Legendary]) / 100;
+                double expectedCommon = ((double)(100.0 - totalProb)) / 100;
+
+                const int iterations = 10000;
+                var counts = new Dictionary<Rarity, int>();
+                foreach (Rarity rarity in Enum.GetValues(typeof(Rarity)))
+                {
+                    counts[rarity] = 0;
+                }
+
+                // Act: Simulate many draws, with one random byte per draw.
+                for (int i = 0; i < iterations; i++)
+                {
+                    random.NextBytes(bytes);
+                    double value = ((double)bytes[0] * 100) / byte.MaxValue;
+                    Rarity rarity = deckAsset.GetRarity(value);
+                    counts[rarity]++;
+                }
+
+                double freqUncommon = counts[Rarity.Uncommon] / (double)iterations;
+                double freqRare = counts[Rarity.Rare] / (double)iterations;
+                double freqEpic = counts[Rarity.Epic] / (double)iterations;
+                double freqLegendary = counts[Rarity.Legendary] / (double)iterations;
+                double freqCommon = counts[Rarity.Common] / (double)iterations;
+
+                // Assert: Check that observed frequencies are within tolerances.
+                Assert.That(freqCommon, Is.EqualTo(expectedCommon).Within(0.015), "Common frequency should be 0.");
+                Assert.That(freqUncommon, Is.EqualTo(expectedUncommon).Within(0.015), "Uncommon frequency out of tolerance.");
+                Assert.That(freqRare, Is.EqualTo(expectedRare).Within(0.015), "Rare frequency out of tolerance.");
+                Assert.That(freqEpic, Is.EqualTo(expectedEpic).Within(0.015), "Epic frequency out of tolerance.");
+                Assert.That(freqLegendary, Is.EqualTo(expectedLegendary).Within(0.015), "Legendary frequency should be 0.");
+            }
+        }
 
     }
 }

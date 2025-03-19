@@ -49,10 +49,10 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             while ((outAsset[0] as GameAsset).LevelState != LevelState.Score)
             {
-                byte[] handArray = new byte[10];
-                for (int i = 0; i < 10; i++)
+                byte[] handArray = new byte[DeckAsset.HAND_LIMIT_SIZE];
+                for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
                 {
-                    handArray[i] = (outAsset[1] as DeckAsset).GetHandCard(i);
+                    handArray[i] = (outAsset[1] as DeckAsset).GetHandCard(i, out _, out _);
                 }
 
                 bool battleResult = Engine.Transition(_user, BATTLE, inAsset = outAsset, out outAsset,
@@ -71,7 +71,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
         [Test]
         public void Test_Preparation_Level2()
         {
-            Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(10));
+            Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(12));
 
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
@@ -80,14 +80,14 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             Assert.That(preGame.Level, Is.EqualTo(2));
             Assert.That(preGame.LevelState, Is.EqualTo(LevelState.Preparation));
-            Assert.That(preGame.Round, Is.EqualTo(5));
+            Assert.That(preGame.Round, Is.EqualTo(7));
             Assert.That(preDeck.DeckSize, Is.EqualTo(52));
 
-            Assert.That(preTowr.GetBoonAndBane(0).boon, Is.EqualTo(BonusType.DeckRefill));
-            Assert.That(preTowr.GetBoonAndBane(0).bane, Is.EqualTo(MalusType.VulnerableState));
-            Assert.That(preTowr.GetBoonAndBane(1).boon, Is.EqualTo(BonusType.ZealousCharge));
-            Assert.That(preTowr.GetBoonAndBane(1).bane, Is.EqualTo(MalusType.SpadeHealsOpponent));
-            Assert.That(preTowr.GetBoonAndBane(2).boon, Is.EqualTo(BonusType.InspiringPresence));
+            Assert.That(preTowr.GetBoonAndBane(0).boon, Is.EqualTo(BonusType.FortunesFavor));
+            Assert.That(preTowr.GetBoonAndBane(0).bane, Is.EqualTo(MalusType.HeavyBurden));
+            Assert.That(preTowr.GetBoonAndBane(1).boon, Is.EqualTo(BonusType.RapidRecovery));
+            Assert.That(preTowr.GetBoonAndBane(1).bane, Is.EqualTo(MalusType.UniformSuitPenalty));
+            Assert.That(preTowr.GetBoonAndBane(2).boon, Is.EqualTo(BonusType.DivineIntervention));
             Assert.That(preTowr.GetBoonAndBane(2).bane, Is.EqualTo(MalusType.ReducedEndurance));
 
 
