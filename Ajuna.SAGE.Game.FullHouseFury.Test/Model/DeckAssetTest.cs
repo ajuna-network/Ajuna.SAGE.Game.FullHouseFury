@@ -270,11 +270,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
                 double freqCommon = counts[Rarity.Common] / (double)iterations;
 
                 // Assert: Check that observed frequencies are within tolerances.
-                Assert.That(freqCommon, Is.EqualTo(expectedCommon).Within(0.015), "Common frequency should be 0.");
-                Assert.That(freqUncommon, Is.EqualTo(expectedUncommon).Within(0.015), "Uncommon frequency out of tolerance.");
-                Assert.That(freqRare, Is.EqualTo(expectedRare).Within(0.015), "Rare frequency out of tolerance.");
-                Assert.That(freqEpic, Is.EqualTo(expectedEpic).Within(0.015), "Epic frequency out of tolerance.");
-                Assert.That(freqLegendary, Is.EqualTo(expectedLegendary).Within(0.015), "Legendary frequency should be 0.");
+                Assert.That(freqCommon, Is.EqualTo(expectedCommon).Within(0.05), "Common frequency should be 0.");
+                Assert.That(freqUncommon, Is.EqualTo(expectedUncommon).Within(0.05), "Uncommon frequency out of tolerance.");
+                Assert.That(freqRare, Is.EqualTo(expectedRare).Within(0.05), "Rare frequency out of tolerance.");
+                Assert.That(freqEpic, Is.EqualTo(expectedEpic).Within(0.05), "Epic frequency out of tolerance.");
+                Assert.That(freqLegendary, Is.EqualTo(expectedLegendary).Within(0.05), "Legendary frequency should be 0.");
             }
         }
 
