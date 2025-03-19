@@ -95,8 +95,10 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             var handString = string.Join(" ", hand.Select(c => c.ToString())).Trim();
             Assert.That(handString, Is.Not.EqualTo(preHandString));
-            Assert.That(handString, Is.EqualTo("2♦ 2♣ J♥ Q♠ 7♣ K♥ A♥"));    
+            Assert.That(handString, Is.EqualTo("2♦ 2♣ J♥ Q♠ 7♣ K♥ A♥"));
 
+            var rarityString = string.Join(" ", hand.Where(c => c != null).Select(c => ((int)c.Value.Rarity).ToString())).Trim();
+            Assert.That(rarityString, Is.EqualTo("1 1 1 2 1 1 1"));
         }
     }
 }

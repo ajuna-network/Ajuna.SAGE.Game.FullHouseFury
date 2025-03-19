@@ -133,6 +133,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             Deck = ulong.MaxValue;
             MaxDeckSize = 52;
             DeckSize = MaxDeckSize;
+
+            SetRarity(RarityType.Uncommon, 1);
         }
 
         /// <summary>
@@ -274,9 +276,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                 throw new ArgumentOutOfRangeException(nameof(cardIndex));
             }
 
-            if (rarity > 3)
+            if (rarity > 5)
             {
                 throw new ArgumentOutOfRangeException(nameof(rarity));
+            }
+
+            // make sure rarity is set to 0 if cardIndex is EMPTY_SLOT
+            if (cardIndex == EMPTY_SLOT)
+            {
+                rarity = 0;
             }
 
             SetHandCard(position, FullHouseFuryUtil.EncodeCardByte(cardIndex, rarity));
@@ -397,7 +405,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                     byte randCardIndex = (byte)(randA % DeckSize);
                     byte drawnCard = DrawCard(randCardIndex);
 
-                    var rarityPerc = (double)randB / byte.MaxValue;
+                    var rarityPerc = (double)randB * 100 / byte.MaxValue;
                     var rarity = GetRarity(rarityPerc);
 
                     SetHandCard(i, drawnCard, (byte)rarity);
@@ -502,22 +510,36 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             }
         }
 
-        public byte SetRarity(RarityType rarity, byte value)
+        public void SetRarity(RarityType rarity, byte value)
         {
             if (value > 3)
             {
                 throw new ArgumentOutOfRangeException(nameof(value), "Rarity value must be between 0 and 3.");
             }
 
-            return rarity switch
+            switch(rarity)
             {
-                RarityType.Common => 0,
-                RarityType.Uncommon => (byte)(DrawRarity | value),
-                RarityType.Rare => (byte)(DrawRarity | (value << 2)),
-                RarityType.Epic => (byte)(DrawRarity | (value << 4)),
-                RarityType.Legendary => (byte)(DrawRarity | (value << 6)),
-                _ => throw new ArgumentOutOfRangeException(nameof(rarity), "Invalid rarity value."),
-            };
+                case RarityType.Common:
+                    // nothing to store
+                    break;
+                case RarityType.Uncommon:
+                    DrawRarity = (byte)(DrawRarity | value);
+                    break;
+                case RarityType.Rare:
+                    DrawRarity = (byte)(DrawRarity | (value << 2));
+                    break;
+                case RarityType.Epic:
+                    DrawRarity = (byte)(DrawRarity | (value << 4));
+                    break;
+                case RarityType.Legendary:
+                    DrawRarity = (byte)(DrawRarity | (value << 6));
+                    break;
+                case RarityType.Mythical:
+                    // nothing to store
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rarity), "Invalid rarity value.");
+            }
         }
 
         public byte[] GetRarityPercs()

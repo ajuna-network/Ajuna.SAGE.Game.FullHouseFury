@@ -123,13 +123,15 @@ namespace Assets.Scripts.ScreenStates
 
             for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
-                var handCardIndex = PlayState.DeckAsset.GetHandCard(i);
-                if (handCardIndex != DeckAsset.EMPTY_SLOT)
+                PlayState.DeckAsset.GetHandCard(i, out byte cardIndex, out byte rarity);
+                if (cardIndex != DeckAsset.EMPTY_SLOT)
                 {
-                    var card = new Card(handCardIndex);
+                    var card = new Card(cardIndex, rarity);
                     var handCard = new HandCard(i, card);
                     var templateContainer = PlayState.VelCard.Instantiate();
                     var velCard = templateContainer.Q<VisualElement>("VelCard");
+                    var txtCard = velCard.Q<Label>("TxtRarity");
+                    txtCard.text = ((int)card.Rarity).ToString();
                     velCard.RegisterCallback<ClickEvent>(evt => HandCardStateChange(handCard));
                     velCard.style.backgroundImage = new StyleBackground(PlayState.SprDeck.FirstOrDefault(s => s.name ==
                         HelperUtil.GetCardSpritName(card.Suit, card.Rank)));
