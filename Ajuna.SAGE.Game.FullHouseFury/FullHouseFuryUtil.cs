@@ -1,4 +1,5 @@
-﻿using Ajuna.SAGE.Game.FullHouseFury.Model;
+﻿using Ajuna.SAGE.Core;
+using Ajuna.SAGE.Game.FullHouseFury.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,34 +32,195 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         }
 
         /// <summary>
-        /// Evaluates a poker hand (up to 5 cards provided as card indexes 0–51)
-        /// and returns its ranking while also outputting a numeric score calculated as:
-        ///
-        /// - HighCard: factor 1 × (highest card's value, with Ace = 14) + ((1-1)^2 * 10)
-        /// - Pair: factor 2 × (rank of the pair) + ((2-1)^2 * 10)
-        /// - TwoPair: factor 3 × (highest pair's rank) + ((3-1)^2 * 10)
-        /// - ThreeOfAKind: factor 4 × (rank of the triple) + ((4-1)^2 * 10)
-        /// - Straight: factor 5 × (highest card in the straight) + ((5-1)^2 * 10)
-        /// - Flush: factor 6 × (highest card in the flush) + ((6-1)^2 * 10)
-        /// - FullHouse: factor 7 × (rank of the triple part) + ((7-1)^2 * 10)
-        /// - FourOfAKind: factor 8 × (rank of the quadruple) + ((8-1)^2 * 10)
-        /// - StraightFlush: factor 9 × (highest card) + ((9-1)^2 * 10)
-        /// - RoyalFlush: factor 10 × 14 + ((10 - 1)^2 * 10)
+        /// Evaluates an encoded poker hand, calculates its score and scoring breakdown, and returns the determined poker hand category.
         /// </summary>
-        /// <param name="cardIndexes">An array of card indexes (max 5).</param>
-        /// <param name="score">The computed score (higher is better).</param>
-        /// <returns>The PokerHand ranking.</returns>
-        public static PokerHand Evaluate(byte[] attackHand, out ushort score)
+        /// <param name="attackHand"></param>
+        /// <param name="score"></param>
+        /// <param name="scoreCard"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static PokerHand Evaluate(byte[] attackHand, out ushort score, out ushort[] scoreCard)
+        {
+            score = 0;
+            scoreCard = new ushort[4];
+
+            int handSize = attackHand.Length;
+            if (handSize == 0 || handSize > 5)
+            {
+                throw new ArgumentException("Hand must have between 1 and 5 cards.", nameof(attackHand));
+            }
+
+            var cards = new Card[handSize];
+
+            for (int i = 0; i < handSize; i++)
+            {
+                DecodeCardByte(attackHand[i], out byte cardIndex, out byte rarity);
+                cards[i] = new Card(cardIndex, rarity);
+            }
+
+            var rankedCards = new Dictionary<int, List<Card>>();
+            var suitedCards = new Dictionary<int, List<Card>>();
+            foreach (var card in cards)
+            {
+                // Group by Rank.
+                if (!rankedCards.TryGetValue((int)card.Rank, out var rankList))
+                {
+                    rankList = new List<Card>();
+                    rankedCards[(int)card.Rank] = rankList;
+                }
+                rankList.Add(card);
+
+                // Group by Suit.
+                if (!suitedCards.TryGetValue((int)card.Suit, out var suitList))
+                {
+                    suitList = new List<Card>();
+                    suitedCards[(int)card.Suit] = suitList;
+                }
+                suitList.Add(card);
+            }
+
+            // Determine flush: for 5-card hands, flush if one suit has all cards.
+            bool isFlush = (handSize == 5) && suitedCards.Any(s => s.Value.Count == 5);
+
+            // Determine straight: sort distinct ranks.
+            bool isStraight = false;
+            if (handSize == 5)
+            {
+                var distinctRanks = rankedCards.Keys.OrderBy(r => r).ToList();
+                if (distinctRanks.Count == 5)
+                {
+                    int minRank = distinctRanks.First();
+                    int maxRank = distinctRanks.Last();
+                    if (maxRank - minRank == 4)
+                    {
+                        isStraight = true;
+                    }
+                    else if (distinctRanks.SequenceEqual(new List<int> { 1, 10, 11, 12, 13 }))
+                    {
+                        isStraight = true;
+                    }
+                }
+            }
+
+            // Count groups from rankedCards.
+            int fours = rankedCards.Values.Count(g => g.Count == 4);
+            int triples = rankedCards.Values.Count(g => g.Count == 3);
+            int pairs = rankedCards.Values.Count(g => g.Count == 2);
+
+            List<Card> scoringCards = new List<Card>();
+
+            // Determine hand category.
+            PokerHand category;
+            if (isStraight && isFlush)
+            {
+                var distinctRanks = rankedCards.Keys.OrderBy(r => r).ToList();
+                if (distinctRanks.SequenceEqual(new List<int> { 1, 10, 11, 12, 13 }))
+                    category = PokerHand.RoyalFlush;
+                else
+                    category = PokerHand.StraightFlush;
+                scoringCards = cards.ToList(); // All cards count.
+            }
+            else if (fours == 1)
+            {
+                category = PokerHand.FourOfAKind;
+                scoringCards = rankedCards.Values.First(g => g.Count == 4);
+            }
+            else if (triples == 1 && pairs >= 1)
+            {
+                category = PokerHand.FullHouse;
+                // For a full house, both the triple and pair are core.
+                var tripleGroup = rankedCards.Values.First(g => g.Count == 3);
+                var pairGroup = rankedCards.Values.First(g => g.Count == 2);
+                scoringCards.AddRange(tripleGroup);
+                scoringCards.AddRange(pairGroup);
+            }
+            else if (isFlush)
+            {
+                category = PokerHand.Flush;
+                scoringCards = cards.ToList();
+            }
+            else if (isStraight)
+            {
+                category = PokerHand.Straight;
+                scoringCards = cards.ToList();
+            }
+            else if (triples == 1)
+            {
+                category = PokerHand.ThreeOfAKind;
+                scoringCards = rankedCards.Values.First(g => g.Count == 3);
+            }
+            else if (pairs == 2)
+            {
+                category = PokerHand.TwoPair;
+                // Combine both pairs.
+                scoringCards = rankedCards.Values.Where(g => g.Count == 2)
+                                                 .SelectMany(g => g)
+                                                 .ToList();
+            }
+            else if (pairs == 1)
+            {
+                category = PokerHand.Pair;
+                scoringCards = rankedCards.Values.First(g => g.Count == 2);
+            }
+            else
+            {
+                category = PokerHand.HighCard;
+                scoringCards.Add(cards.OrderByDescending(c => c.Rank == Rank.Ace ? 14 : (int)c.Rank).First());
+            }
+
+            // Compute the kicker.
+            // For hands built from a specific group (Pair, TwoPair, Three/Four-of-a-Kind, FullHouse),
+            // the kicker is the maximum rank among the core cards.
+            // For hands where all cards count, we take the highest card.
+            int kicker = scoringCards.Max(c => c.Rank == Rank.Ace ? 14 : (int)c.Rank);
+
+            // Map the hand category to a factor.
+            int factor = category switch
+            {
+                PokerHand.HighCard => 1,
+                PokerHand.Pair => 2,
+                PokerHand.TwoPair => 3,
+                PokerHand.ThreeOfAKind => 4,
+                PokerHand.Straight => 5,
+                PokerHand.Flush => 6,
+                PokerHand.FullHouse => 7,
+                PokerHand.FourOfAKind => 8,
+                PokerHand.StraightFlush => 9,
+                PokerHand.RoyalFlush => 10,
+                _ => 0
+            };
+
+            // Compute the effective multiplier from the rarities of only the scoring cards.
+            ushort multiplier = (ushort)scoringCards.Aggregate(1, (acc, c) => acc * (int)c.Rarity);
+
+            // Calculate bonus and final score.
+            int bonus = (factor - 1) * (factor - 1) * 10;
+            int baseScore = factor * kicker + bonus;
+            score = (ushort)(baseScore * multiplier);
+
+            scoreCard[0] = multiplier;
+            scoreCard[1] = (ushort)factor;
+            scoreCard[2] = (ushort)kicker;
+            scoreCard[3] = (ushort)bonus;
+
+            return category;
+        }
+
+        public static PokerHand OldEvaluate(byte[] attackHand, out ushort score, out ushort[] scoreCard)
         {
             score = 0;
 
-            var cardIndexes = new byte[attackHand.Length];
-            var rarities = new byte[attackHand.Length];
-            for (int i = 0; i < attackHand.Length; i++)
+            int handSize = attackHand.Length;
+            var cardIndexes = new byte[handSize];
+            var rarities = new byte[handSize];
+            var ranks = new int[handSize]; // Store rank for each card
+
+            for (int i = 0; i < handSize; i++)
             {
                 DecodeCardByte(attackHand[i], out byte cardIndex, out byte rarity);
                 cardIndexes[i] = cardIndex;
                 rarities[i] = rarity;
+                ranks[i] = (cardIndex % 13) + 1; // 1..13 (Ace = 1)
             }
 
             if (cardIndexes == null)
@@ -79,14 +241,16 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             List<int> straightRanks = new List<int>(); // raw rank values (Ace = 1)
             List<int> kickerRanks = new List<int>();     // for kicker, treat Ace as high (14)
 
-            foreach (byte index in cardIndexes)
+            for (int i = 0; i < handSize; i++)
             {
+                byte index = cardIndexes[i];
+
                 if (index > 51)
                 {
                     throw new ArgumentOutOfRangeException(nameof(cardIndexes), "Each card index must be between 0 and 51.");
                 }
 
-                int rank = (index % 13) + 1; // 1..13
+                int rank = ranks[i];
                 int suit = index / 13;
                 rankCounts[rank]++;
                 if (rank < minRank)
@@ -274,8 +438,129 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 _ => 0
             };
 
+            // --- Compute the effective multiplier only from the cards contributing to the hand ---
+            List<int> contributingIndices = new List<int>();
+
+            switch (category)
+            {
+                case PokerHand.HighCard:
+                    {
+                        // Only the highest card counts.
+                        int maxKicker = -1;
+                        int idx = -1;
+                        for (int i = 0; i < handSize; i++)
+                        {
+                            int cardKicker = (ranks[i] == 1 ? 14 : ranks[i]);
+                            if (cardKicker > maxKicker)
+                            {
+                                maxKicker = cardKicker;
+                                idx = i;
+                            }
+                        }
+                        if (idx != -1)
+                            contributingIndices.Add(idx);
+                    }
+                    break;
+
+                case PokerHand.Pair:
+                    {
+                        // Find the rank that makes the pair.
+                        int pairRank = 0;
+                        for (int r = 13; r >= 1; r--)
+                        {
+                            if (rankCounts[r] == 2)
+                            {
+                                pairRank = r;
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < handSize; i++)
+                        {
+                            if (ranks[i] == pairRank)
+                                contributingIndices.Add(i);
+                        }
+                    }
+                    break;
+
+                case PokerHand.TwoPair:
+                    {
+                        // Collect indices for both pairs.
+                        List<int> pairRanks = new List<int>();
+                        for (int r = 1; r <= 13; r++)
+                        {
+                            if (rankCounts[r] == 2)
+                                pairRanks.Add(r);
+                        }
+                        for (int i = 0; i < handSize; i++)
+                        {
+                            if (pairRanks.Contains(ranks[i]))
+                                contributingIndices.Add(i);
+                        }
+                    }
+                    break;
+
+                case PokerHand.ThreeOfAKind:
+                    {
+                        int threeRank = 0;
+                        for (int r = 13; r >= 1; r--)
+                        {
+                            if (rankCounts[r] == 3)
+                            {
+                                threeRank = r;
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < handSize; i++)
+                        {
+                            if (ranks[i] == threeRank)
+                                contributingIndices.Add(i);
+                        }
+                    }
+                    break;
+
+                case PokerHand.FourOfAKind:
+                    {
+                        int fourRank = 0;
+                        for (int r = 13; r >= 1; r--)
+                        {
+                            if (rankCounts[r] == 4)
+                            {
+                                fourRank = r;
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < handSize; i++)
+                        {
+                            if (ranks[i] == fourRank)
+                                contributingIndices.Add(i);
+                        }
+                    }
+                    break;
+
+                // For the remaining categories, all cards in the hand are used.
+                default:
+                    for (int i = 0; i < handSize; i++)
+                    {
+                        contributingIndices.Add(i);
+                    }
+                    break;
+            }
+
+            ushort multiplier = 1;
+            foreach (int idx in contributingIndices)
+            {
+                multiplier = (ushort)(multiplier * rarities[idx]);
+            }
+
             // New scoring: score = (factor * kicker) + ((factor - 1)^2 * 10)
             score = (ushort)(factor * kicker + (Math.Pow(factor - 1, 2) * 10));
+            score *= multiplier;
+
+            scoreCard = new ushort[4];
+            scoreCard[0] = (ushort)multiplier;
+            scoreCard[1] = (ushort)factor;
+            scoreCard[2] = (ushort)kicker;
+            scoreCard[3] = (ushort)(Math.Pow(factor - 1, 2) * 10);
 
             return category;
         }
@@ -326,7 +611,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     // Build the card indexes for this combination.
                     byte[] comboCards = combo.Select(pos => hand[pos]).ToArray();
                     ushort comboScore;
-                    PokerHand category = Evaluate(comboCards, out comboScore);
+                    PokerHand category = Evaluate(comboCards, out comboScore, out _);
                     BestPokerHand current = new BestPokerHand
                     {
                         Category = category,

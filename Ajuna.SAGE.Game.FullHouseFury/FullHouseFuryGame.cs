@@ -421,7 +421,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 {
                     game.SetAttackHand(i, attackCards[i]);
                 }
-                game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, out ushort score);
+                game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, out ushort score, out _);
                 game.AttackScore = score;
 
                 // on attack event

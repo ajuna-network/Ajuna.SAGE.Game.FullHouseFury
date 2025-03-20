@@ -10,6 +10,8 @@ using UnityEngine.UIElements;
 using static UnityEngine.Rendering.STP;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using UnityEngine.SocialPlatforms.Impl;
+using System.Numerics;
+using UnityEditor.Sprites;
 
 namespace Assets.Scripts.ScreenStates
 {
@@ -41,6 +43,10 @@ namespace Assets.Scripts.ScreenStates
         private Label _lblBaseDamage;
 
         private Label _lblBaseDamageText;
+
+        private Label _lblFactor;
+        private Label _lblKicker;
+        private Label _lblBonus;
 
         public PlayState PlayState => ParentState as PlayState;
 
@@ -75,6 +81,13 @@ namespace Assets.Scripts.ScreenStates
             _txtBossName.text = "C.COX";
 
             var velDamage = velBoss.Q<VisualElement>("VelDamage");
+
+            _lblFactor = velDamage.Q<Label>("TxtFactor");
+            _lblFactor.style.display = DisplayStyle.None;
+            _lblKicker = velDamage.Q<Label>("TxtKicker");
+            _lblKicker.style.display = DisplayStyle.None;
+            _lblBonus = velDamage.Q<Label>("TxtBonus");
+            _lblBonus.style.display = DisplayStyle.None;
 
             _lblMultiSign = velDamage.Q<Label>("TxtMultiSign");
             _lblMultiSign.style.display = DisplayStyle.None;
@@ -230,12 +243,37 @@ namespace Assets.Scripts.ScreenStates
 
             if (_velAttackCards.childCount > 0)
             {
-                var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => p.Card.Index).ToArray();
-                var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score);
+                /*
+                    score = multiplier * (factor * kicker + bonus);
+
+                    scoreCard = new ushort[4];
+                    scoreCard[0] = (ushort)multiplier;
+                    scoreCard[1] = (ushort)factor;
+                    scoreCard[2] = (ushort)kicker;
+                    scoreCard[3] = (ushort)bonus;
+                */
+
+                var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => FullHouseFuryUtil.EncodeCardByte(p.Card.Index, (byte)p.Card.Rarity)).ToArray();
+                var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score, out ushort[] scoreCard);
                 _lblPokerHandText.text = evaluation.ToString();
 
+                Debug.Log($"{scoreCard[0]},{scoreCard[1]},{scoreCard[2]},{scoreCard[3]}");
+
+                var multiplier = scoreCard[0];
+                var factor = scoreCard[1];
+                var kicker = scoreCard[2];
+                var bonus = scoreCard[3];
+
+                _lblFactor.text = factor.ToString();
+                _lblKicker.text = kicker.ToString();
+                _lblBonus.text = bonus.ToString();
+
+                _lblFactor.style.display = DisplayStyle.Flex;
+                _lblKicker.style.display = DisplayStyle.Flex;
+                _lblBonus.style.display = DisplayStyle.Flex;
+
                 _lblMultiSign.text = "x";
-                _lblBaseMultiplier.text = 1.ToString();
+                _lblBaseMultiplier.text = multiplier.ToString();
 
                 _lblDmgSignText.text = "=";
                 _lblBaseDamage.text = score.ToString();
@@ -251,6 +289,10 @@ namespace Assets.Scripts.ScreenStates
             else
             {
                 _frameButtons[1].SetEnabled(false);
+
+                _lblFactor.style.display = DisplayStyle.None;
+                _lblKicker.style.display = DisplayStyle.None;
+                _lblBonus.style.display = DisplayStyle.None;
 
                 _lblMultiSign.style.display = DisplayStyle.None;
                 _lblBaseMultiplier.style.display = DisplayStyle.None;
