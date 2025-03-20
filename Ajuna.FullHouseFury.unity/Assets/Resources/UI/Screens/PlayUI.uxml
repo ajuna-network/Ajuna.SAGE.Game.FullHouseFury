@@ -4,11 +4,23 @@
         <ui:VisualElement name="TopBound" style="flex-grow: 0; flex-shrink: 0; height: 300px; width: 100%; justify-content: center; background-image: url(&quot;project://database/Assets/Images/bar_top.png?fileID=2800000&amp;guid=846748f14336d9743bf154c2955f0cfc&amp;type=3#bar_top&quot;); background-color: rgba(0, 0, 0, 0.78);">
             <ui:VisualElement style="flex-grow: 1; height: 50px;" />
             <ui:VisualElement style="flex-grow: 0; height: 230px; flex-direction: row;">
-                <ui:VisualElement style="flex-grow: 0; width: 350px; height: 230px;" />
+                <ui:VisualElement name="VelToken" style="flex-grow: 0; width: 500px; height: 230px;">
+                    <ui:VisualElement style="flex-grow: 0; height: 80px;">
+                        <ui:Label text="TOKEN" name="TxtTokenText" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; font-size: 50px; -unity-text-align: lower-right;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement style="flex-grow: 0; height: 150px; flex-direction: row;">
+                        <ui:Label text="1" name="TxtToken" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 80%; font-size: 100px; -unity-text-align: lower-right;" />
+                        <ui:VisualElement style="flex-grow: 0; width: 50px; justify-content: center; margin-top: 30px;">
+                            <ui:VisualElement style="flex-grow: 0; width: 50px; height: 50px; background-color: rgb(255, 173, 0); border-top-left-radius: 25px; border-top-right-radius: 25px; border-bottom-right-radius: 25px; border-bottom-left-radius: 25px; border-left-color: rgb(212, 80, 7); border-right-color: rgb(212, 80, 7); border-top-color: rgb(212, 80, 7); border-bottom-color: rgb(212, 80, 7); border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px;">
+                                <ui:Label text="$" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; -unity-text-align: middle-center; font-size: 32px; -unity-font-style: bold; color: rgb(164, 76, 0);" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 0; width: 50%;" />
                 <ui:VisualElement name="VelLevel" style="flex-grow: 0; width: 350px; height: 230px;">
                     <ui:VisualElement style="flex-grow: 0; height: 80px;">
-                        <ui:Label text="LEVEL" name="TxtLevelText" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; font-size: 50px; -unity-text-align: lower-center;" />
+                        <ui:Label text="LVL" name="TxtLevelText" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; font-size: 50px; -unity-text-align: lower-center;" />
                     </ui:VisualElement>
                     <ui:VisualElement style="flex-grow: 0; height: 150px;">
                         <ui:Label text="1" name="TxtLevel" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; font-size: 100px; -unity-text-align: lower-center;" />
@@ -16,7 +28,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="VelRound" style="flex-grow: 0; width: 350px; height: 230px;">
                     <ui:VisualElement style="flex-grow: 0; height: 80px;">
-                        <ui:Label text="ROUND" name="TxtRoundText" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; font-size: 50px; -unity-text-align: lower-center;" />
+                        <ui:Label text="RND" name="TxtRoundText" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; font-size: 50px; -unity-text-align: lower-center;" />
                     </ui:VisualElement>
                     <ui:VisualElement style="flex-grow: 0; height: 150px;">
                         <ui:Label text="1" name="TxtRound" class="font-silkscreen font-light-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; font-size: 100px; -unity-text-align: lower-center;" />

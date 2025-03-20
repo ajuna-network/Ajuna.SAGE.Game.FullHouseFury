@@ -47,6 +47,7 @@ namespace Assets.Scripts.ScreenStates
         private Label _lblFactor;
         private Label _lblKicker;
         private Label _lblBonus;
+        private VisualElement _velHandSort;
 
         public PlayState PlayState => ParentState as PlayState;
 
@@ -101,6 +102,10 @@ namespace Assets.Scripts.ScreenStates
 
             _lblBaseDamageText = velDamage.Q<Label>("TxtBaseDamageText");
             _lblBaseDamageText.style.display = DisplayStyle.None;
+
+            var velHand = elementInstance.Q<VisualElement>("VelHand");
+            _velHandSort = elementInstance.Q<VisualElement>("VelHandSort");
+            _velHandSort.RegisterCallback<ClickEvent>(evt => ReloadCards());
 
             var velPlayer = elementInstance.Q<VisualElement>("VelPlayer");
             _txtPlayerName = velPlayer.Q<Label>("TxtPlayerName");
@@ -198,7 +203,7 @@ namespace Assets.Scripts.ScreenStates
             _velHandCards.Clear();
             _velAttackCards.Clear();
 
-            foreach (var handCard in _handCards.OrderByDescending(p => p.Card.Rank).ThenBy(p => p.Card.Suit))
+            foreach (var handCard in _handCards.OrderByDescending(p => p.Card.Rank == Rank.Ace ? 14 : (int)p.Card.Rank).ThenBy(p => p.Card.Suit))
             {
                 switch (handCard.HandCardState)
                 {
