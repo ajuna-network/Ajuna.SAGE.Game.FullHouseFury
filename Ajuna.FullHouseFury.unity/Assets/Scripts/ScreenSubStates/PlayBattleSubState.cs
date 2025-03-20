@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.Rendering.STP;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
+using UnityEngine.SocialPlatforms.Impl;
 
 namespace Assets.Scripts.ScreenStates
 {
@@ -32,9 +33,14 @@ namespace Assets.Scripts.ScreenStates
         private VisualElement _velEnduranceValue;
         private Label _lblEnduranceText;
         private Button[] _frameButtons;
-        private Label _lblBaseDamageText;
+        
+        private Label _lblMultiSign;
+        private Label _lblBaseMultiplier;
+
         private Label _lblDmgSignText;
         private Label _lblBaseDamage;
+
+        private Label _lblBaseDamageText;
 
         public PlayState PlayState => ParentState as PlayState;
 
@@ -69,10 +75,17 @@ namespace Assets.Scripts.ScreenStates
             _txtBossName.text = "C.COX";
 
             var velDamage = velBoss.Q<VisualElement>("VelDamage");
+
+            _lblMultiSign = velDamage.Q<Label>("TxtMultiSign");
+            _lblMultiSign.style.display = DisplayStyle.None;
+            _lblBaseMultiplier = velDamage.Q<Label>("TxtBaseMultiplier");
+            _lblBaseMultiplier.style.display = DisplayStyle.None;
+
             _lblDmgSignText = velDamage.Q<Label>("TxtDmgSign");
             _lblDmgSignText.style.display = DisplayStyle.None;
             _lblBaseDamage = velDamage.Q<Label>("TxtBaseDamage");
             _lblBaseDamage.style.display = DisplayStyle.None;
+
             _lblBaseDamageText = velDamage.Q<Label>("TxtBaseDamageText");
             _lblBaseDamageText.style.display = DisplayStyle.None;
 
@@ -94,7 +107,6 @@ namespace Assets.Scripts.ScreenStates
             var velEndurance = velPlayer.Q<VisualElement>("VelEndurance");
             _velEnduranceValue = velEndurance.Q<VisualElement>("VelCurrentValue");
             _lblEnduranceText = velEndurance.Q<Label>("TxtValue");
-
 
             _frameButtons = new Button[] {
                 ButtonAction("DISCARD", PlayState.VtrBtnAction),
@@ -130,12 +142,14 @@ namespace Assets.Scripts.ScreenStates
                     var handCard = new HandCard(i, card);
                     var templateContainer = PlayState.VelCard.Instantiate();
                     var velCard = templateContainer.Q<VisualElement>("VelCard");
-                    var txtCard = velCard.Q<Label>("TxtRarity");
+                    var velGlow = templateContainer.Q<VisualElement>("VelGlow");
+                    var txtCard = templateContainer.Q<Label>("TxtMultiplier");
                     txtCard.text = ((int)card.Rarity).ToString();
+                    velGlow.style.backgroundColor = new StyleColor(HelperUtil.GetRarityColor(card.Rarity));
                     velCard.RegisterCallback<ClickEvent>(evt => HandCardStateChange(handCard));
                     velCard.style.backgroundImage = new StyleBackground(PlayState.SprDeck.FirstOrDefault(s => s.name ==
                         HelperUtil.GetCardSpritName(card.Suit, card.Rank)));
-                    handCard.VisualElement = velCard;
+                    handCard.VisualElement = templateContainer;
                     _handCards.Add(handCard);
                 }
             }
@@ -219,9 +233,15 @@ namespace Assets.Scripts.ScreenStates
                 var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => p.Card.Index).ToArray();
                 var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score);
                 _lblPokerHandText.text = evaluation.ToString();
-                
-                _lblDmgSignText.text = "+";
+
+                _lblMultiSign.text = "x";
+                _lblBaseMultiplier.text = 1.ToString();
+
+                _lblDmgSignText.text = "=";
                 _lblBaseDamage.text = score.ToString();
+
+                _lblMultiSign.style.display = DisplayStyle.Flex;
+                _lblBaseMultiplier.style.display = DisplayStyle.Flex;
 
                 _lblDmgSignText.style.display = DisplayStyle.Flex;
                 _lblBaseDamage.style.display = DisplayStyle.Flex;
@@ -231,6 +251,9 @@ namespace Assets.Scripts.ScreenStates
             else
             {
                 _frameButtons[1].SetEnabled(false);
+
+                _lblMultiSign.style.display = DisplayStyle.None;
+                _lblBaseMultiplier.style.display = DisplayStyle.None;
                 _lblDmgSignText.style.display = DisplayStyle.None;
                 _lblBaseDamage.style.display = DisplayStyle.None;
                 _lblBaseDamageText.style.display = DisplayStyle.None;
