@@ -25,6 +25,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
+        /// ....X... ........ ........ ........
+        public byte Token
+        {
+            get => Data.Read(4, ByteType.Full);
+            set => Data?.Set(4, ByteType.Full, (byte)value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
         /// .....H.. ........ ........ ........
         public GameState GameState
         {
@@ -182,6 +191,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         {
             GameState = GameState.Running;
             LevelState = LevelState.Preparation;
+            Token = 0;
             Level = 1;
             Round = 0;
             MaxBossHealth = 100;

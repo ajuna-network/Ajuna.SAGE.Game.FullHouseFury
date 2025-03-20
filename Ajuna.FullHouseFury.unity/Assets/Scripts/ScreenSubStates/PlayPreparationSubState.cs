@@ -63,17 +63,6 @@ namespace Assets.Scripts
             
             PlayState.AddFrameButtons(frameButtons);
 
-            if (PlayState.GameAsset != null)
-            {
-                PlayState.SetLevel(PlayState.GameAsset.Level.ToString());
-                PlayState.SetRound(PlayState.GameAsset.Round.ToString());
-            }
-            else
-            {
-                PlayState.SetLevel("-");
-                PlayState.SetRound("-");
-            }
-
             UpdateBattleStats();
 
             UpdateBoonOrBane(0, _velChoices[0]);

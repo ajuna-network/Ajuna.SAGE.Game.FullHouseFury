@@ -1,12 +1,8 @@
 ﻿using Ajuna.SAGE.Core.Model;
-using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Assets.Scripts.ScreenStates;
-using System;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UIElements;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace Assets.Scripts
 {

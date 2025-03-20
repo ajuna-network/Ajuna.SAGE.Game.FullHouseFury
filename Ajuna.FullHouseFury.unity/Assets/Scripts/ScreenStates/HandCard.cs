@@ -1,7 +1,4 @@
 ﻿using Ajuna.SAGE.Game.FullHouseFury.Model;
-using System;
-using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Assets.Scripts.ScreenStates
@@ -19,11 +16,11 @@ namespace Assets.Scripts.ScreenStates
 
         public Card Card { get; private set; }
 
-        public HandCardState HandCardState { get; private set;}
+        public HandCardState HandCardState { get; private set; }
 
         public VisualElement VisualElement { get; set; }
 
-        public HandCard(int index, Card card) 
+        public HandCard(int index, Card card)
         {
             Index = index;
             Card = card;

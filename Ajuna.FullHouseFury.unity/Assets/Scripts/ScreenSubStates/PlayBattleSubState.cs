@@ -1,20 +1,19 @@
 ﻿using Ajuna.SAGE.Core.Model;
-using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.Rendering.STP;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
-using UnityEngine.SocialPlatforms.Impl;
-using System.Numerics;
-using UnityEditor.Sprites;
 
 namespace Assets.Scripts.ScreenStates
 {
+    public enum SortCards
+    {
+        Rank,
+        Suit
+    }
+
     public class PlayBattleSubState : ScreenBaseState
     {
         private VisualElement _velAttackCards, _velHandCards;
@@ -24,7 +23,7 @@ namespace Assets.Scripts.ScreenStates
         private Label _txtBossName;
         private VisualElement _velBossCurrentHealthValue;
         private Label _lblBossHealthText;
-        
+
         private Label _txtPlayerName;
         private VisualElement _velPlayerHealthValue;
         private Label _lblPlayerHealthText;
@@ -35,7 +34,7 @@ namespace Assets.Scripts.ScreenStates
         private VisualElement _velEnduranceValue;
         private Label _lblEnduranceText;
         private Button[] _frameButtons;
-        
+
         private Label _lblMultiSign;
         private Label _lblBaseMultiplier;
 
@@ -49,12 +48,14 @@ namespace Assets.Scripts.ScreenStates
         private Label _lblBonus;
         private VisualElement _velHandSort;
 
+        private SortCards _sortCards;
+
         public PlayState PlayState => ParentState as PlayState;
 
         public PlayBattleSubState(FlowController flowController, ScreenBaseState parent)
             : base(flowController, parent)
         {
-
+            _sortCards = SortCards.Rank;
         }
 
         public override void EnterState()
@@ -74,7 +75,7 @@ namespace Assets.Scripts.ScreenStates
 
             var velPokerHand = elementInstance.Q<VisualElement>("VelPokerHand");
             _lblPokerHandText = velPokerHand.Q<Label>("TxtPokerHand");
- 
+
             var velBoss = elementInstance.Q<VisualElement>("VelBoss");
             _txtBossName = velBoss.Q<Label>("TxtBossName");
             _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
@@ -105,7 +106,7 @@ namespace Assets.Scripts.ScreenStates
 
             var velHand = elementInstance.Q<VisualElement>("VelHand");
             _velHandSort = elementInstance.Q<VisualElement>("VelHandSort");
-            _velHandSort.RegisterCallback<ClickEvent>(evt => ReloadCards());
+            _velHandSort.RegisterCallback<ClickEvent>(evt => ToggleSort());
 
             var velPlayer = elementInstance.Q<VisualElement>("VelPlayer");
             _txtPlayerName = velPlayer.Q<Label>("TxtPlayerName");
@@ -134,9 +135,6 @@ namespace Assets.Scripts.ScreenStates
             _frameButtons[1].RegisterCallback<ClickEvent>(evt => ExtrinsicAttack());
             PlayState.AddFrameButtons(_frameButtons);
 
-            PlayState.SetLevel(PlayState.GameAsset.Level.ToString());
-            PlayState.SetRound(PlayState.GameAsset.Round.ToString());
-
             floatBody.Add(elementInstance);
 
             LoadHandCards();
@@ -147,7 +145,7 @@ namespace Assets.Scripts.ScreenStates
             Debug.Log($"[{this.GetType().Name}][SUB] ExitState");
         }
 
-        private void LoadHandCards() 
+        private void LoadHandCards()
         {
             _handCards.Clear();
 
@@ -198,12 +196,31 @@ namespace Assets.Scripts.ScreenStates
             ReloadCards();
         }
 
+        private void ToggleSort()
+        {
+            _sortCards = _sortCards == SortCards.Rank ? SortCards.Suit : SortCards.Rank;
+            ReloadCards();
+        }
+
         private void ReloadCards()
         {
             _velHandCards.Clear();
             _velAttackCards.Clear();
 
-            foreach (var handCard in _handCards.OrderByDescending(p => p.Card.Rank == Rank.Ace ? 14 : (int)p.Card.Rank).ThenBy(p => p.Card.Suit))
+            IEnumerable<HandCard> _sortedHandCards = _handCards.OrderByDescending(p => p.Card.Rank == Rank.Ace ? 14 : (int)p.Card.Rank).ThenBy(p => p.Card.Suit);
+            switch (_sortCards)
+            {
+
+                case SortCards.Suit:
+                    _sortedHandCards = _handCards.OrderBy(p => p.Card.Suit).ThenByDescending(p => p.Card.Rank == Rank.Ace ? 14 : (int)p.Card.Rank);
+                    break;
+
+                case SortCards.Rank:
+                default:
+                    break;
+            }
+
+            foreach (var handCard in _sortedHandCards)
             {
                 switch (handCard.HandCardState)
                 {
@@ -290,7 +307,7 @@ namespace Assets.Scripts.ScreenStates
                 _lblBaseDamage.style.display = DisplayStyle.Flex;
                 _lblBaseDamageText.style.display = DisplayStyle.Flex;
                 _frameButtons[1].SetEnabled(true);
-            } 
+            }
             else
             {
                 _frameButtons[1].SetEnabled(false);
@@ -333,7 +350,7 @@ namespace Assets.Scripts.ScreenStates
         private void ExtrinsicAttack()
         {
             var attackHand = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => (byte)p.Index).ToArray();
-            if (attackHand == null ||attackHand.Length == 0)
+            if (attackHand == null || attackHand.Length == 0)
             {
                 Debug.Log("No cards selected for attack");
                 return;

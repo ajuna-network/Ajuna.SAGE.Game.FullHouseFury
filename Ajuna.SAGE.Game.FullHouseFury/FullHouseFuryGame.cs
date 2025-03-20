@@ -607,6 +607,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 // clear attack
                 game.ClearAttack();
 
+                // payout tokens
+                var bonus = game.Round < 4 ? 3 : game.Round < 8 ? 2 : 1;
+                game.Token = (byte)Math.Min(game.Token + game.Level + bonus, byte.MaxValue);
+
                 // next level
                 game.Level = (byte)Math.Min(game.Level + 1, byte.MaxValue);
                 fxManager.TriggerEvent(GameEvent.OnLevelStart, game, deck, towr, game.Level);

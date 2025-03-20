@@ -18,6 +18,7 @@ namespace Assets.Scripts.ScreenStates
 
         private Label _txtLevel;
         private Label _txtRound;
+        private Label _txtToken;
 
         internal GameAsset GameAsset { get; private set; }
         internal DeckAsset DeckAsset { get; private set; }
@@ -48,9 +49,11 @@ namespace Assets.Scripts.ScreenStates
             var velRound = _topBound.Q<VisualElement>("VelRound");
             _txtRound = velRound.Q<Label>("TxtRound");
 
+            var velToken = _topBound.Q<VisualElement>("VelToken");
+            _txtToken = velToken.Q<Label>("TxtToken");
+
             _bottomBound = instance.Q<VisualElement>("BottomBound");
             _velActionButtons = _bottomBound.Q<VisualElement>("VelActionButtons");
-
 
             // add container
             FlowController.VelContainer.Add(instance);
@@ -61,6 +64,11 @@ namespace Assets.Scripts.ScreenStates
         public override void ExitState()
         {
             Debug.Log($"[{this.GetType().Name}] ExitState");
+        }
+
+        public void SetToken(string token)
+        {
+            _txtToken.text = token;
         }
 
         public void SetLevel(string level)
@@ -78,6 +86,20 @@ namespace Assets.Scripts.ScreenStates
             GameAsset = FlowController.GetAsset<GameAsset>(FlowController.User, AssetType.Game, AssetSubType.None);
             DeckAsset = FlowController.GetAsset<DeckAsset>(FlowController.User, AssetType.Deck, AssetSubType.None);
             TowrAsset = FlowController.GetAsset<TowerAsset>(FlowController.User, AssetType.Tower, AssetSubType.None);
+
+            if (GameAsset != null)
+            {
+                SetToken(GameAsset.Token.ToString());
+                SetLevel(GameAsset.Level.ToString());
+                SetRound(GameAsset.Round.ToString());
+            }
+            else
+            {
+                SetToken("-");
+                SetLevel("-");
+                SetRound("-");
+            }
+
         }
 
         internal void AddFrameButtons(Button[] frameButtons)
