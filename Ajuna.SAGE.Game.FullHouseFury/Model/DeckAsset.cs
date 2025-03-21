@@ -445,7 +445,6 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     public partial class DeckAsset
     {
         private const int BitsPerLevel = 3;
-        public const int PokerHandCount = 10;
 
         /// <summary>
         /// Gets the 3-bit level (0–7) for the specified poker hand index (0–9).
@@ -453,7 +452,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public byte GetPokerHandLevel(PokerHand pokerHand)
         {
             var index = (int)pokerHand;
-            if (index < 0 || index >= PokerHandCount)
+            if (index < 0 || index > (int)PokerHand.RoyalFlush)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
@@ -469,7 +468,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public void SetPokerHandLevel(PokerHand pokerHand, byte levelValue)
         {
             var index = (int)pokerHand;
-            if (index < 0 || index >= PokerHandCount)
+            if (index < 0 || index > (int)PokerHand.RoyalFlush)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
