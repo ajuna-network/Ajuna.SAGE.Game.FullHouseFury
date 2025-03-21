@@ -1,6 +1,6 @@
 ﻿using Ajuna.SAGE.Core.Model;
-using Ajuna.SAGE.Game.FullHouseFury.Model;
 using Ajuna.SAGE.Game.FullHouseFury;
+using Ajuna.SAGE.Game.FullHouseFury.Model;
 
 namespace Ajuna.SAGE.Core.HeroJam.Test
 {

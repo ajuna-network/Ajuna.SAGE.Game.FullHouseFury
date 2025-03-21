@@ -9,6 +9,7 @@
         Battle = 4,
         Discard = 5,
         Score = 6,
+        Shop = 7,
         // *** DO NOT PASS 15 INDEX ***
     }
 
