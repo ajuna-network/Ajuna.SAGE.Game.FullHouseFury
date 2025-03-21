@@ -235,6 +235,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Get Preparation transition set
+        /// </summary>
+        /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetPreparationTransition()
         {
             var identifier = FullHouseFuryConfig.Preparation(out FullHouseFuryRule[] rules, out ITransitioFee? fee);
@@ -310,6 +314,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Get Battle transition set
+        /// </summary>
+        /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetBattleTransition()
         {
             var identifier = FullHouseFuryConfig.Battle(out FullHouseFuryRule[] rules, out ITransitioFee? fee);
@@ -518,6 +526,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Get Score transition set
+        /// </summary>
+        /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetScoreTransition()
         {
             var identifier = FullHouseFuryConfig.Score(out FullHouseFuryRule[] rules, out ITransitioFee? fee);
@@ -587,6 +599,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return (identifier, rules, fee, function);
         }
 
+        /// <summary>
+        /// Get Shop transition set
+        /// </summary>
+        /// <returns></returns>
         private static (FullHouseFuryIdentifier, FullHouseFuryRule[], ITransitioFee?, TransitionFunction<FullHouseFuryRule>) GetShopTransition()
         {
             var identifier = FullHouseFuryConfig.Shop(out FullHouseFuryRule[] rules, out ITransitioFee? fee);

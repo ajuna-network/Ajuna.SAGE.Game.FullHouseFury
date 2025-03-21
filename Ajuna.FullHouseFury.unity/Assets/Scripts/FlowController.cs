@@ -24,17 +24,19 @@ namespace Assets.Scripts
         Preparation,
         Battle,
         Score,
+        Shop,
     }
 
     public class FlowController : MonoBehaviour
     {
-        public readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start();
-        public readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play();
-        public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation();
-        public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle();
-        public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard();
-        public readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Score();
-
+        public readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Start);
+        public readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Play);
+        public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Preparation);
+        public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Battle);
+        public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Discard);
+        public readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Score);
+        public readonly FullHouseFuryIdentifier SHOP = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Shop);
+        
         internal readonly RandomNumberGenerator Random = RandomNumberGenerator.Create();
 
         public Vector2 ScrollOffset { get; set; }
@@ -83,6 +85,7 @@ namespace Assets.Scripts
                 { ScreenSubState.Preparation, new PlayPreparationSubState(this, playState) },
                 { ScreenSubState.Battle, new PlayBattleSubState(this, playState) },
                 { ScreenSubState.Score, new PlayScoreSubState(this, playState) },
+                { ScreenSubState.Shop, new PlayShopSubState(this, playState) },
             };
 
             _subStateDictionary.Add(ScreenState.Play, mainScreenSubStates);

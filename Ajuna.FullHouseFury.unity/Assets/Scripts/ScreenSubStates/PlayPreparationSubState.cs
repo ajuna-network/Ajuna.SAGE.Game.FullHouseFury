@@ -57,9 +57,11 @@ namespace Assets.Scripts
             };
 
             var frameButtons = new Button[] {
+                ButtonAction("SHOP", PlayState.VtrBtnAction),
                 ButtonAction("BATTLE", PlayState.VtrBtnAction)
             };
-            frameButtons[0].RegisterCallback<ClickEvent>(evt => ExtrinsicPreparation());
+            frameButtons[0].RegisterCallback<ClickEvent>(evt => FrameShop());
+            frameButtons[1].RegisterCallback<ClickEvent>(evt => ExtrinsicPreparation());
             
             PlayState.AddFrameButtons(frameButtons);
 
@@ -149,6 +151,11 @@ namespace Assets.Scripts
             //_lblPlayerHealthText.text = $"{currentPlayerHealth}";
             //_velPlayerHealthValue.style.width = new StyleLength(new Length((float)currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
 
+        }
+
+        private void FrameShop()
+        {
+            FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Shop);
         }
 
         private void ExtrinsicPreparation()
