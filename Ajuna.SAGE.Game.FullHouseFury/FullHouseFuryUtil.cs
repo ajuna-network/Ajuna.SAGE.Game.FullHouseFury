@@ -1,4 +1,5 @@
 ﻿using Ajuna.SAGE.Core;
+using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using System;
 using System.Collections.Generic;
@@ -773,6 +774,178 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         public static byte EncodeCardByte(byte cardIndex, byte rarity)
         {
             return (byte)((cardIndex & 0b0011_1111) | ((rarity & 0b0000_0011) << 6));
+        }
+
+        /// <summary>
+        /// Determines the upgrade price for a given feature type and level.
+        /// </summary>
+        /// <param name="featureType"></param>
+        /// <param name="featureEnum"></param>
+        /// <param name="level"></param>
+        /// <param name="baseAssets"></param>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        public static bool UpgradeInfo(FeatureType featureType, object featureEnum, byte level, IAsset[] baseAssets, out byte price)
+        {
+            return Upgrade(false, featureType, featureEnum, level, baseAssets, out price);
+        }
+
+        /// <summary>
+        /// Determines the upgrade price for a given feature type and level.
+        /// </summary>
+        /// <param name="doUpgrade"></param>
+        /// <param name="featureType"></param>
+        /// <param name="featureEnum"></param>
+        /// <param name="level"></param>
+        /// <param name="baseAssets"></param>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        private static bool Upgrade(bool doUpgrade, FeatureType featureType, object featureEnum, byte level, IAsset[] baseAssets, out byte price)
+        {
+            var game = baseAssets[0] as GameAsset;
+            var deck = baseAssets[1] as DeckAsset;
+            var towr = baseAssets[2] as TowerAsset;
+
+            price = 0;
+            switch (featureType)
+            {
+                case FeatureType.RarityLevel:
+                    {
+                        if (featureEnum is RarityType type && deck != null)
+                        {
+                            return Upgrade(doUpgrade, type, level, deck, out price);
+                        }
+                    }
+                    break;
+
+                case FeatureType.PokerHandLevel:
+                    { 
+                        if (featureEnum is PokerHand type && deck != null)
+                        {
+                            return Upgrade(doUpgrade, type, level, deck, out price);
+                        }
+                    }
+                    break;
+                case FeatureType.None:
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines the upgrade price for a given rarity level and level.
+        /// </summary>
+        /// <param name="featureEnum"></param>
+        /// <param name="level"></param>
+        /// <param name="deck"></param>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        private static bool Upgrade(bool doUpgrade, RarityType featureEnum, byte level, DeckAsset deck, out byte price)
+        {
+            price = 0;
+            var currentLevel = deck.GetRarity(featureEnum);
+
+            if (currentLevel == level || level > DeckAsset.MAX_RARITY_LEVEL) 
+            { 
+                return false;
+            }
+
+            if (level - currentLevel != 1)
+            {
+                return false;
+            }
+
+            switch (featureEnum)
+            {
+                case RarityType.Uncommon:
+                case RarityType.Rare:
+                case RarityType.Epic:
+                case RarityType.Legendary:
+                    price = (byte)(level * (int)featureEnum);
+                    break;
+
+                case RarityType.Mythical:
+                case RarityType.Common:
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determines the upgrade price for a given poker hand feature and level.
+        /// </summary>
+        /// <param name="doUpgrade"></param>
+        /// <param name="featureEnum"></param>
+        /// <param name="level"></param>
+        /// <param name="deck"></param>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        private static bool Upgrade(bool doUpgrade, PokerHand featureEnum, byte level, DeckAsset deck, out byte price)
+        {
+            price = 0;
+            var currentLevel = deck.GetPokerHandLevel(featureEnum);
+
+            if (currentLevel == level || level > DeckAsset.MAX_POKERHAND_LEVEL)
+            {
+                return false;
+            }
+
+            switch (featureEnum)
+            {
+                case PokerHand.HighCard:
+                case PokerHand.Pair:
+                case PokerHand.TwoPair:
+                case PokerHand.ThreeOfAKind:
+                case PokerHand.Straight:
+                case PokerHand.Flush:
+                case PokerHand.FullHouse:
+                case PokerHand.FourOfAKind:
+                case PokerHand.StraightFlush:
+                case PokerHand.RoyalFlush:
+                    price = (byte)level;
+                    break;
+
+                case PokerHand.None:
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to upgrade a feature to a given level.
+        /// </summary>
+        /// <param name="featureType"></param>
+        /// <param name="featureEnum"></param>
+        /// <param name="level"></param>
+        /// <param name="baseAssets"></param>
+        /// <returns></returns>
+        public static bool TryUpgrade(FeatureType featureType, object featureEnum, byte level, IAsset[] baseAssets)
+        {
+            if (!UpgradeInfo(featureType, featureEnum, level, baseAssets, out byte price))
+            {
+                return false;
+            }
+
+            var game = baseAssets[0] as GameAsset;
+            var deck = baseAssets[1] as DeckAsset;
+            var towr = baseAssets[2] as TowerAsset;
+
+            if (game == null || price > game.Token)
+            {
+                return false;
+            }
+
+            // pay upgrade price
+            game.Token -= price;
+
+           return Upgrade(true, featureType, featureEnum, level, baseAssets, out _);
+
         }
     }
 }

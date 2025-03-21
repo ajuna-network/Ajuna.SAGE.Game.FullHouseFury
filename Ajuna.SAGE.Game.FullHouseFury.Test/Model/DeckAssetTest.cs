@@ -259,7 +259,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
                 {
                     random.NextBytes(bytes);
                     double value = ((double)bytes[0] * 100) / byte.MaxValue;
-                    RarityType rarity = deckAsset.GetRarity(value);
+                    RarityType rarity = deckAsset.EvaluateRarity(value);
                     counts[rarity]++;
                 }
 
@@ -321,7 +321,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             {
                 random.NextBytes(bytes);
                 double value = ((double)bytes[0] * 100) / byte.MaxValue;
-                RarityType rarity = deckAsset.GetRarity(value);
+                RarityType rarity = deckAsset.EvaluateRarity(value);
                 counts[rarity]++;
             }
 

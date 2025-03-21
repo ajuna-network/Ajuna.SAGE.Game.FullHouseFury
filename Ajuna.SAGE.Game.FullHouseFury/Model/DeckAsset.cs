@@ -11,6 +11,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public const byte DECK_LIMIT_SIZE = 62;
         public const byte HAND_LIMIT_SIZE = 8;
 
+        public const byte MAX_RARITY_LEVEL = 3; 
+        public const byte MAX_POKERHAND_LEVEL = 7;
+
         public DeckAsset(uint ownerId, uint genesis)
             : base(ownerId, genesis)
         {
@@ -406,7 +409,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                     byte drawnCard = DrawCard(randCardIndex);
 
                     var rarityPerc = (double)randB * 100 / byte.MaxValue;
-                    var rarity = GetRarity(rarityPerc);
+                    var rarity = EvaluateRarity(rarityPerc);
 
                     SetHandCard(i, drawnCard, (byte)rarity);
                     newCards[currentHandSize - startHandSize] = drawnCard;
@@ -447,8 +450,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// <summary>
         /// Gets the 3-bit level (0–7) for the specified poker hand index (0–9).
         /// </summary>
-        public byte GetPokerHandLevel(int index)
+        public byte GetPokerHandLevel(PokerHand pokerHand)
         {
+            var index = (int)pokerHand;
             if (index < 0 || index >= PokerHandCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
@@ -462,16 +466,17 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// <summary>
         /// Sets the 3-bit level (0–7) for the specified poker hand index (0–9).
         /// </summary>
-        public void SetPokerHandLevel(int index, byte levelValue)
+        public void SetPokerHandLevel(PokerHand pokerHand, byte levelValue)
         {
+            var index = (int)pokerHand;
             if (index < 0 || index >= PokerHandCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
-            if (levelValue > 7)
+            if (levelValue > MAX_POKERHAND_LEVEL)
             {
-                throw new ArgumentOutOfRangeException(nameof(levelValue), "Level value must be between 0 and 7.");
+                throw new ArgumentOutOfRangeException(nameof(levelValue), $"Level value must be between 0 and {MAX_POKERHAND_LEVEL}.");
             }
 
             int bitOffset = index * BitsPerLevel;
@@ -512,9 +517,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         public void SetRarity(RarityType rarity, byte value)
         {
-            if (value > 3)
+            if (value > MAX_RARITY_LEVEL)
             {
-                throw new ArgumentOutOfRangeException(nameof(value), "Rarity value must be between 0 and 3.");
+                throw new ArgumentOutOfRangeException(nameof(value), $"Rarity value must be between 0 and {MAX_RARITY_LEVEL}.");
             }
 
             switch(rarity)
@@ -542,6 +547,10 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             }
         }
 
+        /// <summary>
+        /// Get the rarity percentages.
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetRarityPercs()
         {
             return new byte[] {
@@ -555,7 +564,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             };
         }
 
-        public RarityType GetRarity(double rarityValue)
+        /// <summary>
+        /// Evaluate the rarity of a card based on a random value.
+        /// </summary>
+        /// <param name="rarityValue"></param>
+        /// <returns></returns>
+        public RarityType EvaluateRarity(double rarityValue)
         {
             var rarityPercs = GetRarityPercs();
 

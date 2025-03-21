@@ -124,6 +124,16 @@
     }
 
     /// <summary>
+    /// Features that can be upgraded in the game.
+    /// </summary>
+    public enum FeatureType
+    {
+        None = 0,
+        RarityLevel = 1,
+        PokerHandLevel = 2,
+    }
+
+    /// <summary>
     /// Defines different types of bonuses that can be applied in the game.
     /// </summary>
     public enum BonusType

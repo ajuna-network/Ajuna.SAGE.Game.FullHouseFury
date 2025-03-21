@@ -32,9 +32,11 @@ namespace Assets.Scripts
 
 
             var frameButtons = new Button[] {
-                ButtonAction("BACK", PlayState.VtrBtnAction)
+                ButtonAction("BACK", PlayState.VtrBtnAction),
+                ButtonAction("BUY", PlayState.VtrBtnAction)
             };
             frameButtons[0].RegisterCallback<ClickEvent>(evt => FramePreparation());
+            frameButtons[1].RegisterCallback<ClickEvent>(evt => ExtrinsicShop());
             PlayState.AddFrameButtons(frameButtons);
 
             floatBody.Add(elementInstance);
@@ -52,5 +54,9 @@ namespace Assets.Scripts
             FlowController.ChangeScreenSubState(ScreenState.Play, ScreenSubState.Preparation);
         }
 
+        private void ExtrinsicShop()
+        {
+            
+        }
     }
 }

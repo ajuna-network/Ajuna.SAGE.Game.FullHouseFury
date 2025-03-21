@@ -625,7 +625,47 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     return result;
                 }
 
+                if (game.Token == 0)
+                {
+                    // not enough tokens to buy anything
+                    return result;
+                }
 
+                ushort[]? upgrades = c as ushort[];
+                if (upgrades == null)
+                {
+                    // upgrades are not provided
+                    return result;
+                }
+
+                // verify all upgrade are valid
+                var totalPrice = 0;
+                foreach (var upgrade in upgrades)
+                {
+                    var upgradeSet = new UpgradeSet(upgrade);
+                    if (!FullHouseFuryUtil.UpgradeInfo(upgradeSet.FeatureType, upgradeSet.FeatureEnum, upgradeSet.Level, result, out byte price))
+                    {
+                        // upgrade is not valid
+                        return result;
+                    }
+
+                    totalPrice += price;
+                    if (game.Token < totalPrice)
+                    {
+                        // not enough tokens to buy all upgrades
+                        return result;
+                    }
+                }
+
+                // upgrade
+                foreach (var upgrade in upgrades)
+                {
+                    var upgradeSet = new UpgradeSet(upgrade);
+                    if (!FullHouseFuryUtil.TryUpgrade(upgradeSet.FeatureType, upgradeSet.FeatureEnum, upgradeSet.Level, result))
+                    {
+                        throw new NotSupportedException($"Unsupported upgrade {upgradeSet.FeatureType} {upgradeSet.FeatureEnum} {upgradeSet.Level} this should never happen!");
+                    }
+                }
 
                 return result;
             };
