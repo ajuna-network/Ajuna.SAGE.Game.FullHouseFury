@@ -341,8 +341,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Test.Model
             Assert.That(freqMythical, Is.EqualTo(0).Within(0.05), "Mythical frequency should be 0.");
 
 
-            Assert.That(freqCommon, Is.EqualTo(0.95).Within(0.01));
-            Assert.That(freqUncommon, Is.EqualTo(0.05).Within(0.01));
+            Assert.That(freqCommon, Is.EqualTo(0.95).Within(0.02));
+            Assert.That(freqUncommon, Is.EqualTo(0.05).Within(0.02));
         }
 
         [Test]

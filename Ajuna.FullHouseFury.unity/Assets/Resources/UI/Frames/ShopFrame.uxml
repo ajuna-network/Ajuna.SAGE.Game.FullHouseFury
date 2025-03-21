@@ -1,4 +1,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
-    <ui:VisualElement name="VelShop" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-end; align-items: center; width: 100%; height: 100%;" />
+    <ui:VisualElement name="VelShop" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-start; align-items: center; width: 100%; height: 100%;">
+        <ui:VisualElement style="flex-grow: 0; height: 200px; width: 100%;">
+            <ui:Label text="SHOP" name="TxtResult" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; -unity-text-align: middle-center; font-size: 100px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="VelRarityUpgrades" style="flex-grow: 0; height: 300px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);">
+            <ui:VisualElement style="flex-grow: 0; height: 50px; justify-content: center; align-self: center;">
+                <ui:VisualElement style="flex-grow: 0; width: 250px; height: 100%;">
+                    <ui:Label text="RARITY" name="TxtDescription" class="font-light-color font-silkscreen" style="align-self: center; font-size: 30px; -unity-font-style: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="VelValues" style="flex-grow: 0; width: 100%; height: 250px; flex-direction: row; justify-content: center; align-items: center;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

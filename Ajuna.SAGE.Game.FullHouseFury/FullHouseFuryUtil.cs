@@ -785,7 +785,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <param name="baseAssets"></param>
         /// <param name="price"></param>
         /// <returns></returns>
-        public static bool UpgradeInfo(FeatureType featureType, object featureEnum, byte level, IAsset[] baseAssets, out byte price)
+        public static bool UpgradeInfo(FeatureType featureType, byte featureEnum, byte level, IAsset[] baseAssets, out byte price)
         {
             return Upgrade(false, featureType, featureEnum, level, baseAssets, out price);
         }
@@ -800,32 +800,27 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <param name="baseAssets"></param>
         /// <param name="price"></param>
         /// <returns></returns>
-        private static bool Upgrade(bool doUpgrade, FeatureType featureType, object featureEnum, byte level, IAsset[] baseAssets, out byte price)
+        private static bool Upgrade(bool doUpgrade, FeatureType featureType, byte featureEnum, byte level, IAsset[] baseAssets, out byte price)
         {
             var game = baseAssets[0] as GameAsset;
             var deck = baseAssets[1] as DeckAsset;
             var towr = baseAssets[2] as TowerAsset;
 
             price = 0;
+
+            if (game == null || deck == null || towr == null)
+            {
+                return false;
+            }
+
             switch (featureType)
             {
                 case FeatureType.RarityLevel:
-                    {
-                        if (featureEnum is RarityType type && deck != null)
-                        {
-                            return Upgrade(doUpgrade, type, level, deck, out price);
-                        }
-                    }
-                    break;
+                    return Upgrade(doUpgrade, (RarityType)featureEnum, level, deck, out price);
 
                 case FeatureType.PokerHandLevel:
-                    { 
-                        if (featureEnum is PokerHand type && deck != null)
-                        {
-                            return Upgrade(doUpgrade, type, level, deck, out price);
-                        }
-                    }
-                    break;
+                    return Upgrade(doUpgrade, (PokerHand)featureEnum, level, deck, out price);
+
                 case FeatureType.None:
                 default:
                     break;
@@ -925,7 +920,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <param name="level"></param>
         /// <param name="baseAssets"></param>
         /// <returns></returns>
-        public static bool TryUpgrade(FeatureType featureType, object featureEnum, byte level, IAsset[] baseAssets)
+        public static bool TryUpgrade(FeatureType featureType, byte featureEnum, byte level, IAsset[] baseAssets)
         {
             if (!UpgradeInfo(featureType, featureEnum, level, baseAssets, out byte price))
             {
@@ -941,10 +936,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 return false;
             }
 
+            if (!Upgrade(true, featureType, featureEnum, level, baseAssets, out _))
+            {
+                return false;
+            }
+
             // pay upgrade price
             game.Token -= price;
 
-           return Upgrade(true, featureType, featureEnum, level, baseAssets, out _);
+            return Upgrade(true, featureType, featureEnum, level, baseAssets, out _);
 
         }
     }

@@ -24,7 +24,7 @@ namespace Assets.Scripts
         Preparation,
         Battle,
         Score,
-        Shop,
+        Shop
     }
 
     public class FlowController : MonoBehaviour
