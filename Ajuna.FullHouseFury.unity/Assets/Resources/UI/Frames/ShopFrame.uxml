@@ -24,11 +24,10 @@
                     <ui:VisualElement name="VelLevelElement" style="flex-grow: 0; height: 250px; width: 100%; flex-direction: column;">
                         <ui:VisualElement style="flex-grow: 0; height: 10px; width: 100%;" />
                         <ui:VisualElement style="flex-grow: 0; width: auto; height: 200px; flex-direction: row; justify-content: flex-end;">
-                            <ui:VisualElement style="flex-grow: 0; height: 200px; width: 200px; align-items: center; flex-direction: row; margin-left: 10px; margin-right: 10px;">
-                                <ui:VisualElement name="VelLeftArrow" style="flex-grow: 0; width: 50%; height: 100%; background-image: url(&quot;project://database/Assets/Images/left-arrow.png?fileID=2800000&amp;guid=0dfd0a9e9cb3d964ab77523cdff4d11a&amp;type=3#left-arrow&quot;); -unity-background-scale-mode: scale-and-crop;" />
-                                <ui:VisualElement name="VelRightArrow" style="flex-grow: 0; width: 50%; height: 100%; background-image: url(&quot;project://database/Assets/Images/right-arrow.png?fileID=2800000&amp;guid=a0065e4b7dd95c242b1e45005e907192&amp;type=3#right-arrow&quot;); -unity-background-scale-mode: scale-and-crop;" />
+                            <ui:VisualElement style="flex-grow: 0; height: 200px; width: 80px; align-items: center; flex-direction: row;">
+                                <ui:VisualElement name="VelLeftArrow" style="flex-grow: 0; width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/Images/left-arrow.png?fileID=2800000&amp;guid=0dfd0a9e9cb3d964ab77523cdff4d11a&amp;type=3#left-arrow&quot;); -unity-background-scale-mode: scale-and-crop;" />
                             </ui:VisualElement>
-                            <ui:VisualElement name="VelHandCont" style="flex-grow: 1; height: 200px; width: auto; align-items: center; flex-direction: row; justify-content: center;" />
+                            <ui:VisualElement name="VelHandCont" style="flex-grow: 1; height: 200px; width: auto; align-items: center; flex-direction: row; justify-content: center; margin-left: 5px; margin-right: 5px;" />
                             <ui:VisualElement style="flex-grow: 0; height: 200px; width: 50px; align-items: center;">
                                 <ui:VisualElement style="flex-grow: 0; width: 50px; height: 200px; justify-content: flex-end;">
                                     <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%; background-image: none; -unity-background-scale-mode: stretch-to-fill; margin-bottom: 0; background-color: rgb(100, 100, 100);" />
@@ -43,6 +42,9 @@
                                     <ui:Label text="10" name="TxtPrice" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 75px; -unity-font-style: bold; -unity-text-align: middle-center;" />
                                 </ui:VisualElement>
                                 <ui:VisualElement style="flex-grow: 0; width: 100%; height: 50%; background-image: url(&quot;project://database/Assets/Images/token.png?fileID=2800000&amp;guid=5f2397658b434b2489b10aeb361ad708&amp;type=3#token&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                            </ui:VisualElement>
+                            <ui:VisualElement style="flex-grow: 0; height: 200px; width: 80px; align-items: center; flex-direction: row;">
+                                <ui:VisualElement name="VelRightArrow" style="flex-grow: 0; width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/Images/right-arrow.png?fileID=2800000&amp;guid=a0065e4b7dd95c242b1e45005e907192&amp;type=3#right-arrow&quot;); -unity-background-scale-mode: scale-and-crop;" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement style="flex-grow: 0; height: 40px; width: 100%;">
