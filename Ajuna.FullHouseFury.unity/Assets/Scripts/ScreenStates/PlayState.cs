@@ -8,6 +8,8 @@ namespace Assets.Scripts.ScreenStates
     public class PlayState : ScreenBaseState
     {
         internal VisualTreeAsset VelCard { get; }
+        internal VisualTreeAsset VelPlayer { get; }
+
         internal Sprite[] SprDeck { get; }
 
         internal VisualTreeAsset VtrBtnAction { get; }
@@ -24,10 +26,18 @@ namespace Assets.Scripts.ScreenStates
         internal DeckAsset DeckAsset { get; private set; }
         internal TowerAsset TowrAsset { get; private set; }
 
+        public Player CurrentPlayer { get; internal set; }
+        public TemplateContainer VelCurrentPlayer { get; internal set; }
+
+        public Player CurrentOpponent { get; internal set; }
+        public TemplateContainer VelCurrentOpponent { get; internal set; }
+
         public PlayState(FlowController _flowController)
             : base(_flowController)
         {
             VelCard = Resources.Load<VisualTreeAsset>("UI/Elements/VelCard");
+            VelPlayer = Resources.Load<VisualTreeAsset>("UI/Elements/VelPlayer");
+
             SprDeck = Resources.LoadAll<Sprite>("Textures/Deck05");
 
             VtrBtnAction = Resources.Load<VisualTreeAsset>("UI/Elements/BtnAction");

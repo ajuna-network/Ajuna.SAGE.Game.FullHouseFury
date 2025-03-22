@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:Template name="VelPlayer" src="project://database/Assets/Resources/UI/Elements/VelPlayer.uxml?fileID=9197481963319205126&amp;guid=8ebaf1dbaa86dde4cafa22cabfa95b38&amp;type=3#VelPlayer" />
     <ui:Template name="VelCard" src="project://database/Assets/Resources/UI/Elements/VelCard.uxml?fileID=9197481963319205126&amp;guid=76a5a80e834d1954eb355dd2fd8b0845&amp;type=3#VelCard" />
     <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
     <ui:VisualElement name="VelBattle" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-end; align-items: center; width: 100%; height: 100%;">
@@ -31,8 +30,8 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 100%; height: 45px;" />
             </ui:VisualElement>
-            <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 225px; height: 500px;">
-                <ui:Instance template="VelPlayer" style="height: 400px; width: 225px;" />
+            <ui:VisualElement name="VelPlayerVisual" style="flex-grow: 0; width: 225px; height: 500px; justify-content: flex-end;">
+                <ui:VisualElement name="VelPlayerCont" style="flex-grow: 1;" />
                 <ui:Label text="C. COX" name="TxtBossName" class="font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-text-align: middle-center; -unity-font-style: normal; height: 55px;" />
                 <ui:VisualElement name="VelBossHealth" style="flex-grow: 0; width: 100%; height: 45px;">
                     <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
@@ -65,8 +64,8 @@
             <ui:VisualElement name="VelHandCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center;" />
         </ui:VisualElement>
         <ui:VisualElement name="VelPlayer" style="flex-grow: 0; height: 500px; width: 100%; flex-direction: row;">
-            <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 225px; height: 500px;">
-                <ui:Instance template="VelPlayer" style="height: 400px; width: 225px;" />
+            <ui:VisualElement name="VelPlayerVisual" style="flex-grow: 0; width: 225px; height: 500px; justify-content: flex-end;">
+                <ui:VisualElement name="VelPlayerCont" style="flex-grow: 1;" />
                 <ui:Label text="PLAYER" name="TxtPlayerName" class="font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-text-align: upper-center; -unity-font-style: normal; height: 55px;" />
                 <ui:VisualElement name="VelPlayerHealth" style="flex-grow: 0; width: 100%; height: 45px;">
                     <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">

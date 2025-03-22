@@ -14,7 +14,7 @@
             <ui:VisualElement style="flex-grow: 0; width: 225px;" />
             <ui:VisualElement style="flex-grow: 1; width: 225px; align-items: center;">
                 <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 225px;">
-                    <ui:VisualElement name="ImgBoss" style="flex-grow: 0; height: 400px; background-image: url(&quot;project://database/Assets/Images/boss.png?fileID=2800000&amp;guid=d8d4f9ee3355f7449938d4ab647e452d&amp;type=3#boss&quot;); -unity-background-scale-mode: scale-to-fit; width: 225px;" />
+                    <ui:VisualElement name="VelOpponentCont" style="flex-grow: 0; width: 225px; height: 400px;" />
                     <ui:VisualElement name="VelBossHealth" style="flex-grow: 0; width: 100%; height: 45px;">
                         <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
                             <ui:VisualElement name="VelCurrentValue" style="flex-grow: 0; height: 100%; width: 50%; background-color: rgb(244, 67, 54);" />

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 
 [assembly: InternalsVisibleTo("Ajuna.SAGE.Game.CasinoJam.Test")]
 
@@ -947,5 +948,6 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             return Upgrade(true, featureType, featureEnum, level, baseAssets, out _);
 
         }
+
     }
 }

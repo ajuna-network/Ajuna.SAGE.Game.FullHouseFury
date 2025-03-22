@@ -226,6 +226,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 // initialize a new tower
                 towr.New();
 
+                // set level 1 boss
+                game.BossType = (byte)(h[4] % 4);
+                game.MaxBossHealth = (ushort)(Math.Pow(game.Level, 2) * 100);
+                game.BossDamage = 0;
+
                 // empty hand
                 deck.EmptyHand();
 
@@ -434,7 +439,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 if (!game.IsPlayerAlive || ((deck.DeckSize + deck.HandCardsCount()) == 0))
                 {
                     game.GameState = GameState.Finished;
-                }
+                } 
 
                 return result;
             };
@@ -561,11 +566,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 var bonus = game.Round < 4 ? 3 : game.Round < 8 ? 2 : 1;
                 game.Token = (byte)Math.Min(game.Token + game.Level + bonus, byte.MaxValue);
 
+                // updated achievements
+                towr.Achievement(game.Level, game.BossType);
+ 
                 // next level
                 game.Level = (byte)Math.Min(game.Level + 1, byte.MaxValue);
                 fxManager.TriggerEvent(GameEvent.OnLevelStart, game, deck, towr, game.Level);
 
                 // set next boss
+                game.BossType = (byte)(h[4] % 4);
                 game.MaxBossHealth = (ushort)(Math.Pow(game.Level, 2) * 100);
                 game.BossDamage = 0;
 

@@ -70,6 +70,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
+        /// ........ X....... ........ ........
+        public byte BossType
+        {
+            get => Data.Read(8, ByteType.Full);
+            set => Data?.Set(8, ByteType.Full, value);
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
         /// ........ .XX..... ........ ........
         public ushort MaxBossHealth
         {

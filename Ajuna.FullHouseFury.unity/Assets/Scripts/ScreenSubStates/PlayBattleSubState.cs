@@ -1,6 +1,7 @@
 ﻿using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -80,7 +81,6 @@ namespace Assets.Scripts.ScreenStates
             _txtBossName = velBoss.Q<Label>("TxtBossName");
             _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
             _lblBossHealthText = velBoss.Q<Label>("TxtValue");
-            _txtBossName.text = "C.COX";
 
             var velDamage = velBoss.Q<VisualElement>("VelDamage");
 
@@ -127,6 +127,8 @@ namespace Assets.Scripts.ScreenStates
             _velEnduranceValue = velEndurance.Q<VisualElement>("VelCurrentValue");
             _lblEnduranceText = velEndurance.Q<Label>("TxtValue");
 
+            UpdatePlayers(velPlayer, velBoss);
+
             _frameButtons = new Button[] {
                 ButtonAction("DISCARD", PlayState.VtrBtnAction),
                 ButtonAction("ATTACK", PlayState.VtrBtnAction)
@@ -143,6 +145,15 @@ namespace Assets.Scripts.ScreenStates
         public override void ExitState()
         {
             Debug.Log($"[{this.GetType().Name}][SUB] ExitState");
+        }
+
+        private void UpdatePlayers(VisualElement velPlayer, VisualElement velBoss)
+        {
+            velPlayer.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentPlayer);
+            velBoss.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentOpponent);
+
+            _txtPlayerName.text = PlayState.CurrentPlayer.ShortName();
+            _txtBossName.text = PlayState.CurrentOpponent.ShortName();
         }
 
         private void LoadHandCards()

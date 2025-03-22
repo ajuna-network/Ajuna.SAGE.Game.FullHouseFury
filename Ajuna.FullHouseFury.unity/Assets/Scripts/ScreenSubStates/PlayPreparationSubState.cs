@@ -3,6 +3,7 @@ using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using Assets.Scripts.ScreenStates;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -46,9 +47,8 @@ namespace Assets.Scripts
             _txtLevelName = velLevel.Q<Label>("TxtLevelName");
 
             var velBoss = elementInstance.Q<VisualElement>("VelBoss");
-            _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
-            _lblBossHealthText = velBoss.Q<Label>("TxtValue");
-            _txtBossName.text = "C.COX";
+
+            UpdatePlayers(velBoss);
 
             _velChoices = new VisualElement[] {
                 elementInstance.Q<VisualElement>("VelBoonAndBane1"),
@@ -79,6 +79,56 @@ namespace Assets.Scripts
         public override void ExitState()
         {
             Debug.Log($"[{this.GetType().Name}][SUB] ExitState");
+        }
+
+        private void UpdatePlayers(VisualElement velBoss)
+        {
+            var map = Player.GetPlayerMap();
+
+            if (!map.TryGetValue("L0P1", out Player player))
+            {
+                Debug.LogWarning($"Haven't found Player with key L0P1!");
+                return;
+            }
+            var templatePlayer = PlayState.VelPlayer.Instantiate();
+            var velPlayerVisual = templatePlayer.Q<VisualElement>("VelPlayerVisual");
+            templatePlayer.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
+            templatePlayer.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+            var imagePlayer = Resources.Load<Texture2D>($"Images/Players/{player.Image}");
+            velPlayerVisual.style.backgroundImage = new StyleBackground(imagePlayer);
+
+            PlayState.CurrentPlayer = player;
+            PlayState.VelCurrentPlayer = templatePlayer;
+
+            GameAsset gameAsset = PlayState.GameAsset;
+            var key = $"L{gameAsset.Level}P{gameAsset.BossType + 1}";
+            Debug.Log($"Boss is {key}");
+
+            if (!map.TryGetValue(key, out Player opponent))
+            {
+                Debug.LogWarning($"Haven't found Boss with key {key}!");
+                return;
+            }
+
+            var templateOpponent = PlayState.VelPlayer.Instantiate();
+            var velOpponentVisual = templateOpponent.Q<VisualElement>("VelPlayerVisual");
+            templateOpponent.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
+            templateOpponent.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+            Debug.Log($"Opponent Image: {opponent.Image}");
+            var imageOpponent = Resources.Load<Texture2D>($"Images/Players/{opponent.Image}");
+            velOpponentVisual.style.backgroundImage = new StyleBackground(imageOpponent);
+
+            PlayState.CurrentOpponent = opponent;
+            PlayState.VelCurrentOpponent = templateOpponent;
+
+            var velOpponentCont = velBoss.Q<VisualElement>("VelOpponentCont");
+            velOpponentCont.Add(templateOpponent);
+
+            _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
+            _lblBossHealthText = velBoss.Q<Label>("TxtValue");
+            _txtBossName.text = PlayState.CurrentOpponent.ShortName();
+
+            Debug.Log($"Player: {player.Name} vs. Opponent: {opponent.Name}");
         }
 
         private void UpdateBoonOrBane(int index, VisualElement velBoonAndBane)

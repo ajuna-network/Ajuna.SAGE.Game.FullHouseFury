@@ -43,13 +43,13 @@ namespace Assets.Scripts
             _txtPlayerName = velPlayer.Q<Label>("TxtPlayerName");
             _velPlayerHealthValue = velPlayer.Q<VisualElement>("VelCurrentValue");
             _lblPlayerHealthText = velPlayer.Q<Label>("TxtValue");
-            _txtPlayerName.text = "PLAYER";
 
             var velBoss = elementInstance.Q<VisualElement>("VelBoss");
             _txtBossName = velBoss.Q<Label>("TxtBossName");
             _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
             _lblBossHealthText = velBoss.Q<Label>("TxtValue");
-            _txtBossName.text = "C.COX";
+
+            UpdatePlayers(velPlayer, velBoss);
 
             var frameButtons = new Button[] {
                 ButtonAction("NEXT", PlayState.VtrBtnAction),
@@ -72,6 +72,15 @@ namespace Assets.Scripts
             }
         }
 
+        private void UpdatePlayers(VisualElement velPlayer, VisualElement velBoss)
+        {
+            velPlayer.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentPlayer);
+            velBoss.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentOpponent);
+
+            _txtPlayerName.text = PlayState.CurrentPlayer.ShortName();
+            _txtBossName.text = PlayState.CurrentOpponent.ShortName();
+
+        }
         private void ExtrinsicScore()
         {
             if (PlayState.GameAsset.GameState != GameState.Running)

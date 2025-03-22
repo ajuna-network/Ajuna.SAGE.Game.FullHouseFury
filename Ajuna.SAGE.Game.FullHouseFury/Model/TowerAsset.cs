@@ -24,6 +24,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
         /// 00000000 00111111 11112222 22222233
         /// 01234567 89012345 67890123 45678901
+        /// ....XXXX XXXX.... ........ ........
+        public ulong TowerLevel
+        {
+            get => BitConverter.ToUInt32(Data.Read(04, 8), 0);
+            set => Data.Set(04, BitConverter.GetBytes(value));
+        }
+
+        /// 00000000 00111111 11112222 22222233
+        /// 01234567 89012345 67890123 45678901
         /// ........ ....XXXX ........ ........
         public uint BoonsAndBanes
         {
@@ -231,6 +240,50 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             {
                 throw new ArgumentOutOfRangeException("GetAttribute index must be between 0 and 47.");
             }
+        }
+    }
+
+    public partial class TowerAsset
+    {
+        public bool GetTowerLevel(byte index)
+        {
+            if (index > 63)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            return ((TowerLevel >> index) & 1UL) == 1UL;
+        }
+
+        public void SetTowerLevel(byte index, bool state)
+        {
+            if (index > 63)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            ulong towerLevels = TowerLevel;
+            if (state)
+            {
+                towerLevels |= (1UL << index);
+            }
+            else
+            {
+                towerLevels &= ~(1UL << index);
+            }
+
+            TowerLevel = towerLevels;
+        }
+
+        public void Achievement(byte level, byte bossType)
+        {
+            var index =  (4 *level) + bossType;
+            if (index > 63)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            SetTowerLevel((byte)index, true);
         }
     }
 }
