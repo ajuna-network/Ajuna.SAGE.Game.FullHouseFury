@@ -200,5 +200,48 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(deck.GetPokerHandLevel(PokerHand.Pair), Is.EqualTo(1));
             Assert.That(deck.GetPokerHandLevel(PokerHand.TwoPair), Is.EqualTo(1));
         }
+
+        [Test]
+        public void Test_ShopLevel_Rarity_Two()
+        {
+            Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(13));
+
+            var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
+            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
+            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            IAsset[] inAsset = [preGame, preDeck, preTowr];
+
+            Assert.That(preGame.Level, Is.EqualTo(2));
+            Assert.That(preGame.LevelState, Is.EqualTo(LevelState.Preparation));
+            Assert.That(preDeck.DeckSize, Is.EqualTo(52));
+
+            Assert.That(preGame.Token, Is.EqualTo(3));
+            preGame.Token = 4;
+
+            Assert.That(preDeck.GetRarity(RarityType.Uncommon), Is.EqualTo(1));
+
+            var u1 = new UpgradeSet(FeatureType.RarityLevel, (byte)RarityType.Uncommon, 2);
+
+            ushort[] config = { u1.Encode() };
+
+            bool resultFirst = Engine.Transition(_user, SHOP, inAsset, out IAsset[] outAssets, config);
+            Assert.That(resultFirst, Is.True, "transition result should succeed.");
+
+            // Capture key state after the first gamble.
+            var game = outAssets[0] as GameAsset;
+            var deck = outAssets[1] as DeckAsset;
+            var towr = outAssets[2] as TowerAsset;
+
+            Assert.That(game, Is.Not.Null);
+            Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
+
+            Assert.That(game.GameState, Is.EqualTo(GameState.Running));
+            Assert.That(game.LevelState, Is.EqualTo(LevelState.Preparation));
+
+            Assert.That(game.Token, Is.EqualTo(0));
+            Assert.That(deck.GetRarity(RarityType.Uncommon), Is.EqualTo(2));
+
+        }
     }
 }

@@ -130,6 +130,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     /// </summary>
     public partial class DeckAsset
     {
+        /// <summary>
+        /// Only use this at the start of a new game, not during a game
+        /// </summary>
         public void New()
         {
             DeckRefill = 0;
@@ -139,6 +142,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             DeckSize = MaxDeckSize;
 
             SetRarity(RarityType.Uncommon, 1);
+        }
+
+        /// <summary>
+        /// Reset the deck for the next level.
+        /// </summary>
+        public void Reset()
+        {
+            Deck = ulong.MaxValue;
+            DeckSize = MaxDeckSize;
         }
 
         /// <summary>
@@ -527,16 +539,16 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                     // nothing to store
                     break;
                 case RarityType.Uncommon:
-                    DrawRarity = (byte)(DrawRarity | value);
+                    DrawRarity = (byte)((DrawRarity & ~0b0000_0011) | (value << 0));
                     break;
                 case RarityType.Rare:
-                    DrawRarity = (byte)(DrawRarity | (value << 2));
+                    DrawRarity = (byte)((DrawRarity & ~0b0000_1100) | (value << 2));
                     break;
                 case RarityType.Epic:
-                    DrawRarity = (byte)(DrawRarity | (value << 4));
+                    DrawRarity = (byte)((DrawRarity & ~0b0011_0000) | (value << 4));
                     break;
                 case RarityType.Legendary:
-                    DrawRarity = (byte)(DrawRarity | (value << 6));
+                    DrawRarity = (byte)((DrawRarity & ~0b1100_0000) | (value << 6));
                     break;
                 case RarityType.Mythical:
                     // nothing to store

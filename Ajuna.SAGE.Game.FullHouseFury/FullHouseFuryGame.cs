@@ -589,7 +589,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 deck.EmptyHand();
 
                 // reset deck
-                deck.New();
+                deck.Reset();
 
                 // set of 3 boons and banes combos, to choose from in preparation
                 for(int i = 0; i < 3; i++)
