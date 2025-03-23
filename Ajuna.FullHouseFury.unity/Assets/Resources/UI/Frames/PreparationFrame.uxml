@@ -1,4 +1,70 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
-    <ui:VisualElement name="VelPreparation" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-end; align-items: center; width: 100%; height: 100%;" />
+    <ui:VisualElement name="VelPreparation" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-end; align-items: center; width: 100%; height: 100%;">
+        <ui:VisualElement name="Spacer" style="flex-grow: 1; width: 100%;" />
+        <ui:VisualElement name="VelLevel" style="flex-grow: 0; height: 250px; width: 100%;">
+            <ui:VisualElement name="VelLevelName" style="flex-grow: 0; height: 50%; justify-content: center;">
+                <ui:Label text="LVL. 1" name="TxtLevelName" class="font-silkscreen" style="align-self: center; font-size: 100px; -unity-font-style: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="VelBossName" style="flex-grow: 0; height: 50%; justify-content: center;">
+                <ui:Label text="CARL COX" name="TxtBossName" class="font-silkscreen" style="align-self: center; font-size: 55px; -unity-font-style: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="VelBoss" style="flex-grow: 0; height: 500px; width: 100%; flex-direction: row;">
+            <ui:VisualElement style="flex-grow: 0; width: 225px;" />
+            <ui:VisualElement style="flex-grow: 1; width: 225px; align-items: center;">
+                <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 225px;">
+                    <ui:VisualElement name="VelOpponentCont" style="flex-grow: 0; width: 225px; height: 400px;" />
+                    <ui:VisualElement name="VelBossHealth" style="flex-grow: 0; width: 100%; height: 45px;">
+                        <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
+                            <ui:VisualElement name="VelCurrentValue" style="flex-grow: 0; height: 100%; width: 50%; background-color: rgb(244, 67, 54);" />
+                            <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
+                                <ui:Label text="75" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 30px; -unity-text-align: middle-center; -unity-font-style: normal;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 0; width: 225px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="VelBonsAndBanes" style="flex-grow: 0; height: 750px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);">
+            <ui:VisualElement name="VelText" style="flex-grow: 0; height: 50px; justify-content: center;">
+                <ui:Label text="BOONS and BANES" name="TxtBonsAndBanes" class="font-light-color font-silkscreen" style="align-self: center; font-size: 30px; -unity-font-style: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" style="flex-grow: 1; height: 50px;" />
+            <ui:VisualElement name="VelBoonAndBane1" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-top-width: 10px; border-right-width: 10px; border-bottom-width: 10px; border-left-width: 10px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px;">
+                <ui:VisualElement name="VelBoon" style="flex-grow: 0; width: 50%; height: 100%; background-color: rgba(50, 200, 50, 0.78); padding-left: 10px; padding-right: 10px; border-top-width: 10px; border-right-width: 5px; border-bottom-width: 10px; border-left-width: 10px; border-top-left-radius: 45px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 45px; border-right-color: rgb(0, 0, 0);">
+                    <ui:Label text="Heart Heal" name="TxtBoonOrBaneName" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; -unity-text-align: upper-center; height: 50px;" />
+                    <ui:Label text="Each Heart card in your hand heals the player for 5 HP." name="TxtBoonOrBaneDesc" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; -unity-text-align: upper-center; white-space: normal;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="VelBane" style="flex-grow: 0; width: 50%; height: 100%; background-color: rgba(200, 50, 50, 0.78); border-left-color: rgb(0, 0, 0); border-top-width: 10px; border-right-width: 10px; border-bottom-width: 10px; border-left-width: 5px; border-top-left-radius: 0; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 0;">
+                    <ui:Label text="Halved Damage" name="TxtBoonOrBaneName" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; -unity-text-align: upper-center; height: 50px;" />
+                    <ui:Label text="All damage output is reduced by 50%." name="TxtBoonOrBaneDesc" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; -unity-text-align: upper-center; white-space: normal;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" style="flex-grow: 1; height: 50px;" />
+            <ui:VisualElement name="VelBoonAndBane2" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-top-width: 10px; border-right-width: 10px; border-bottom-width: 10px; border-left-width: 10px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px;">
+                <ui:VisualElement name="VelBoon" style="flex-grow: 0; width: 50%; height: 100%; background-color: rgba(50, 200, 50, 0.78); padding-left: 10px; padding-right: 10px; border-top-width: 10px; border-right-width: 5px; border-bottom-width: 10px; border-left-width: 10px; border-top-left-radius: 45px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 45px; border-right-color: rgb(0, 0, 0);">
+                    <ui:Label text="Heart Heal" name="TxtBoonOrBaneName" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; -unity-text-align: upper-center; height: 50px;" />
+                    <ui:Label text="Each Heart card in your hand heals the player for 5 HP." name="TxtBoonOrBaneDesc" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; -unity-text-align: upper-center; white-space: normal;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="VelBane" style="flex-grow: 0; width: 50%; height: 100%; background-color: rgba(200, 50, 50, 0.78); border-left-color: rgb(0, 0, 0); border-top-width: 10px; border-right-width: 10px; border-bottom-width: 10px; border-left-width: 5px; border-top-left-radius: 0; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 0;">
+                    <ui:Label text="Halved Damage" name="TxtBoonOrBaneName" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; -unity-text-align: upper-center; height: 50px;" />
+                    <ui:Label text="All damage output is reduced by 50%." name="TxtBoonOrBaneDesc" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; -unity-text-align: upper-center; white-space: normal;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="Spacer" style="flex-grow: 1; height: 50px;" />
+            <ui:VisualElement name="VelBoonAndBane3" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-top-width: 10px; border-right-width: 10px; border-bottom-width: 10px; border-left-width: 10px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px;">
+                <ui:VisualElement name="VelBoon" style="flex-grow: 0; width: 50%; height: 100%; background-color: rgba(50, 200, 50, 0.78); padding-left: 10px; padding-right: 10px; border-top-width: 10px; border-right-width: 5px; border-bottom-width: 10px; border-left-width: 10px; border-top-left-radius: 45px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 45px; border-right-color: rgb(0, 0, 0);">
+                    <ui:Label text="Heart Heal" name="TxtBoonOrBaneName" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; -unity-text-align: upper-center; height: 50px;" />
+                    <ui:Label text="Each Heart card in your hand heals the player for 5 HP." name="TxtBoonOrBaneDesc" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; -unity-text-align: upper-center; white-space: normal;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="VelBane" style="flex-grow: 0; width: 50%; height: 100%; background-color: rgba(200, 50, 50, 0.78); border-left-color: rgb(0, 0, 0); border-top-width: 10px; border-right-width: 10px; border-bottom-width: 10px; border-left-width: 5px; border-top-left-radius: 0; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 0;">
+                    <ui:Label text="Halved Damage" name="TxtBoonOrBaneName" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; -unity-text-align: upper-center; height: 50px;" />
+                    <ui:Label text="All damage output is reduced by 50%." name="TxtBoonOrBaneDesc" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; -unity-text-align: upper-center; white-space: normal;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="Spacer" style="flex-grow: 1; width: 100%;" />
+    </ui:VisualElement>
 </ui:UXML>

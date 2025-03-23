@@ -8,10 +8,13 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryFull1Tests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Start);
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Play);
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Preparation);
+        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Battle);
+        private readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Discard);
+        private readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Score);
+        private readonly FullHouseFuryIdentifier SHOP = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Shop);
 
         private IAccount _user;
 
@@ -25,18 +28,18 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             bool resultFirst = false;
             GameAsset game = null;
             DeckAsset deck = null;
+            TowerAsset towr = null;
+            IAsset[] inAsset = [];
+            IAsset[] outAsset = [];
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            resultFirst = Engine.Transition(_user, START, [], out _);
+            resultFirst = Engine.Transition(_user, START, [], out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-
-            resultFirst = Engine.Transition(_user, PLAY, [game, deck], out _);
+            resultFirst = Engine.Transition(_user, PLAY, inAsset = outAsset, out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -48,13 +51,16 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             // Retrieve current game and deck assets.
             GameAsset game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             DeckAsset deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
+            TowerAsset towr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+
+            IAsset[] inAsset = [game, deck, towr];
+            IAsset[] outAsset = null;
 
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
 
-            IAsset[] outAsset = null;
-
-            bool prepResult = Engine.Transition(_user, PREPARATION, [game, deck], out outAsset);
+            bool prepResult = Engine.Transition(_user, PREPARATION, inAsset, out outAsset);
             Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
 
             // Loop until game.LevelState becomes Score
@@ -62,22 +68,23 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             {
                 game = outAsset[0] as GameAsset;
                 deck = outAsset[1] as DeckAsset;
+                towr = outAsset[2] as TowerAsset;
 
                 if (game.Round == 1)
                 {
-                    var hand = new Card?[10];
-                    for (int i = 0; i < 10; i++)
+                    var hand = new Card?[DeckAsset.HAND_LIMIT_SIZE];
+                    for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
                     {
-                        hand[i] = deck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
+                        hand[i] = deck.TryGetHandCard(i, out byte cardIndex, out byte rarity) && cardIndex != DeckAsset.EMPTY_SLOT ? new Card(cardIndex, rarity) : null;
                     }
                     //Assert.That(string.Join(" ", hand.Select(c => c.ToString())).Trim(), Is.EqualTo("3♠ Q♥ A♣ 4♠ 6♠ J♠ 7♣"));
                 }
 
                 // Convert the hand from deck into a byte[10]
-                byte[] handArray = new byte[10];
-                for (int i = 0; i < 10; i++)
+                byte[] handArray = new byte[DeckAsset.HAND_LIMIT_SIZE];
+                for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
                 {
-                    handArray[i] = deck.GetHandCard(i);
+                    handArray[i] = deck.GetHandCard(i, out _, out _);
                 }
 
                 // Evaluate the best attack from the hand.
@@ -86,7 +93,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
                 // Create an AttackHand instance from the chosen positions.
                 byte[] attackHand = bestAttack.Positions.Select(pos => (byte)pos).ToArray();
 
-                bool battleResult = Engine.Transition(_user, BATTLE, [game, deck], out outAsset, attackHand);
+                bool battleResult = Engine.Transition(_user, BATTLE, inAsset = outAsset, out outAsset, attackHand);
                 Assert.That(battleResult, Is.True, "BATTLE_LEVEL transition should succeed.");
 
                 BlockchainInfoProvider.CurrentBlockNumber++;
@@ -94,13 +101,12 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
                 Assert.That(outAsset, Is.Not.Null);
             }
 
-            Assert.That(game.Round, Is.EqualTo(5), "Round is not correct.");
+            Assert.That(game.Round, Is.EqualTo(7), "Round is not correct.");
             Assert.That(game.IsBossAlive, Is.EqualTo(false), "Boss should be alive.");
             Assert.That(game.IsPlayerAlive, Is.EqualTo(true), "Player should be dead.");
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running), "Game should eventually transition to Finished state.");
             Assert.That(game.LevelState, Is.EqualTo(LevelState.Score), "Game should eventually transition to Score state.");
         }
-
     }
 }

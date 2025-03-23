@@ -1,11 +1,5 @@
-﻿using Ajuna.SAGE.Core.Model;
-using Ajuna.SAGE.Game.FullHouseFury;
+﻿using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,6 +8,8 @@ namespace Assets.Scripts.ScreenStates
     public class PlayState : ScreenBaseState
     {
         internal VisualTreeAsset VelCard { get; }
+        internal VisualTreeAsset VelPlayer { get; }
+
         internal Sprite[] SprDeck { get; }
 
         internal VisualTreeAsset VtrBtnAction { get; }
@@ -24,15 +20,24 @@ namespace Assets.Scripts.ScreenStates
 
         private Label _txtLevel;
         private Label _txtRound;
+        private Label _txtToken;
 
         internal GameAsset GameAsset { get; private set; }
-
         internal DeckAsset DeckAsset { get; private set; }
+        internal TowerAsset TowrAsset { get; private set; }
+
+        public Player CurrentPlayer { get; internal set; }
+        public TemplateContainer VelCurrentPlayer { get; internal set; }
+
+        public Player CurrentOpponent { get; internal set; }
+        public TemplateContainer VelCurrentOpponent { get; internal set; }
 
         public PlayState(FlowController _flowController)
             : base(_flowController)
         {
             VelCard = Resources.Load<VisualTreeAsset>("UI/Elements/VelCard");
+            VelPlayer = Resources.Load<VisualTreeAsset>("UI/Elements/VelPlayer");
+
             SprDeck = Resources.LoadAll<Sprite>("Textures/Deck05");
 
             VtrBtnAction = Resources.Load<VisualTreeAsset>("UI/Elements/BtnAction");
@@ -54,9 +59,11 @@ namespace Assets.Scripts.ScreenStates
             var velRound = _topBound.Q<VisualElement>("VelRound");
             _txtRound = velRound.Q<Label>("TxtRound");
 
+            var velToken = _topBound.Q<VisualElement>("VelToken");
+            _txtToken = velToken.Q<Label>("TxtToken");
+
             _bottomBound = instance.Q<VisualElement>("BottomBound");
             _velActionButtons = _bottomBound.Q<VisualElement>("VelActionButtons");
-
 
             // add container
             FlowController.VelContainer.Add(instance);
@@ -67,6 +74,11 @@ namespace Assets.Scripts.ScreenStates
         public override void ExitState()
         {
             Debug.Log($"[{this.GetType().Name}] ExitState");
+        }
+
+        public void SetToken(string token)
+        {
+            _txtToken.text = token;
         }
 
         public void SetLevel(string level)
@@ -83,6 +95,21 @@ namespace Assets.Scripts.ScreenStates
         {
             GameAsset = FlowController.GetAsset<GameAsset>(FlowController.User, AssetType.Game, AssetSubType.None);
             DeckAsset = FlowController.GetAsset<DeckAsset>(FlowController.User, AssetType.Deck, AssetSubType.None);
+            TowrAsset = FlowController.GetAsset<TowerAsset>(FlowController.User, AssetType.Tower, AssetSubType.None);
+
+            if (GameAsset != null)
+            {
+                SetToken(GameAsset.Token.ToString());
+                SetLevel(GameAsset.Level.ToString());
+                SetRound(GameAsset.Round.ToString());
+            }
+            else
+            {
+                SetToken("-");
+                SetLevel("-");
+                SetRound("-");
+            }
+
         }
 
         internal void AddFrameButtons(Button[] frameButtons)

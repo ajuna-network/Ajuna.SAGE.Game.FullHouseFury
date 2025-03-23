@@ -1,105 +1,115 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3" />
+    <ui:Template name="VelCard" src="project://database/Assets/Resources/UI/Elements/VelCard.uxml?fileID=9197481963319205126&amp;guid=76a5a80e834d1954eb355dd2fd8b0845&amp;type=3#VelCard" />
+    <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
     <ui:VisualElement name="VelBattle" style="flex-grow: 1; padding-right: 25px; padding-left: 25px; justify-content: flex-end; align-items: center; width: 100%; height: 100%;">
+        <ui:VisualElement name="Spacer" style="flex-grow: 1; width: 100%;" />
         <ui:VisualElement name="VelBoss" style="flex-grow: 0; height: 500px; width: 100%; flex-direction: row;">
-            <ui:VisualElement style="flex-grow: 0; width: 225px;" />
-            <ui:VisualElement name="VelDamage" style="flex-grow: 1; width: 40%;">
-                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 400px; font-size: 100px; -unity-text-align: middle-center; flex-direction: row;">
-                    <ui:Label text="+" name="TxtDmgSign" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100px; -unity-text-align: lower-left;" />
-                    <ui:Label text="185" name="TxtBaseDamage" class="font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; -unity-text-align: lower-left;" />
+            <ui:VisualElement style="flex-grow: 0; width: 225px; height: 500px;" />
+            <ui:VisualElement name="VelDamage" style="flex-grow: 1; width: 40%; height: 500px;">
+                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 75px; font-size: 100px; -unity-text-align: middle-center; flex-direction: row;">
+                    <ui:Label name="TxtFactorDesc" text="FACT." class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 33%; -unity-text-align: lower-left; font-size: 45px; -unity-font-style: bold;" />
+                    <ui:Label name="TxtKickDesc" text="KICK." class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 33%; -unity-text-align: lower-left; font-size: 45px; -unity-font-style: bold;" />
+                    <ui:Label name="TxtBonusDesc" text="BON." class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 34%; -unity-text-align: lower-left; font-size: 45px; -unity-font-style: bold;" />
                 </ui:VisualElement>
-                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 50px; flex-direction: row;">
+                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 75px; font-size: 100px; -unity-text-align: middle-center; flex-direction: row;">
+                    <ui:Label name="TxtFactor" text="10" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 33%; -unity-text-align: middle-left; font-size: 60px; -unity-font-style: bold;" />
+                    <ui:Label name="TxtKicker" text="12" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 33%; -unity-text-align: middle-left; font-size: 60px; -unity-font-style: bold;" />
+                    <ui:Label name="TxtBonus" text="50" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 25%; -unity-text-align: middle-left; font-size: 60px; -unity-font-style: bold;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 125px; font-size: 100px; -unity-text-align: middle-center; flex-direction: row;">
+                    <ui:Label text="x" name="TxtMultiSign" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100px; -unity-text-align: middle-left; -unity-font-style: bold; font-size: 75px;" />
+                    <ui:Label text="4" name="TxtBaseMultiplier" class="font-silkscreen font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; -unity-text-align: middle-left; -unity-font-style: bold;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 125px; font-size: 100px; -unity-text-align: middle-center; flex-direction: row;">
+                    <ui:Label text="=" name="TxtDmgSign" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100px; -unity-text-align: lower-left; -unity-font-style: bold;" />
+                    <ui:Label text="185" name="TxtBaseDamage" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; height: 100%; width: 100%; -unity-text-align: lower-left; -unity-font-style: bold;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 55px; flex-direction: row;">
                     <ui:VisualElement name="Spacer" style="flex-grow: 0; width: 100px; height: 100%;" />
-                    <ui:Label text="BASE DMG." name="TxtBaseDamageText" class="font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-font-style: normal; -unity-text-align: upper-left; height: 55px;" />
+                    <ui:Label text="BASE DMG." name="TxtBaseDamageText" class="font-dark-color font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-font-style: bold; -unity-text-align: upper-left; height: 55px;" />
                 </ui:VisualElement>
-                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 45px;" />
+                <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 100%; height: 45px;" />
             </ui:VisualElement>
-            <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 225px;">
-                <ui:VisualElement name="ImgBoss" style="flex-grow: 0; height: 400px; background-image: url(&quot;project://database/Assets/Images/boss.png?fileID=2800000&amp;guid=d8d4f9ee3355f7449938d4ab647e452d&amp;type=3#boss&quot;); -unity-background-scale-mode: scale-to-fit; width: 225px;" />
+            <ui:VisualElement name="VelPlayerVisual" style="flex-grow: 0; width: 225px; height: 500px; justify-content: flex-end;">
+                <ui:VisualElement name="VelPlayerCont" style="flex-grow: 1;" />
                 <ui:Label text="C. COX" name="TxtBossName" class="font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-text-align: middle-center; -unity-font-style: normal; height: 55px;" />
                 <ui:VisualElement name="VelBossHealth" style="flex-grow: 0; width: 100%; height: 45px;">
                     <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
                         <ui:VisualElement name="VelCurrentValue" style="flex-grow: 0; height: 100%; width: 50%; background-color: rgb(244, 67, 54);" />
                         <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
-                            <ui:Label text="75 / 100" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 25px; -unity-text-align: middle-center; -unity-font-style: normal;" />
+                            <ui:Label text="75 / 100" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 30px; -unity-text-align: middle-center; -unity-font-style: normal;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="VelAttack" style="flex-grow: 0; height: 250px; width: 100%;">
-            <ui:VisualElement name="VelAttackCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center;" />
+            <ui:VisualElement name="VelAttackCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center;">
+                <ui:Instance template="VelCard" />
+                <ui:Instance template="VelCard" />
+                <ui:Instance template="VelCard" />
+                <ui:Instance template="VelCard" />
+                <ui:Instance template="VelCard" />
+            </ui:VisualElement>
             <ui:VisualElement name="VelPokerHand" style="flex-grow: 0; height: 50px; justify-content: center;">
                 <ui:Label text="HIGH CARD" name="TxtPokerHand" class="font-silkscreen" style="align-self: center; font-size: 35px; -unity-font-style: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="VelHand" style="flex-grow: 0; height: 250px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);">
-            <ui:VisualElement name="VelText" style="flex-grow: 0; height: 50px; justify-content: center;">
-                <ui:Label text="HAND" name="TxtHand" class="font-light-color font-silkscreen" style="align-self: center; font-size: 30px; -unity-font-style: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            <ui:VisualElement name="VelHandText" style="flex-grow: 0; height: 50px; justify-content: center; align-self: center;">
+                <ui:VisualElement name="VelHandSort" style="flex-grow: 0; width: 250px; height: 100%;">
+                    <ui:Label text="HAND" name="TxtHand" class="font-light-color font-silkscreen" style="align-self: center; font-size: 30px; -unity-font-style: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+                </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="VelHandCards" style="flex-grow: 0; width: 100%; height: 200px; flex-direction: row; justify-content: center; align-items: center;" />
         </ui:VisualElement>
-        <ui:VisualElement name="VelPlayer" style="flex-grow: 0; height: 500px; width: 100%; border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); flex-direction: row;">
-            <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 225px;">
-                <ui:VisualElement name="ImgPlayer" style="flex-grow: 0; height: 400px; background-image: url(&quot;project://database/Assets/Images/hero.png?fileID=2800000&amp;guid=06560af21976ae64694ac9dbe51b0203&amp;type=3#hero&quot;); -unity-background-scale-mode: scale-to-fit; width: 225px;" />
-                <ui:VisualElement style="flex-grow: 0; height: 100px; margin-top: 0;">
-                    <ui:Label text="PLAYER" name="TxtPlayerName" class="font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-text-align: upper-center; -unity-font-style: normal; height: 55px;" />
-                    <ui:VisualElement name="VelPlayerHealth" style="flex-grow: 0; width: 100%; height: 45px;">
-                        <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
-                            <ui:VisualElement name="VelCurrentValue" style="flex-grow: 0; height: 100%; width: 50%; background-color: rgb(76, 175, 80);" />
-                            <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
-                                <ui:Label text="75 / 100" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 25px; -unity-text-align: middle-center; -unity-font-style: normal;" />
-                            </ui:VisualElement>
+        <ui:VisualElement name="VelPlayer" style="flex-grow: 0; height: 500px; width: 100%; flex-direction: row;">
+            <ui:VisualElement name="VelPlayerVisual" style="flex-grow: 0; width: 225px; height: 500px; justify-content: flex-end;">
+                <ui:VisualElement name="VelPlayerCont" style="flex-grow: 1;" />
+                <ui:Label text="PLAYER" name="TxtPlayerName" class="font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-text-align: upper-center; -unity-font-style: normal; height: 55px;" />
+                <ui:VisualElement name="VelPlayerHealth" style="flex-grow: 0; width: 100%; height: 45px;">
+                    <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
+                        <ui:VisualElement name="VelCurrentValue" style="flex-grow: 0; height: 100%; width: 50%; background-color: rgb(76, 175, 80);" />
+                        <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
+                            <ui:Label text="75/100" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 30px; -unity-text-align: middle-center; -unity-font-style: normal;" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement style="flex-grow: 1; width: 40%;" />
-            <ui:VisualElement style="flex-grow: 0; width: 225px;">
+            <ui:VisualElement style="flex-grow: 1; width: 40%; height: 500px;" />
+            <ui:VisualElement style="flex-grow: 0; width: 225px; height: 500px;">
                 <ui:VisualElement name="VelDeckSize" style="flex-grow: 0; height: 100px; margin-top: 0;">
-                    <ui:Label text="DECK" name="TxtDeckSize" class="font-aeonik font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; height: 55px; -unity-text-align: lower-right; -unity-font-style: bold;" />
+                    <ui:Label text="DECK" name="TxtDeckSize" class="font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 35px; height: 55px; -unity-text-align: lower-right; -unity-font-style: normal;" />
                     <ui:VisualElement name="VelDeckSize" style="flex-grow: 0; width: 100%; height: 45px;">
-                        <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
-                            <ui:VisualElement name="VelCurrentValue" style="flex-grow: 0; height: 100%; width: 50%; background-color: rgb(33, 150, 243); display: flex;" />
-                            <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
-                                <ui:Label text="45 / 52" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 25px; -unity-text-align: middle-center; -unity-font-style: normal;" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
+                        <ui:Label text="45/52" name="TxtValue" class="font-silkscreen font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 30px; -unity-text-align: middle-right; -unity-font-style: normal;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="VelDiscards" style="flex-grow: 0; height: 100px; margin-top: 0;">
-                    <ui:Label text="DISCARDS" name="TxtDiscards" class="font-aeonik font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; height: 55px; -unity-text-align: lower-right; -unity-font-style: bold;" />
+                    <ui:Label text="DISCARD" name="TxtDiscards" class="font-aeonik font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 35px; height: 55px; -unity-text-align: lower-right; -unity-font-style: normal;" />
                     <ui:VisualElement name="VelDiscards" style="flex-grow: 0; width: 100%; height: 45px;">
-                        <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
-                            <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
-                                <ui:Label text="3" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 25px; -unity-text-align: middle-center; -unity-font-style: normal;" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
+                        <ui:Label text="3" name="TxtValue" class="font-silkscreen font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 30px; -unity-text-align: middle-right; -unity-font-style: normal;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 0; height: 100px; margin-top: 0;" />
                 <ui:VisualElement name="VelFatigue" style="flex-grow: 0; height: 100px; margin-top: 0;">
-                    <ui:Label text="FATIGUE DMG." name="TxtFatigue" class="font-aeonik font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; height: 55px; -unity-text-align: lower-right; -unity-font-style: bold;" />
+                    <ui:Label text="FATIGUE" name="TxtFatigue" class="font-aeonik font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 35px; height: 55px; -unity-text-align: lower-right; -unity-font-style: normal;" />
                     <ui:VisualElement name="VelFatigue" style="flex-grow: 0; width: 100%; height: 45px;">
-                        <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
-                            <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
-                                <ui:Label text="0" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 25px; -unity-text-align: middle-center; -unity-font-style: normal;" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
+                        <ui:Label text="3" name="TxtValue" class="font-silkscreen font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 30px; -unity-text-align: middle-right; -unity-font-style: normal;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="VelEndurance" style="flex-grow: 0; height: 100px; margin-top: 0;">
-                    <ui:Label text="ENDURANCE" name="TxtEndurance" class="font-aeonik font-dark-color" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 30px; height: 55px; -unity-text-align: lower-right; -unity-font-style: bold;" />
+                    <ui:Label text="STAMINA" name="TxtEndurance" class="font-aeonik font-dark-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 35px; height: 55px; -unity-text-align: lower-right; -unity-font-style: normal;" />
                     <ui:VisualElement name="VelEnduranceBar" style="flex-grow: 0; width: 100%; height: 45px;">
                         <ui:VisualElement name="VelMaxValue" style="flex-grow: 0; height: 100%; width: 100%; background-color: rgb(47, 47, 47);">
                             <ui:VisualElement name="VelCurrentValue" style="flex-grow: 0; height: 100%; width: 50%; background-color: rgb(33, 150, 243);" />
                             <ui:VisualElement style="flex-grow: 0; position: absolute; width: 100%; height: 100%;">
-                                <ui:Label text="5 / 10" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 25px; -unity-text-align: middle-center; -unity-font-style: normal;" />
+                                <ui:Label text="5/10" name="TxtValue" class="font-light-color font-silkscreen" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 30px; -unity-text-align: middle-center; -unity-font-style: normal;" />
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="Spacer" style="flex-grow: 1; width: 100%;" />
     </ui:VisualElement>
 </ui:UXML>

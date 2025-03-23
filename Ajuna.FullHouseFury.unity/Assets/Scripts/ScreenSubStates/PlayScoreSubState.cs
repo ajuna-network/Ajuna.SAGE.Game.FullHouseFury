@@ -1,12 +1,8 @@
 ﻿using Ajuna.SAGE.Core.Model;
-using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Assets.Scripts.ScreenStates;
-using System;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UIElements;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace Assets.Scripts
 {
@@ -47,13 +43,13 @@ namespace Assets.Scripts
             _txtPlayerName = velPlayer.Q<Label>("TxtPlayerName");
             _velPlayerHealthValue = velPlayer.Q<VisualElement>("VelCurrentValue");
             _lblPlayerHealthText = velPlayer.Q<Label>("TxtValue");
-            _txtPlayerName.text = "PLAYER";
 
             var velBoss = elementInstance.Q<VisualElement>("VelBoss");
             _txtBossName = velBoss.Q<Label>("TxtBossName");
             _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
             _lblBossHealthText = velBoss.Q<Label>("TxtValue");
-            _txtBossName.text = "C.COX";
+
+            UpdatePlayers(velPlayer, velBoss);
 
             var frameButtons = new Button[] {
                 ButtonAction("NEXT", PlayState.VtrBtnAction),
@@ -76,6 +72,15 @@ namespace Assets.Scripts
             }
         }
 
+        private void UpdatePlayers(VisualElement velPlayer, VisualElement velBoss)
+        {
+            velPlayer.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentPlayer);
+            velBoss.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentOpponent);
+
+            _txtPlayerName.text = PlayState.CurrentPlayer.ShortName();
+            _txtBossName.text = PlayState.CurrentOpponent.ShortName();
+
+        }
         private void ExtrinsicScore()
         {
             if (PlayState.GameAsset.GameState != GameState.Running)
@@ -84,7 +89,8 @@ namespace Assets.Scripts
                 return;
             }
 
-            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.SCORE, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] _);
+            var inAsset = new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset, PlayState.TowrAsset };
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.SCORE, inAsset, out IAsset[] _);
             if (!resultFirst)
             {
                 Debug.LogWarning("Wasn't successfull in executing the ExtrinsicScore!");
@@ -99,15 +105,15 @@ namespace Assets.Scripts
             _lblResult.text = PlayState.GameAsset.GameState == GameState.Running ? "YOU WON!" : "YOU LOST!";
 
             var maxBossHealth = PlayState.GameAsset.MaxBossHealth;
-            var currentBossHealth = PlayState.GameAsset.BossHealth;
+            var currentBossHealth = PlayState.GameAsset.BossHealth > 0 ? PlayState.GameAsset.BossHealth : 0;
 
             var maxPlayerHealth = PlayState.GameAsset.MaxPlayerHealth;
-            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth;
+            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth > 0 ? PlayState.GameAsset.PlayerHealth : 0;
 
-            _lblBossHealthText.text = $"{currentBossHealth} / {maxBossHealth}";
+            _lblBossHealthText.text = $"{currentBossHealth}";
             _velBossCurrentHealthValue.style.width = new StyleLength(new Length((float)currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
 
-            _lblPlayerHealthText.text = $"{currentPlayerHealth} / {maxPlayerHealth}";
+            _lblPlayerHealthText.text = $"{currentPlayerHealth}";
             _velPlayerHealthValue.style.width = new StyleLength(new Length((float)currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
         }
     }

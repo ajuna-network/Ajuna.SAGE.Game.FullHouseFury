@@ -3,7 +3,6 @@ using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using Assets.Scripts.ScreenStates;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -25,17 +24,19 @@ namespace Assets.Scripts
         Preparation,
         Battle,
         Score,
+        Shop
     }
 
     public class FlowController : MonoBehaviour
     {
-        public readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
-        public readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Score(AssetType.Game, AssetSubType.None);
-
+        public readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Start);
+        public readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Play);
+        public readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Preparation);
+        public readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Battle);
+        public readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Discard);
+        public readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Score);
+        public readonly FullHouseFuryIdentifier SHOP = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Shop);
+        
         internal readonly RandomNumberGenerator Random = RandomNumberGenerator.Create();
 
         public Vector2 ScrollOffset { get; set; }
@@ -84,6 +85,7 @@ namespace Assets.Scripts
                 { ScreenSubState.Preparation, new PlayPreparationSubState(this, playState) },
                 { ScreenSubState.Battle, new PlayBattleSubState(this, playState) },
                 { ScreenSubState.Score, new PlayScoreSubState(this, playState) },
+                { ScreenSubState.Shop, new PlayShopSubState(this, playState) },
             };
 
             _subStateDictionary.Add(ScreenState.Play, mainScreenSubStates);
@@ -198,10 +200,7 @@ namespace Assets.Scripts
                 .Select(p => (BaseAsset)p)
                 .Where(p => p.AssetType == type && p.AssetSubType == subType)
                 .FirstOrDefault();
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<T>());
             var typedResult = result as T;
-            Assert.That(typedResult, Is.Not.Null);
             return typedResult;
         }
     }

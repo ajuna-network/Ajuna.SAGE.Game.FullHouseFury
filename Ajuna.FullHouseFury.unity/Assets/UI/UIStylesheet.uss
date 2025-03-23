@@ -20,3 +20,8 @@
 .font-silkscreen {
     -unity-font-definition: url("project://database/Assets/Fonts/Silkscreen-Bold%20SDF.asset?fileID=11400000&guid=4e87c6eb4882cba43995f31c23bcc3ca&type=2#Silkscreen-Bold SDF");
 }
+
+.font-silkthin {
+    -unity-font-definition: url("project://database/Assets/Fonts/Silkscreen-Regular%20SDF.asset?fileID=11400000&guid=bff9d99e6b5f09049be3540314d85cee&type=2#Silkscreen-Regular SDF");
+    -unity-font-style: normal;
+}

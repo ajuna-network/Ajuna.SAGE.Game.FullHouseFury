@@ -7,10 +7,13 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryFull2Tests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Start);
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Play);
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Preparation);
+        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Battle);
+        private readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Discard);
+        private readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Score);
+        private readonly FullHouseFuryIdentifier SHOP = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Shop);
 
         private IAccount _user;
 
@@ -24,18 +27,18 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             bool resultFirst = false;
             GameAsset game = null;
             DeckAsset deck = null;
+            TowerAsset towr = null;
+            IAsset[] inAsset = [];
+            IAsset[] outAsset = [];
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            resultFirst = Engine.Transition(_user, START, [], out _);
+            resultFirst = Engine.Transition(_user, START, [], out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-
-            resultFirst = Engine.Transition(_user, PLAY, [game, deck], out _);
+            resultFirst = Engine.Transition(_user, PLAY, inAsset = outAsset, out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -47,16 +50,19 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             // Retrieve current game and deck assets.
             GameAsset game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             DeckAsset deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
+            TowerAsset towr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+
+            IAsset[] inAsset = [game, deck, towr];
+            IAsset[] outAsset = [];
 
             // set boos to max health
             game.MaxBossHealth = ushort.MaxValue;
 
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
 
-            IAsset[] outAsset = null;
-
-            bool prepResult = Engine.Transition(_user, PREPARATION, [game, deck], out outAsset);
+            bool prepResult = Engine.Transition(_user, PREPARATION, inAsset, out outAsset);
             Assert.That(prepResult, Is.True, "PREP_LEVEL transition should succeed.");
 
             // Loop until game.LevelState becomes Score
@@ -64,11 +70,12 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             {
                 game = outAsset[0] as GameAsset;
                 deck = outAsset[1] as DeckAsset;
+                towr = outAsset[1] as TowerAsset;
 
                 // take the first card from the hand to play
                 byte[] attackHand = [0];
 
-                bool battleResult = Engine.Transition(_user, BATTLE, [game, deck], out outAsset, attackHand);
+                bool battleResult = Engine.Transition(_user, BATTLE, inAsset = outAsset, out outAsset, attackHand);
                 Assert.That(battleResult, Is.True, "BATTLE_LEVEL transition should succeed.");
 
                 BlockchainInfoProvider.CurrentBlockNumber++;

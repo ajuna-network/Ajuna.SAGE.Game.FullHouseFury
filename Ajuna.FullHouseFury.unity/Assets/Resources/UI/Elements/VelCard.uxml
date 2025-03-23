@@ -1,3 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="VelCard" style="flex-grow: 0; width: 120px; height: 145px; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck06.png?fileID=-403279020148781650&amp;guid=fd90010ba2b8746359c2f503c5cf6c3a&amp;type=3#Deck06_0&quot;); -unity-background-scale-mode: scale-to-fit;" />
+    <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
+    <ui:VisualElement name="CardContainer" style="width: 120px; height: 144px;">
+        <ui:VisualElement name="VelGlow" class="special-common" style="position: absolute; top: 3%; left: 5%; width: 90%; height: 94%; background-color: rgb(50, 50, 50); border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px;" />
+        <ui:VisualElement name="VelCard" style="width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/Asset_PlayingCards/Textures/Deck05.png?fileID=8839279153528333326&amp;guid=661156f394d6046c185490657f9bdfed&amp;type=3#Deck05_0&quot;); -unity-background-scale-mode: scale-to-fit;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="CardInfo" style="flex-grow: 1;">
+        <ui:VisualElement style="flex-grow: 0; background-size: 100% 50%; flex-direction: row; width: 100%; height: 30px; margin-bottom: 0;">
+            <ui:Label text="x" class="font-silkscreen" style="width: 45%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-text-align: middle-right; font-size: 20px;" />
+            <ui:Label text="4" name="TxtMultiplier" class="font-silkscreen font-silkthin" style="width: 55%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 40px; -unity-text-align: middle-left;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

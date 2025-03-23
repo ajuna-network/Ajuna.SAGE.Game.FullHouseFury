@@ -1,5 +1,4 @@
 ﻿using Ajuna.SAGE.Core.Model;
-using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Game.FullHouseFury;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
 using System;
@@ -7,11 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.Rendering.STP;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace Assets.Scripts.ScreenStates
 {
+    public enum SortCards
+    {
+        Rank,
+        Suit
+    }
+
     public class PlayBattleSubState : ScreenBaseState
     {
         private VisualElement _velAttackCards, _velHandCards;
@@ -21,7 +24,7 @@ namespace Assets.Scripts.ScreenStates
         private Label _txtBossName;
         private VisualElement _velBossCurrentHealthValue;
         private Label _lblBossHealthText;
-        
+
         private Label _txtPlayerName;
         private VisualElement _velPlayerHealthValue;
         private Label _lblPlayerHealthText;
@@ -32,16 +35,28 @@ namespace Assets.Scripts.ScreenStates
         private VisualElement _velEnduranceValue;
         private Label _lblEnduranceText;
         private Button[] _frameButtons;
-        private Label _lblBaseDamageText;
+
+        private Label _lblMultiSign;
+        private Label _lblBaseMultiplier;
+
         private Label _lblDmgSignText;
         private Label _lblBaseDamage;
+
+        private Label _lblBaseDamageText;
+
+        private Label _lblFactor;
+        private Label _lblKicker;
+        private Label _lblBonus;
+        private VisualElement _velHandSort;
+
+        private SortCards _sortCards;
 
         public PlayState PlayState => ParentState as PlayState;
 
         public PlayBattleSubState(FlowController flowController, ScreenBaseState parent)
             : base(flowController, parent)
         {
-
+            _sortCards = SortCards.Rank;
         }
 
         public override void EnterState()
@@ -61,20 +76,37 @@ namespace Assets.Scripts.ScreenStates
 
             var velPokerHand = elementInstance.Q<VisualElement>("VelPokerHand");
             _lblPokerHandText = velPokerHand.Q<Label>("TxtPokerHand");
- 
+
             var velBoss = elementInstance.Q<VisualElement>("VelBoss");
             _txtBossName = velBoss.Q<Label>("TxtBossName");
             _velBossCurrentHealthValue = velBoss.Q<VisualElement>("VelCurrentValue");
             _lblBossHealthText = velBoss.Q<Label>("TxtValue");
-            _txtBossName.text = "C.COX";
 
             var velDamage = velBoss.Q<VisualElement>("VelDamage");
+
+            _lblFactor = velDamage.Q<Label>("TxtFactor");
+            _lblFactor.style.display = DisplayStyle.None;
+            _lblKicker = velDamage.Q<Label>("TxtKicker");
+            _lblKicker.style.display = DisplayStyle.None;
+            _lblBonus = velDamage.Q<Label>("TxtBonus");
+            _lblBonus.style.display = DisplayStyle.None;
+
+            _lblMultiSign = velDamage.Q<Label>("TxtMultiSign");
+            _lblMultiSign.style.display = DisplayStyle.None;
+            _lblBaseMultiplier = velDamage.Q<Label>("TxtBaseMultiplier");
+            _lblBaseMultiplier.style.display = DisplayStyle.None;
+
             _lblDmgSignText = velDamage.Q<Label>("TxtDmgSign");
             _lblDmgSignText.style.display = DisplayStyle.None;
             _lblBaseDamage = velDamage.Q<Label>("TxtBaseDamage");
             _lblBaseDamage.style.display = DisplayStyle.None;
+
             _lblBaseDamageText = velDamage.Q<Label>("TxtBaseDamageText");
             _lblBaseDamageText.style.display = DisplayStyle.None;
+
+            var velHand = elementInstance.Q<VisualElement>("VelHand");
+            _velHandSort = elementInstance.Q<VisualElement>("VelHandSort");
+            _velHandSort.RegisterCallback<ClickEvent>(evt => ToggleSort());
 
             var velPlayer = elementInstance.Q<VisualElement>("VelPlayer");
             _txtPlayerName = velPlayer.Q<Label>("TxtPlayerName");
@@ -95,6 +127,7 @@ namespace Assets.Scripts.ScreenStates
             _velEnduranceValue = velEndurance.Q<VisualElement>("VelCurrentValue");
             _lblEnduranceText = velEndurance.Q<Label>("TxtValue");
 
+            UpdatePlayers(velPlayer, velBoss);
 
             _frameButtons = new Button[] {
                 ButtonAction("DISCARD", PlayState.VtrBtnAction),
@@ -103,9 +136,6 @@ namespace Assets.Scripts.ScreenStates
             _frameButtons[0].RegisterCallback<ClickEvent>(evt => ExtrinsicDiscard());
             _frameButtons[1].RegisterCallback<ClickEvent>(evt => ExtrinsicAttack());
             PlayState.AddFrameButtons(_frameButtons);
-
-            PlayState.SetLevel(PlayState.GameAsset.Level.ToString());
-            PlayState.SetRound(PlayState.GameAsset.Round.ToString());
 
             floatBody.Add(elementInstance);
 
@@ -117,23 +147,36 @@ namespace Assets.Scripts.ScreenStates
             Debug.Log($"[{this.GetType().Name}][SUB] ExitState");
         }
 
-        private void LoadHandCards() 
+        private void UpdatePlayers(VisualElement velPlayer, VisualElement velBoss)
+        {
+            velPlayer.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentPlayer);
+            velBoss.Q<VisualElement>("VelPlayerCont").Add(PlayState.VelCurrentOpponent);
+
+            _txtPlayerName.text = PlayState.CurrentPlayer.ShortName();
+            _txtBossName.text = PlayState.CurrentOpponent.ShortName();
+        }
+
+        private void LoadHandCards()
         {
             _handCards.Clear();
 
             for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
-                var handCardIndex = PlayState.DeckAsset.GetHandCard(i);
-                if (handCardIndex != DeckAsset.EMPTY_SLOT)
+                PlayState.DeckAsset.GetHandCard(i, out byte cardIndex, out byte rarity);
+                if (cardIndex != DeckAsset.EMPTY_SLOT)
                 {
-                    var card = new Card(handCardIndex);
+                    var card = new Card(cardIndex, rarity);
                     var handCard = new HandCard(i, card);
                     var templateContainer = PlayState.VelCard.Instantiate();
                     var velCard = templateContainer.Q<VisualElement>("VelCard");
+                    var velGlow = templateContainer.Q<VisualElement>("VelGlow");
+                    var txtCard = templateContainer.Q<Label>("TxtMultiplier");
+                    txtCard.text = ((int)card.Rarity).ToString();
+                    velGlow.style.backgroundColor = new StyleColor(HelperUtil.GetRarityColor(card.Rarity));
                     velCard.RegisterCallback<ClickEvent>(evt => HandCardStateChange(handCard));
                     velCard.style.backgroundImage = new StyleBackground(PlayState.SprDeck.FirstOrDefault(s => s.name ==
                         HelperUtil.GetCardSpritName(card.Suit, card.Rank)));
-                    handCard.VisualElement = velCard;
+                    handCard.VisualElement = templateContainer;
                     _handCards.Add(handCard);
                 }
             }
@@ -164,12 +207,31 @@ namespace Assets.Scripts.ScreenStates
             ReloadCards();
         }
 
+        private void ToggleSort()
+        {
+            _sortCards = _sortCards == SortCards.Rank ? SortCards.Suit : SortCards.Rank;
+            ReloadCards();
+        }
+
         private void ReloadCards()
         {
             _velHandCards.Clear();
             _velAttackCards.Clear();
 
-            foreach (var handCard in _handCards.OrderByDescending(p => p.Card.Rank).ThenBy(p => p.Card.Suit))
+            IEnumerable<HandCard> _sortedHandCards = _handCards.OrderByDescending(p => p.Card.Rank == Rank.Ace ? 14 : (int)p.Card.Rank).ThenBy(p => p.Card.Suit);
+            switch (_sortCards)
+            {
+
+                case SortCards.Suit:
+                    _sortedHandCards = _handCards.OrderBy(p => p.Card.Suit).ThenByDescending(p => p.Card.Rank == Rank.Ace ? 14 : (int)p.Card.Rank);
+                    break;
+
+                case SortCards.Rank:
+                default:
+                    break;
+            }
+
+            foreach (var handCard in _sortedHandCards)
             {
                 switch (handCard.HandCardState)
                 {
@@ -189,18 +251,18 @@ namespace Assets.Scripts.ScreenStates
         private void UpdateBattleStats()
         {
             var maxBossHealth = PlayState.GameAsset.MaxBossHealth;
-            var currentBossHealth = PlayState.GameAsset.BossHealth;
+            var currentBossHealth = PlayState.GameAsset.BossHealth > 0 ? PlayState.GameAsset.BossHealth : 0;
 
             var maxPlayerHealth = PlayState.GameAsset.MaxPlayerHealth;
-            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth;
+            var currentPlayerHealth = PlayState.GameAsset.PlayerHealth > 0 ? PlayState.GameAsset.PlayerHealth : 0;
 
-            _lblBossHealthText.text = $"{currentBossHealth} / {maxBossHealth}";
+            _lblBossHealthText.text = $"{currentBossHealth}";
             _velBossCurrentHealthValue.style.width = new StyleLength(new Length((float)currentBossHealth / maxBossHealth * 100, LengthUnit.Percent));
 
-            _lblPlayerHealthText.text = $"{currentPlayerHealth} / {maxPlayerHealth}";
+            _lblPlayerHealthText.text = $"{currentPlayerHealth}";
             _velPlayerHealthValue.style.width = new StyleLength(new Length((float)currentPlayerHealth / maxPlayerHealth * 100, LengthUnit.Percent));
 
-            _lblDeckSize.text = $"{PlayState.DeckAsset.DeckSize} / {PlayState.DeckAsset.MaxDeckSize}";
+            _lblDeckSize.text = $"{PlayState.DeckAsset.DeckSize}/{PlayState.DeckAsset.MaxDeckSize}";
             _lblDiscards.text = $"{PlayState.GameAsset.Discard}";
             _lblFatigue.text = $"{PlayState.GameAsset.FatigueDamage}";
 
@@ -209,26 +271,64 @@ namespace Assets.Scripts.ScreenStates
 
             var playerEndurance = PlayState.GameAsset.PlayerEndurance;
             var maxPlayerEndurance = PlayState.GameAsset.MaxPlayerEndurance;
-            _lblEnduranceText.text = $"{playerEndurance} / {maxPlayerEndurance}";
+            _lblEnduranceText.text = $"{playerEndurance}/{maxPlayerEndurance}";
             _velEnduranceValue.style.width = new StyleLength(new Length((float)playerEndurance / maxPlayerEndurance * 100, LengthUnit.Percent));
 
             if (_velAttackCards.childCount > 0)
             {
-                var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => p.Card.Index).ToArray();
-                var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score);
+                /*
+                    score = multiplier * (factor * kicker + bonus);
+
+                    scoreCard = new ushort[4];
+                    scoreCard[0] = (ushort)multiplier;
+                    scoreCard[1] = (ushort)factor;
+                    scoreCard[2] = (ushort)kicker;
+                    scoreCard[3] = (ushort)bonus;
+                */
+
+                var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => FullHouseFuryUtil.EncodeCardByte(p.Card.Index, (byte)p.Card.Rarity)).ToArray();
+                var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score, out ushort[] scoreCard);
                 _lblPokerHandText.text = evaluation.ToString();
-                
-                _lblDmgSignText.text = "+";
+
+                Debug.Log($"{scoreCard[0]},{scoreCard[1]},{scoreCard[2]},{scoreCard[3]}");
+
+                var multiplier = scoreCard[0];
+                var factor = scoreCard[1];
+                var kicker = scoreCard[2];
+                var bonus = scoreCard[3];
+
+                _lblFactor.text = factor.ToString();
+                _lblKicker.text = kicker.ToString();
+                _lblBonus.text = bonus.ToString();
+
+                _lblFactor.style.display = DisplayStyle.Flex;
+                _lblKicker.style.display = DisplayStyle.Flex;
+                _lblBonus.style.display = DisplayStyle.Flex;
+
+                _lblMultiSign.text = "x";
+                _lblBaseMultiplier.text = multiplier.ToString();
+
+                _lblDmgSignText.text = "=";
                 _lblBaseDamage.text = score.ToString();
+
+                _lblMultiSign.style.display = DisplayStyle.Flex;
+                _lblBaseMultiplier.style.display = DisplayStyle.Flex;
 
                 _lblDmgSignText.style.display = DisplayStyle.Flex;
                 _lblBaseDamage.style.display = DisplayStyle.Flex;
                 _lblBaseDamageText.style.display = DisplayStyle.Flex;
                 _frameButtons[1].SetEnabled(true);
-            } 
+            }
             else
             {
                 _frameButtons[1].SetEnabled(false);
+
+                _lblFactor.style.display = DisplayStyle.None;
+                _lblKicker.style.display = DisplayStyle.None;
+                _lblBonus.style.display = DisplayStyle.None;
+
+                _lblMultiSign.style.display = DisplayStyle.None;
+                _lblBaseMultiplier.style.display = DisplayStyle.None;
                 _lblDmgSignText.style.display = DisplayStyle.None;
                 _lblBaseDamage.style.display = DisplayStyle.None;
                 _lblBaseDamageText.style.display = DisplayStyle.None;
@@ -245,8 +345,8 @@ namespace Assets.Scripts.ScreenStates
                 Debug.Log("No cards selected for discard");
                 return;
             }
-
-            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.DISCARD, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] outAssets, discardHand);
+            var inAsset = new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset, PlayState.TowrAsset };
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.DISCARD, inAsset, out IAsset[] outAssets, discardHand);
 
             if (resultFirst)
             {
@@ -261,13 +361,14 @@ namespace Assets.Scripts.ScreenStates
         private void ExtrinsicAttack()
         {
             var attackHand = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => (byte)p.Index).ToArray();
-            if (attackHand == null ||attackHand.Length == 0)
+            if (attackHand == null || attackHand.Length == 0)
             {
                 Debug.Log("No cards selected for attack");
                 return;
             }
 
-            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.BATTLE, new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset }, out IAsset[] outAssets, attackHand);
+            var inAsset = new IAsset[] { PlayState.GameAsset, PlayState.DeckAsset, PlayState.TowrAsset };
+            bool resultFirst = FlowController.Engine.Transition(FlowController.User, FlowController.BATTLE, inAsset, out IAsset[] outAssets, attackHand);
 
             if (!resultFirst)
             {

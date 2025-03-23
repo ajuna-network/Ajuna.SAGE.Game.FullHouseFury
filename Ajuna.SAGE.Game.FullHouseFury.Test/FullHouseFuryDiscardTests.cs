@@ -8,11 +8,14 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
     [TestFixture]
     public class FullHouseFuryDiscardTests : FullHouseFuryBaseTest
     {
-        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Start(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Play(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Preparation(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Battle(AssetType.Game, AssetSubType.None);
-        private readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Discard(AssetType.Game, AssetSubType.None);
+        private readonly FullHouseFuryIdentifier START = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Start);
+        private readonly FullHouseFuryIdentifier PLAY = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Play);
+        private readonly FullHouseFuryIdentifier PREPARATION = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Preparation);
+        private readonly FullHouseFuryIdentifier BATTLE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Battle);
+        private readonly FullHouseFuryIdentifier DISCARD = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Discard);
+        private readonly FullHouseFuryIdentifier SCORE = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Score);
+        private readonly FullHouseFuryIdentifier SHOP = FullHouseFuryIdentifier.Create(FullHouseFuryAction.Shop);
+
         private IAccount _user;
 
         [SetUp]
@@ -25,26 +28,23 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             bool resultFirst = false;
             GameAsset game = null;
             DeckAsset deck = null;
+            TowerAsset towr = null;
+            IAsset[] inAsset = [];
+            IAsset[] outAsset = [];
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            resultFirst = Engine.Transition(_user, START, [], out _);
+            resultFirst = Engine.Transition(_user, START, [], out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-
-            resultFirst = Engine.Transition(_user, PLAY, [game, deck], out _);
+            resultFirst = Engine.Transition(_user, PLAY, inAsset = outAsset, out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-
-            resultFirst = Engine.Transition(_user, PREPARATION, [game, deck], out IAsset[] _);
+            resultFirst = Engine.Transition(_user, PREPARATION, inAsset = outAsset, out outAsset);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             BlockchainInfoProvider.CurrentBlockNumber++;
@@ -57,31 +57,35 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
             var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
+            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            IAsset[] inAsset = [preGame, preDeck, preTowr];
 
-            var preHand = new Card?[10];
-            for (int i = 0; i < 10; i++)
+            var preHand = new Card?[DeckAsset.HAND_LIMIT_SIZE];
+            for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
-                preHand[i] = preDeck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
+                preHand[i] = preDeck.TryGetHandCard(i, out byte cardIndex, out byte rarity) && cardIndex != DeckAsset.EMPTY_SLOT ? new Card(cardIndex, 0) : null;
             }
-            var preHandString = "3♠ Q♥ A♣ 4♠ 6♠ J♠ 7♣";
+            var preHandString = "3♠ 9♠ J♥ 2♠ 7♣ K♥ A♥";
             Assert.That(string.Join(" ", preHand.Select(c => c.ToString())).Trim(), Is.EqualTo(preHandString));
 
             byte[] config = [0, 1, 3];
 
-            bool resultFirst = Engine.Transition(_user, DISCARD, [preGame, preDeck], out IAsset[] outAssets, config);
+            bool resultFirst = Engine.Transition(_user, DISCARD, inAsset, out IAsset[] outAssets, config);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
 
             // Capture key state after the first gamble.
             var game = outAssets[0] as GameAsset;
             var deck = outAssets[1] as DeckAsset;
+            var towr = outAssets[2] as TowerAsset;
 
             Assert.That(game, Is.Not.Null);
             Assert.That(deck, Is.Not.Null);
+            Assert.That(towr, Is.Not.Null);
 
-            var hand = new Card?[10];
-            for (int i = 0; i < 10; i++)
+            var hand = new Card?[DeckAsset.HAND_LIMIT_SIZE];
+            for (int i = 0; i < DeckAsset.HAND_LIMIT_SIZE; i++)
             {
-                hand[i] = deck.TryGetHandCard(i, out byte cardIndex) ? new Card(cardIndex) : null;
+                hand[i] = deck.TryGetHandCard(i, out byte cardIndex, out byte rarity) && cardIndex != DeckAsset.EMPTY_SLOT ? new Card(cardIndex, rarity) : null;
             }
 
             Assert.That(game.GameState, Is.EqualTo(GameState.Running));
@@ -94,8 +98,10 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             var handString = string.Join(" ", hand.Select(c => c.ToString())).Trim();
             Assert.That(handString, Is.Not.EqualTo(preHandString));
-            Assert.That(handString, Is.EqualTo("3♦ 6♥ A♣ 8♠ 6♠ J♠ 7♣"));    
+            Assert.That(handString, Is.EqualTo("2♦ 2♣ J♥ Q♠ 7♣ K♥ A♥"));
 
+            var rarityString = string.Join(" ", hand.Where(c => c != null).Select(c => ((int)c.Value.Rarity).ToString())).Trim();
+            Assert.That(rarityString, Is.EqualTo("1 1 1 2 1 1 1"));
         }
     }
 }

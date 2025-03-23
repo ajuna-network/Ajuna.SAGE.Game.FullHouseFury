@@ -1,5 +1,5 @@
+using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Game.FullHouseFury;
-using NUnit.Framework.Interfaces;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -121,5 +121,31 @@ namespace Assets.Scripts
             }
         }
 
+        public static Color GetRarityColor(RarityType rarity)
+        {
+            switch (rarity)
+            {
+                case RarityType.Common:
+                    return new Color(250f / 255, 250f / 255, 250f / 255, 255 / 255);
+
+                case RarityType.Uncommon:
+                    return new Color(50f / 255, 250f / 255, 50f / 255, 255f / 255);
+
+                case RarityType.Rare:
+                    return new Color(50f / 255, 50f / 255, 250f / 255, 255f / 255);
+
+                case RarityType.Epic:
+                    return new Color(250f / 255, 50f / 255, 250f / 255, 255f / 255);
+
+                case RarityType.Legendary:
+                    return new Color(250f / 255, 150f / 255, 0f / 255, 255f / 255);
+
+                case RarityType.Mythical:
+                    return new Color(250f / 255, 50f / 255, 50f / 255, 255f / 255);
+
+                default:
+                    return new Color(50f / 255, 50f / 255, 50f / 255, 255f / 255);
+            }
+        }
     }
 }
