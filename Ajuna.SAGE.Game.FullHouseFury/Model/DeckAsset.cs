@@ -1,6 +1,7 @@
 ﻿using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Core.Model;
 using System;
+using System.Linq;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
 {
@@ -452,32 +453,31 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public byte GetPokerHandLevel(PokerHand pokerHand)
         {
             var index = (int)pokerHand;
-            if (index < 0 || index > (int)PokerHand.RoyalFlush)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
             int bitOffset = index * BitsPerLevel;
             // Extract 3 bits corresponding to the level.
             return (byte)((PokerHandLevel >> bitOffset) & 0x7U);
         }
 
         /// <summary>
+        /// Gets the 3-bit level (0–7) for all poker hands.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] PokerHandLevels()
+            => Enumerable.Range((int)PokerHand.HighCard, (int)PokerHand.RoyalFlush)
+                .Select(i => GetPokerHandLevel((PokerHand)i))
+                .ToArray();
+
+        /// <summary>
         /// Sets the 3-bit level (0–7) for the specified poker hand index (0–9).
         /// </summary>
         public void SetPokerHandLevel(PokerHand pokerHand, byte levelValue)
         {
-            var index = (int)pokerHand;
-            if (index < 0 || index > (int)PokerHand.RoyalFlush)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
             if (levelValue > MAX_POKERHAND_LEVEL)
             {
                 throw new ArgumentOutOfRangeException(nameof(levelValue), $"Level value must be between 0 and {MAX_POKERHAND_LEVEL}.");
             }
 
+            var index = (int)pokerHand;
             int bitOffset = index * BitsPerLevel;
             uint levels = PokerHandLevel;
             // Clear the 3 bits for this poker hand.

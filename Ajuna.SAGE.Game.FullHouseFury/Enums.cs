@@ -110,8 +110,7 @@
 
     public enum PokerHand
     {
-        None = 0,
-        HighCard = 1,
+        HighCard = 0,
         Pair,
         TwoPair,
         ThreeOfAKind,
