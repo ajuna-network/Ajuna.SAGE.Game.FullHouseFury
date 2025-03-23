@@ -36,8 +36,10 @@ namespace Assets.Scripts.ScreenStates
         private Label _lblEnduranceText;
         private Button[] _frameButtons;
 
-        private Label _lblMultiSign;
-        private Label _lblBaseMultiplier;
+        private Label _lblRarityMultiSign;
+        private Label _lblRarityMultiplier;
+        private Label _lblPokerMultiSign;
+        private Label _lblPokerMultiplier;
 
         private Label _lblDmgSignText;
         private Label _lblBaseDamage;
@@ -91,10 +93,14 @@ namespace Assets.Scripts.ScreenStates
             _lblBonus = velDamage.Q<Label>("TxtBonus");
             _lblBonus.style.display = DisplayStyle.None;
 
-            _lblMultiSign = velDamage.Q<Label>("TxtMultiSign");
-            _lblMultiSign.style.display = DisplayStyle.None;
-            _lblBaseMultiplier = velDamage.Q<Label>("TxtBaseMultiplier");
-            _lblBaseMultiplier.style.display = DisplayStyle.None;
+            _lblRarityMultiSign = velDamage.Q<Label>("TxtRarityMultiSign");
+            _lblRarityMultiSign.style.display = DisplayStyle.None;
+            _lblRarityMultiplier = velDamage.Q<Label>("TxtRarityMultiplier");
+            _lblRarityMultiplier.style.display = DisplayStyle.None;
+            _lblPokerMultiSign = velDamage.Q<Label>("TxtPokerMultiSign");
+            _lblPokerMultiSign.style.display = DisplayStyle.None;
+            _lblPokerMultiplier = velDamage.Q<Label>("TxtPokerMultiplier");
+            _lblPokerMultiplier.style.display = DisplayStyle.None;
 
             _lblDmgSignText = velDamage.Q<Label>("TxtDmgSign");
             _lblDmgSignText.style.display = DisplayStyle.None;
@@ -287,15 +293,16 @@ namespace Assets.Scripts.ScreenStates
                 */
 
                 var attackCardsArray = _handCards.Where(p => p.HandCardState == HandCardState.InPlay).Select(p => FullHouseFuryUtil.EncodeCardByte(p.Card.Index, (byte)p.Card.Rarity)).ToArray();
-                var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, out ushort score, out ushort[] scoreCard);
+                var evaluation = FullHouseFuryUtil.Evaluate(attackCardsArray, PlayState.DeckAsset.PokerHandLevels(), out ushort score, out ushort[] scoreCard);
                 _lblPokerHandText.text = evaluation.ToString();
 
                 Debug.Log($"{scoreCard[0]},{scoreCard[1]},{scoreCard[2]},{scoreCard[3]}");
 
-                var multiplier = scoreCard[0];
-                var factor = scoreCard[1];
-                var kicker = scoreCard[2];
-                var bonus = scoreCard[3];
+                var factor = scoreCard[0];
+                var kicker = scoreCard[1];
+                var bonus = scoreCard[2];
+                var multi_rarity = scoreCard[3];
+                var multi_pokerh = scoreCard[4];
 
                 _lblFactor.text = factor.ToString();
                 _lblKicker.text = kicker.ToString();
@@ -305,14 +312,16 @@ namespace Assets.Scripts.ScreenStates
                 _lblKicker.style.display = DisplayStyle.Flex;
                 _lblBonus.style.display = DisplayStyle.Flex;
 
-                _lblMultiSign.text = "x";
-                _lblBaseMultiplier.text = multiplier.ToString();
+                _lblRarityMultiplier.text = multi_rarity.ToString();
+                _lblPokerMultiplier.text = multi_pokerh.ToString();
 
                 _lblDmgSignText.text = "=";
                 _lblBaseDamage.text = score.ToString();
 
-                _lblMultiSign.style.display = DisplayStyle.Flex;
-                _lblBaseMultiplier.style.display = DisplayStyle.Flex;
+                _lblRarityMultiSign.style.display = DisplayStyle.Flex;
+                _lblRarityMultiplier.style.display = DisplayStyle.Flex;
+                _lblPokerMultiSign.style.display = DisplayStyle.Flex;
+                _lblPokerMultiplier.style.display = DisplayStyle.Flex;
 
                 _lblDmgSignText.style.display = DisplayStyle.Flex;
                 _lblBaseDamage.style.display = DisplayStyle.Flex;
@@ -327,8 +336,10 @@ namespace Assets.Scripts.ScreenStates
                 _lblKicker.style.display = DisplayStyle.None;
                 _lblBonus.style.display = DisplayStyle.None;
 
-                _lblMultiSign.style.display = DisplayStyle.None;
-                _lblBaseMultiplier.style.display = DisplayStyle.None;
+                _lblRarityMultiSign.style.display = DisplayStyle.None;
+                _lblRarityMultiplier.style.display = DisplayStyle.None;
+                _lblPokerMultiSign.style.display = DisplayStyle.None;
+                _lblPokerMultiplier.style.display = DisplayStyle.None;
                 _lblDmgSignText.style.display = DisplayStyle.None;
                 _lblBaseDamage.style.display = DisplayStyle.None;
                 _lblBaseDamageText.style.display = DisplayStyle.None;
