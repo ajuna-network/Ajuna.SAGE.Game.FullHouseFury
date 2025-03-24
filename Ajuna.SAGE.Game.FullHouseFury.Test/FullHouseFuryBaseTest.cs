@@ -6,10 +6,16 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 {
     public class FullHouseFuryBaseTest
     {
-        public IBlockchainInfoProvider BlockchainInfoProvider { get; }
-        public Engine<FullHouseFuryIdentifier, FullHouseFuryRule> Engine { get; }
+        public IBlockchainInfoProvider BlockchainInfoProvider { get; private set; }
+        public Engine<FullHouseFuryIdentifier, FullHouseFuryRule> Engine { get; private set; }
 
         public FullHouseFuryBaseTest()
+        {
+            BlockchainInfoProvider = new BlockchainInfoProvider(1234);
+            Engine = FullHouseFuryGame.Create(BlockchainInfoProvider);
+        }
+
+        public void Reset()
         {
             BlockchainInfoProvider = new BlockchainInfoProvider(1234);
             Engine = FullHouseFuryGame.Create(BlockchainInfoProvider);

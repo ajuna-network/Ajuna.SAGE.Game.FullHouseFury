@@ -93,7 +93,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             Assert.That(deck.DeckSize, Is.EqualTo(42));
 
-            Assert.That(game.AttackType, Is.EqualTo(PokerHand.None));
+            Assert.That(game.AttackType, Is.EqualTo(PokerHand.HighCard));
             Assert.That(game.AttackScore, Is.EqualTo(0));
 
             var handString = string.Join(" ", hand.Select(c => c.ToString())).Trim();

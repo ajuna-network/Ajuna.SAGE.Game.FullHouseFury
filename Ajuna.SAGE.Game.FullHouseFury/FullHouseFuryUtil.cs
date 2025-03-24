@@ -41,10 +41,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury
         /// <param name="scoreCard"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static PokerHand Evaluate(byte[] attackHand, out ushort score, out ushort[] scoreCard)
+        public static PokerHand Evaluate(byte[] attackHand, byte[] pokerHandLevels, out ushort score, out ushort[] scoreCard)
         {
             score = 0;
-            scoreCard = new ushort[4];
 
             int handSize = attackHand.Length;
             if (handSize == 0 || handSize > 5)
@@ -193,376 +192,23 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             };
 
             // Compute the effective multiplier from the rarities of only the scoring cards.
-            ushort multiplier = (ushort)scoringCards.Aggregate(1, (acc, c) => acc * (int)c.Rarity);
+            ushort multi_rarity = (ushort)scoringCards.Aggregate(1, (acc, c) => acc * (int)c.Rarity);
+
+            // Compute the effective multiplier from the poker hand level.
+            pokerHandLevels ??= (new byte[10]);
+            ushort multi_pokerh = (ushort)(pokerHandLevels[(int)category] + 1);
 
             // Calculate bonus and final score.
             int bonus = (factor - 1) * (factor - 1) * 10;
             int baseScore = factor * kicker + bonus;
-            score = (ushort)(baseScore * multiplier);
+            score = (ushort)(baseScore * multi_rarity * multi_pokerh);
 
-            scoreCard[0] = multiplier;
-            scoreCard[1] = (ushort)factor;
-            scoreCard[2] = (ushort)kicker;
-            scoreCard[3] = (ushort)bonus;
-
-            return category;
-        }
-
-        public static PokerHand OldEvaluate(byte[] attackHand, out ushort score, out ushort[] scoreCard)
-        {
-            score = 0;
-
-            int handSize = attackHand.Length;
-            var cardIndexes = new byte[handSize];
-            var rarities = new byte[handSize];
-            var ranks = new int[handSize]; // Store rank for each card
-
-            for (int i = 0; i < handSize; i++)
-            {
-                DecodeCardByte(attackHand[i], out byte cardIndex, out byte rarity);
-                cardIndexes[i] = cardIndex;
-                rarities[i] = rarity;
-                ranks[i] = (cardIndex % 13) + 1; // 1..13 (Ace = 1)
-            }
-
-            if (cardIndexes == null)
-            {
-                throw new ArgumentNullException(nameof(cardIndexes));
-            }
-
-            if (cardIndexes.Length == 0 || cardIndexes.Length > 5)
-            {
-                throw new ArgumentException("Hand must have between 1 and 5 cards.", nameof(cardIndexes));
-            }
-
-            // Array for rank frequencies (indices 1..13, Ace = 1, King = 13)
-            int[] rankCounts = new int[14]; // index 0 unused.
-            int minRank = 14, maxRank = 0;
-            int firstSuit = -1;
-            bool isFlush = cardIndexes.Length == 5;
-            List<int> straightRanks = new List<int>(); // raw rank values (Ace = 1)
-            List<int> kickerRanks = new List<int>();     // for kicker, treat Ace as high (14)
-
-            for (int i = 0; i < handSize; i++)
-            {
-                byte index = cardIndexes[i];
-
-                if (index > 51)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(cardIndexes), "Each card index must be between 0 and 51.");
-                }
-
-                int rank = ranks[i];
-                int suit = index / 13;
-                rankCounts[rank]++;
-                if (rank < minRank)
-                {
-                    minRank = rank;
-                }
-
-                if (rank > maxRank)
-                {
-                    maxRank = rank;
-                }
-
-                straightRanks.Add(rank);
-                kickerRanks.Add(rank == 1 ? 14 : rank); // Ace as 14 for kicker
-
-                if (firstSuit == -1)
-                {
-                    firstSuit = suit;
-                }
-                else if (suit != firstSuit)
-                {
-                    isFlush = false;
-                }
-            }
-
-            // Check for straight:
-            bool isStraight = false;
-            if (cardIndexes.Length == 5 && straightRanks.Distinct().Count() == 5)
-            {
-                if (maxRank - minRank == 4)
-                {
-                    isStraight = true;
-                }
-                // Special case: royal straight (A,10,J,Q,K)
-                else if (straightRanks.OrderBy(x => x).SequenceEqual(new List<int> { 1, 10, 11, 12, 13 }))
-                {
-                    isStraight = true;
-                }
-            }
-
-            int fours = rankCounts.Count(c => c == 4);
-            int triples = rankCounts.Count(c => c == 3);
-            int pairs = rankCounts.Count(c => c == 2);
-
-            PokerHand category;
-            if (isStraight && isFlush)
-            {
-                // Royal Flush: Ace, 10, J, Q, K
-                if (straightRanks.OrderBy(x => x).SequenceEqual(new List<int> { 1, 10, 11, 12, 13 }))
-                {
-                    category = PokerHand.RoyalFlush;
-                }
-                else
-                {
-                    category = PokerHand.StraightFlush;
-                }
-            }
-            else if (fours == 1)
-            {
-                category = PokerHand.FourOfAKind;
-            }
-            else if (triples == 1 && pairs == 1)
-            {
-                category = PokerHand.FullHouse;
-            }
-            else if (isFlush)
-            {
-                category = PokerHand.Flush;
-            }
-            else if (isStraight)
-            {
-                category = PokerHand.Straight;
-            }
-            else if (triples == 1)
-            {
-                category = PokerHand.ThreeOfAKind;
-            }
-            else if (pairs == 2)
-            {
-                category = PokerHand.TwoPair;
-            }
-            else if (pairs == 1)
-            {
-                category = PokerHand.Pair;
-            }
-            else
-            {
-                category = PokerHand.HighCard;
-            }
-
-            // Determine the kicker value based on hand category.
-            int kicker = 0;
-            switch (category)
-            {
-                case PokerHand.HighCard:
-                    kicker = kickerRanks.Max(); // only highest card counts.
-                    break;
-
-                case PokerHand.Pair:
-                    // Find the pair rank (highest pair if more than one, though with 5 cards you can only have one pair).
-                    for (int r = 13; r >= 1; r--)
-                    {
-                        if (rankCounts[r] == 2)
-                        {
-                            kicker = (r == 1 ? 14 : r);
-                            break;
-                        }
-                    }
-                    break;
-
-                case PokerHand.TwoPair:
-                    // Use the highest pair rank.
-                    for (int r = 13; r >= 1; r--)
-                    {
-                        if (rankCounts[r] == 2)
-                        {
-                            kicker = (r == 1 ? 14 : r);
-                            break;
-                        }
-                    }
-                    break;
-
-                case PokerHand.ThreeOfAKind:
-                    for (int r = 13; r >= 1; r--)
-                    {
-                        if (rankCounts[r] == 3)
-                        {
-                            kicker = (r == 1 ? 14 : r);
-                            break;
-                        }
-                    }
-                    break;
-
-                case PokerHand.Straight:
-                case PokerHand.Flush:
-                case PokerHand.StraightFlush:
-                    kicker = kickerRanks.Max();
-                    break;
-
-                case PokerHand.FullHouse:
-                    // Use the rank of the triple part.
-                    for (int r = 13; r >= 1; r--)
-                    {
-                        if (rankCounts[r] == 3)
-                        {
-                            kicker = (r == 1 ? 14 : r);
-                            break;
-                        }
-                    }
-                    break;
-
-                case PokerHand.FourOfAKind:
-                    for (int r = 13; r >= 1; r--)
-                    {
-                        if (rankCounts[r] == 4)
-                        {
-                            kicker = (r == 1 ? 14 : r);
-                            break;
-                        }
-                    }
-                    break;
-
-                case PokerHand.RoyalFlush:
-                    kicker = 14; // Ace is highest.
-                    break;
-
-                default:
-                    kicker = 0;
-                    break;
-            }
-
-            // Determine the factor based on hand category.
-            int factor = category switch
-            {
-                PokerHand.HighCard => 1,
-                PokerHand.Pair => 2,
-                PokerHand.TwoPair => 3,
-                PokerHand.ThreeOfAKind => 4,
-                PokerHand.Straight => 5,
-                PokerHand.Flush => 6,
-                PokerHand.FullHouse => 7,
-                PokerHand.FourOfAKind => 8,
-                PokerHand.StraightFlush => 9,
-                PokerHand.RoyalFlush => 10,
-                _ => 0
-            };
-
-            // --- Compute the effective multiplier only from the cards contributing to the hand ---
-            List<int> contributingIndices = new List<int>();
-
-            switch (category)
-            {
-                case PokerHand.HighCard:
-                    {
-                        // Only the highest card counts.
-                        int maxKicker = -1;
-                        int idx = -1;
-                        for (int i = 0; i < handSize; i++)
-                        {
-                            int cardKicker = (ranks[i] == 1 ? 14 : ranks[i]);
-                            if (cardKicker > maxKicker)
-                            {
-                                maxKicker = cardKicker;
-                                idx = i;
-                            }
-                        }
-                        if (idx != -1)
-                            contributingIndices.Add(idx);
-                    }
-                    break;
-
-                case PokerHand.Pair:
-                    {
-                        // Find the rank that makes the pair.
-                        int pairRank = 0;
-                        for (int r = 13; r >= 1; r--)
-                        {
-                            if (rankCounts[r] == 2)
-                            {
-                                pairRank = r;
-                                break;
-                            }
-                        }
-                        for (int i = 0; i < handSize; i++)
-                        {
-                            if (ranks[i] == pairRank)
-                                contributingIndices.Add(i);
-                        }
-                    }
-                    break;
-
-                case PokerHand.TwoPair:
-                    {
-                        // Collect indices for both pairs.
-                        List<int> pairRanks = new List<int>();
-                        for (int r = 1; r <= 13; r++)
-                        {
-                            if (rankCounts[r] == 2)
-                                pairRanks.Add(r);
-                        }
-                        for (int i = 0; i < handSize; i++)
-                        {
-                            if (pairRanks.Contains(ranks[i]))
-                                contributingIndices.Add(i);
-                        }
-                    }
-                    break;
-
-                case PokerHand.ThreeOfAKind:
-                    {
-                        int threeRank = 0;
-                        for (int r = 13; r >= 1; r--)
-                        {
-                            if (rankCounts[r] == 3)
-                            {
-                                threeRank = r;
-                                break;
-                            }
-                        }
-                        for (int i = 0; i < handSize; i++)
-                        {
-                            if (ranks[i] == threeRank)
-                                contributingIndices.Add(i);
-                        }
-                    }
-                    break;
-
-                case PokerHand.FourOfAKind:
-                    {
-                        int fourRank = 0;
-                        for (int r = 13; r >= 1; r--)
-                        {
-                            if (rankCounts[r] == 4)
-                            {
-                                fourRank = r;
-                                break;
-                            }
-                        }
-                        for (int i = 0; i < handSize; i++)
-                        {
-                            if (ranks[i] == fourRank)
-                                contributingIndices.Add(i);
-                        }
-                    }
-                    break;
-
-                // For the remaining categories, all cards in the hand are used.
-                default:
-                    for (int i = 0; i < handSize; i++)
-                    {
-                        contributingIndices.Add(i);
-                    }
-                    break;
-            }
-
-            ushort multiplier = 1;
-            foreach (int idx in contributingIndices)
-            {
-                multiplier = (ushort)(multiplier * rarities[idx]);
-            }
-
-            // New scoring: score = (factor * kicker) + ((factor - 1)^2 * 10)
-            score = (ushort)(factor * kicker + (Math.Pow(factor - 1, 2) * 10));
-            score *= multiplier;
-
-            scoreCard = new ushort[4];
-            scoreCard[0] = (ushort)multiplier;
-            scoreCard[1] = (ushort)factor;
-            scoreCard[2] = (ushort)kicker;
-            scoreCard[3] = (ushort)(Math.Pow(factor - 1, 2) * 10);
+            scoreCard = new ushort[5];
+            scoreCard[0] = (ushort)factor;
+            scoreCard[1] = (ushort)kicker;
+            scoreCard[2] = (ushort)bonus;
+            scoreCard[3] = multi_rarity;
+            scoreCard[4] = multi_pokerh;
 
             return category;
         }
@@ -613,7 +259,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     // Build the card indexes for this combination.
                     byte[] comboCards = combo.Select(pos => hand[pos]).ToArray();
                     ushort comboScore;
-                    PokerHand category = Evaluate(comboCards, out comboScore, out _);
+                    PokerHand category = Evaluate(comboCards, new byte[10], out comboScore, out _);
                     BestPokerHand current = new BestPokerHand
                     {
                         Category = category,
@@ -843,8 +489,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             price = 0;
             var currentLevel = deck.GetRarity(featureEnum);
 
-            if (currentLevel == level || level > DeckAsset.MAX_RARITY_LEVEL) 
-            { 
+            if (currentLevel == level || level > DeckAsset.MAX_RARITY_LEVEL)
+            {
                 return false;
             }
 
@@ -866,6 +512,11 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 case RarityType.Common:
                 default:
                     return false;
+            }
+
+            if (doUpgrade)
+            {
+                deck.SetRarity(featureEnum, level);
             }
 
             return true;
@@ -905,9 +556,13 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     price = (byte)level;
                     break;
 
-                case PokerHand.None:
                 default:
                     return false;
+            }
+
+            if (doUpgrade)
+            {
+                deck.SetPokerHandLevel(featureEnum, level);
             }
 
             return true;
@@ -933,11 +588,6 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             var towr = baseAssets[2] as TowerAsset;
 
             if (game == null || price > game.Token)
-            {
-                return false;
-            }
-
-            if (!Upgrade(true, featureType, featureEnum, level, baseAssets, out _))
             {
                 return false;
             }

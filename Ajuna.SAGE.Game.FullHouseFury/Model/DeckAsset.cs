@@ -1,6 +1,7 @@
 ﻿using Ajuna.SAGE.Core;
 using Ajuna.SAGE.Core.Model;
 using System;
+using System.Linq;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
 {
@@ -129,6 +130,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
     /// </summary>
     public partial class DeckAsset
     {
+        /// <summary>
+        /// Only use this at the start of a new game, not during a game
+        /// </summary>
         public void New()
         {
             DeckRefill = 0;
@@ -138,6 +142,15 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
             DeckSize = MaxDeckSize;
 
             SetRarity(RarityType.Uncommon, 1);
+        }
+
+        /// <summary>
+        /// Reset the deck for the next level.
+        /// </summary>
+        public void Reset()
+        {
+            Deck = ulong.MaxValue;
+            DeckSize = MaxDeckSize;
         }
 
         /// <summary>
@@ -452,32 +465,31 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public byte GetPokerHandLevel(PokerHand pokerHand)
         {
             var index = (int)pokerHand;
-            if (index < 0 || index > (int)PokerHand.RoyalFlush)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
             int bitOffset = index * BitsPerLevel;
             // Extract 3 bits corresponding to the level.
             return (byte)((PokerHandLevel >> bitOffset) & 0x7U);
         }
 
         /// <summary>
+        /// Gets the 3-bit level (0–7) for all poker hands.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] PokerHandLevels()
+            => Enumerable.Range((int)PokerHand.HighCard, (int)PokerHand.RoyalFlush)
+                .Select(i => GetPokerHandLevel((PokerHand)i))
+                .ToArray();
+
+        /// <summary>
         /// Sets the 3-bit level (0–7) for the specified poker hand index (0–9).
         /// </summary>
         public void SetPokerHandLevel(PokerHand pokerHand, byte levelValue)
         {
-            var index = (int)pokerHand;
-            if (index < 0 || index > (int)PokerHand.RoyalFlush)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
             if (levelValue > MAX_POKERHAND_LEVEL)
             {
                 throw new ArgumentOutOfRangeException(nameof(levelValue), $"Level value must be between 0 and {MAX_POKERHAND_LEVEL}.");
             }
 
+            var index = (int)pokerHand;
             int bitOffset = index * BitsPerLevel;
             uint levels = PokerHandLevel;
             // Clear the 3 bits for this poker hand.
@@ -527,16 +539,16 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                     // nothing to store
                     break;
                 case RarityType.Uncommon:
-                    DrawRarity = (byte)(DrawRarity | value);
+                    DrawRarity = (byte)((DrawRarity & ~0b0000_0011) | (value << 0));
                     break;
                 case RarityType.Rare:
-                    DrawRarity = (byte)(DrawRarity | (value << 2));
+                    DrawRarity = (byte)((DrawRarity & ~0b0000_1100) | (value << 2));
                     break;
                 case RarityType.Epic:
-                    DrawRarity = (byte)(DrawRarity | (value << 4));
+                    DrawRarity = (byte)((DrawRarity & ~0b0011_0000) | (value << 4));
                     break;
                 case RarityType.Legendary:
-                    DrawRarity = (byte)(DrawRarity | (value << 6));
+                    DrawRarity = (byte)((DrawRarity & ~0b1100_0000) | (value << 6));
                     break;
                 case RarityType.Mythical:
                     // nothing to store

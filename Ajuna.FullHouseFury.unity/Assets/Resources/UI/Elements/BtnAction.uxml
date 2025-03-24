@@ -1,4 +1,15 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/UIStylesheet.uss?fileID=7433441132597879392&amp;guid=bfbcc6c76b392704eb87d6eb3161064c&amp;type=3#UIStylesheet" />
-    <ui:Button text="ATTACK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="BtnAction" class="font-light-color font-silkscreen" style="background-image: url(&quot;project://database/Assets/Images/bt_red.png?fileID=2800000&amp;guid=8fc9feebf624bba43a9df1301ccf1d8e&amp;type=3#bt_red&quot;); -unity-background-scale-mode: scale-to-fit; border-left-color: rgba(255, 255, 255, 0); border-right-color: rgba(255, 255, 255, 0); border-top-color: rgba(255, 255, 255, 0); border-bottom-color: rgba(255, 255, 255, 0); height: 200px; width: 450px; font-size: 60px; -unity-font-style: normal; background-color: rgba(255, 255, 255, 0); -unity-background-image-tint-color: rgb(255, 255, 255);" />
+    <ui:Button text="ATTACK" parse-escape-sequences="true" display-tooltip-when-elided="true" name="BtnAction" class="font-light-color font-silkscreen" style="background-image: url(&quot;project://database/Assets/Images/btn_red.png?fileID=2800000&amp;guid=8fc9feebf624bba43a9df1301ccf1d8e&amp;type=3#btn_red&quot;); -unity-background-scale-mode: scale-to-fit; border-left-color: rgba(255, 255, 255, 0); border-right-color: rgba(255, 255, 255, 0); border-top-color: rgba(255, 255, 255, 0); border-bottom-color: rgba(255, 255, 255, 0); height: 200px; width: 460px; font-size: 60px; -unity-font-style: normal; background-color: rgba(255, 255, 255, 0); -unity-background-image-tint-color: rgb(255, 255, 255); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;">
+        <ui:VisualElement name="VelAddInfo" style="width: 100%;">
+            <ui:VisualElement name="VelBuyInfo" style="flex-grow: 0; height: 75px; width: 100%; padding-left: 40px; padding-right: 40px; flex-direction: row;">
+                <ui:VisualElement style="flex-grow: 0; width: 60%;">
+                    <ui:Label text="100" name="TxtPrice" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 55px; width: 100%; height: 100%; -unity-text-align: middle-right;" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 0; width: 40%; justify-content: flex-end;">
+                    <ui:VisualElement name="VelTokenBuy" style="flex-grow: 0; width: 50%; height: 90%; background-image: url(&quot;project://database/Assets/Images/token.png?fileID=2800000&amp;guid=5f2397658b434b2489b10aeb361ad708&amp;type=3#token&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:Button>
 </ui:UXML>

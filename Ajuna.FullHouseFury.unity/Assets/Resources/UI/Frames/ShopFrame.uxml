@@ -41,7 +41,7 @@
                                 <ui:VisualElement style="flex-grow: 0; height: 50%; width: 100%;">
                                     <ui:Label text="10" name="TxtPrice" class="font-silkthin" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; height: 100%; font-size: 75px; -unity-font-style: bold; -unity-text-align: middle-center;" />
                                 </ui:VisualElement>
-                                <ui:VisualElement style="flex-grow: 0; width: 100%; height: 50%; background-image: url(&quot;project://database/Assets/Images/token.png?fileID=2800000&amp;guid=5f2397658b434b2489b10aeb361ad708&amp;type=3#token&quot;); -unity-background-scale-mode: scale-to-fit;" />
+                                <ui:VisualElement name="VelTokenBuy" style="flex-grow: 0; width: 100%; height: 50%; background-image: url(&quot;project://database/Assets/Images/token.png?fileID=2800000&amp;guid=5f2397658b434b2489b10aeb361ad708&amp;type=3#token&quot;); -unity-background-scale-mode: scale-to-fit;" />
                             </ui:VisualElement>
                             <ui:VisualElement style="flex-grow: 0; height: 200px; width: 80px; align-items: center; flex-direction: row;">
                                 <ui:VisualElement name="VelRightArrow" style="flex-grow: 0; width: 100%; height: 100%; background-image: url(&quot;project://database/Assets/Images/right-arrow.png?fileID=2800000&amp;guid=a0065e4b7dd95c242b1e45005e907192&amp;type=3#right-arrow&quot;); -unity-background-scale-mode: scale-and-crop;" />
