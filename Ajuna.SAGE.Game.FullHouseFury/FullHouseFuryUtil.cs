@@ -721,7 +721,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
             {
                 MalusType.None => null,
                 MalusType.HalvedDamage => new string[] { "Halved Damage", "All damage output is reduced by 50%." },
-                MalusType.SpadeHeal => new string[] { "Spade Heals Opponent", "Each Spade card played heals the opponent for 3 HP." },
+                MalusType.SpadeOpHeal => new string[] { "Spade Heals Opponent", "Each Spade card played heals the opponent for 3 HP." },
                 MalusType.ReducedEndurance => new string[] { "Reduced Endurance", "Decrease the player's maximum endurance by 1." },
                 MalusType.IncreasedFatigueRate => new string[] { "Increased Fatigue Rate", "Fatigue damage increases at an accelerated exponential rate." },
                 MalusType.LowerCardValue => new string[] { "Lower Card Value", "All card values are reduced by 20%, weakening potential hands." },

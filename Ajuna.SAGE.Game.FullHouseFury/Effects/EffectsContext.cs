@@ -2,13 +2,13 @@
 {
     public struct ModifyContext
     {
-        public byte Level { get; }
-        public byte Value { get; }
+        public byte OldLvl { get; }
+        public byte NewLvl { get; }
 
-        public ModifyContext(byte level, byte value)
+        public ModifyContext(byte oldLvl, byte newLvl)
         {
-            Level = level;
-            Value = value;
+            OldLvl = oldLvl;
+            NewLvl = newLvl;
         }
     }
 
