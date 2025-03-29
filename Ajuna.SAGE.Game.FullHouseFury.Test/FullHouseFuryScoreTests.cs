@@ -112,7 +112,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Assert.That(deck.IsHandSlotEmpty(7), Is.True);
 
             // atack is reset
-            Assert.That(game.AttackType, Is.EqualTo(PokerHand.None));
+            Assert.That(game.AttackType, Is.EqualTo(PokerHand.HighCard));
             Assert.That(game.AttackScore, Is.EqualTo(0));
 
             // player is partially reset

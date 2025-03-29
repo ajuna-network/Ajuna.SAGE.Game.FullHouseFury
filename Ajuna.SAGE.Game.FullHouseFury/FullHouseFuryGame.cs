@@ -394,7 +394,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 {
                     game.SetAttackHand(i, attackCards[i]);
                 }
-                game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, out ushort score, out _);
+                game.AttackType = FullHouseFuryUtil.Evaluate(attackCards, deck.PokerHandLevels(), out ushort score, out _);
                 game.AttackScore = score;
 
                 // on attack event
@@ -589,7 +589,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                 deck.EmptyHand();
 
                 // reset deck
-                deck.New();
+                deck.Reset();
 
                 // set of 3 boons and banes combos, to choose from in preparation
                 for(int i = 0; i < 3; i++)

@@ -211,7 +211,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         public void ClearAttack()
         {
             AttackScore = 0;
-            AttackType = PokerHand.None;
+            AttackType = PokerHand.HighCard;
 
             for (int i = 0; i < 5; i++)
             {

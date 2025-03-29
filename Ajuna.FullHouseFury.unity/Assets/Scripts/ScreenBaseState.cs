@@ -29,11 +29,15 @@ namespace Assets.Scripts
             return elementInstance;
         }
 
-        internal Button ButtonAction(string name, VisualTreeAsset vtrBtnAction)
+        internal Button ButtonAction(string name, VisualTreeAsset vtrBtnAction, byte? price = null)
         {
             var templateContainer = vtrBtnAction.Instantiate();
             var _btnAction = templateContainer.Q<Button>("BtnAction");
             _btnAction.text = name;
+
+            var velAddInfo = templateContainer.Q<VisualElement>("VelAddInfo");
+            velAddInfo.style.display = DisplayStyle.None;
+
             return _btnAction;
         }
 
