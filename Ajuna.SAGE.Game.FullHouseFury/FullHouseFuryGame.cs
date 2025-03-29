@@ -4,7 +4,6 @@ using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury.Effects;
 using Ajuna.SAGE.Game.FullHouseFury.Manager;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
-using Ajuna.SAGE.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,8 +139,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                                 var baseAsset = a[i] as BaseAsset;
                                 if (baseAsset == null
-                                || (byte)baseAsset.AssetType != assetType
-                                || (assetSubType != (byte)AssetSubType.None && (byte)baseAsset.AssetSubType != assetSubType))
+                                || (byte)baseAsset.AssetType != assetType)
                                 {
                                     return false;
                                 }
@@ -282,23 +280,25 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                     var choice = towr.GetBoonAndBane(position.Value);
 
-                    var currentBoon = towr.GetBoon((byte)choice.boon, out bool isMaxedBoon);
+                    var oldBoonLevel = towr.GetBoon((byte)choice.boon, out bool isMaxedBoon);
                     if (!isMaxedBoon)
                     {
-                        towr.SetBoon((byte)choice.boon, (byte)(currentBoon + 1));
+                        var newBoonLevel = (byte)(oldBoonLevel + 1);
+                        towr.SetBoon((byte)choice.boon, newBoonLevel);
                         if (EffectsRegistry.BoonEffects.TryGetValue(choice.boon, out var effect))
                         {
-                            effect.Add(game, deck, towr, 1, new ModifyContext(currentBoon, 1));
+                            effect.Add(game, deck, towr, newBoonLevel, new ModifyContext(oldBoonLevel, newBoonLevel));
                         }
                     }
 
-                    var currentBane = towr.GetBane((byte)choice.bane, out bool isMaxedBane);
+                    var oldBaneLevel = towr.GetBane((byte)choice.bane, out bool isMaxedBane);
                     if (!isMaxedBane)
                     {
-                        towr.SetBane((byte)choice.bane, (byte)(currentBane + 1));
+                        var newBaneLevel = (byte)(oldBaneLevel + 1);
+                        towr.SetBane((byte)choice.bane, newBaneLevel);
                         if (EffectsRegistry.BaneEffects.TryGetValue(choice.bane, out var effect))
                         {
-                            effect.Add(game, deck, towr, 1, new ModifyContext(currentBane, 1));
+                            effect.Add(game, deck, towr, newBaneLevel, new ModifyContext(oldBaneLevel, newBaneLevel));
                         }
                     }
                 }

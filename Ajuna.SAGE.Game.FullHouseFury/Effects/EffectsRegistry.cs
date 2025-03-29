@@ -6,12 +6,12 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Effects
     {
         public static readonly Dictionary<BonusType, IEffect> BoonEffects = new Dictionary<BonusType, IEffect>()
         {
-            { BonusType.HeartHeal, new FxHeartHeal() },
+            { BonusType.HeartHeal, new FxSuitHeal(Suit.Hearts) },
         };
 
         public static readonly Dictionary<MalusType, IEffect> BaneEffects = new Dictionary<MalusType, IEffect>()
         {
-            { MalusType.SpadeHeal, new FxSpadeHeal() },
+            { MalusType.SpadeOpHeal, new FxSuitOpHeal(Suit.Spades) },
         };
     }
 }

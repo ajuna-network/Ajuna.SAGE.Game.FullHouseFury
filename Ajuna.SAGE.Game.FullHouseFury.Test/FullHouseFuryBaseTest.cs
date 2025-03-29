@@ -21,12 +21,12 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
             Engine = FullHouseFuryGame.Create(BlockchainInfoProvider);
         }
 
-        public T GetAsset<T>(IAccount user, AssetType type, AssetSubType subType) where T : BaseAsset
+        public T GetAsset<T>(IAccount user, AssetType type) where T : BaseAsset
         {
             BaseAsset? result = Engine.AssetManager
                 .AssetOf(user)
                 .Select(p => (BaseAsset)p)
-                .Where(p => p.AssetType == type && p.AssetSubType == subType)
+                .Where(p => p.AssetType == type)
                 .FirstOrDefault();
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<T>());

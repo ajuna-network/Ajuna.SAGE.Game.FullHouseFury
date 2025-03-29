@@ -35,9 +35,9 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
 
             BlockchainInfoProvider.CurrentBlockNumber++;
 
-            var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            var preGame = GetAsset<GameAsset>(_user, AssetType.Game);
+            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck);
+            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower);
 
             resultFirst = Engine.Transition(_user, PLAY, [preGame, preDeck, preTowr], out outAssets);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");
@@ -50,9 +50,9 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
         {
             Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(4));
 
-            var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            var preGame = GetAsset<GameAsset>(_user, AssetType.Game);
+            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck);
+            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower);
 
             bool resultFirst = Engine.Transition(_user, PREPARATION, [preGame, preDeck, preTowr], out IAsset[] outAssets);
             Assert.That(resultFirst, Is.True, "transition result should succeed.");

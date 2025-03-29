@@ -72,9 +72,9 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
         {
             Assert.That(BlockchainInfoProvider.CurrentBlockNumber, Is.EqualTo(12));
 
-            var preGame = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            var preGame = GetAsset<GameAsset>(_user, AssetType.Game);
+            var preDeck = GetAsset<DeckAsset>(_user, AssetType.Deck);
+            var preTowr = GetAsset<TowerAsset>(_user, AssetType.Tower);
             IAsset[] inAsset = [preGame, preDeck, preTowr];
 
             Assert.That(preGame.Level, Is.EqualTo(1));

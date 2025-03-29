@@ -179,7 +179,7 @@
     {
         None = 0,
         HalvedDamage = 1,
-        SpadeHeal = 2,
+        SpadeOpHeal = 2,
         ReducedEndurance = 3,
         IncreasedFatigueRate = 4,
         LowerCardValue = 5,

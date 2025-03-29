@@ -4,11 +4,22 @@ using System.Collections.Generic;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Effects
 {
-    public class FxSpadeHeal : IEffect
+    public class FxSuitOpHeal : IEffect
     {
-        public string Name => "Spade Heal";
+        public string Name => $"{Suit} Heal";
 
-        public string Description => "Heals enemy for the sum of the ranks of all spades in the attack";
+        public string Description => $"Heals opponent for the sum of the ranks of all {Suit.ToString().ToLower()}s in the attack";
+
+        public Suit Suit { get; }
+
+        /// <summary>
+        /// Effect that heals the opponent for the sum of the ranks of all cards of a given suit in the attack.
+        /// </summary>
+        /// <param name="suit"></param>
+        public FxSuitOpHeal(Suit suit)
+        {
+            Suit = suit;
+        }
 
         public IEnumerable<GameEvent> Triggers => new[] { GameEvent.OnAttack };
 

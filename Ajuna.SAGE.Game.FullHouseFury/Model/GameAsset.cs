@@ -20,169 +20,113 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         }
 
         public GameAsset(IAsset asset)
-            : base(asset)
-        { }
+            : base(asset) { }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ....X... ........ ........ ........
-        public byte Token
-        {
-            get => Data.Read(4, ByteType.Full);
-            set => Data?.Set(4, ByteType.Full, (byte)value);
-        }
-
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// .....H.. ........ ........ ........
         public GameState GameState
         {
-            get => (GameState)Data.Read(5, ByteType.High);
-            set => Data?.Set(5, ByteType.High, (byte)value);
+            get => (GameState)Data.Read<byte>(1);
+            set => Data.Set<byte>(1, (byte)value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// .....L.. ........ ........ ........
         public LevelState LevelState
         {
-            get => (LevelState)Data.Read(5, ByteType.Low);
-            set => Data?.Set(5, ByteType.Low, (byte)value);
+            get => (LevelState)Data.Read<byte>(2);
+            set => Data.Set<byte>(2, (byte)value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ......X. ........ ........ ........
+        public byte Token
+        {
+            get => Data.Read<byte>(3);
+            set => Data.Set<byte>(3, value);
+        }
         public byte Level
         {
-            get => Data.Read(6, ByteType.Full);
-            set => Data?.Set(6, ByteType.Full, value);
+            get => Data.Read<byte>(4);
+            set => Data.Set<byte>(4, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// .......X ........ ........ ........
         public byte Round
         {
-            get => Data.Read(7, ByteType.Full);
-            set => Data?.Set(7, ByteType.Full, value);
+            get => Data.Read<byte>(5);
+            set => Data.Set<byte>(5, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ X....... ........ ........
         public byte BossType
         {
-            get => Data.Read(8, ByteType.Full);
-            set => Data?.Set(8, ByteType.Full, value);
+            get => Data.Read<byte>(6);
+            set => Data.Set<byte>(6, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ .XX..... ........ ........
         public ushort MaxBossHealth
         {
-            get => Data.ReadValue<ushort>(9);
-            set => Data?.SetValue<ushort>(9, value);
+            get => Data.Read<ushort>(7);
+            set => Data.Set<ushort>(7, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ...XX... ........ ........
         public ushort BossDamage
         {
-            get => Data.ReadValue<ushort>(11);
-            set => Data?.SetValue<ushort>(11, value);
+            get => Data.Read<ushort>(9);
+            set => Data?.Set<ushort>(9, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ .....H.. ........ ........
         public byte Discard
         {
-            get => Data.Read(13, ByteType.High);
-            set => Data?.Set(13, ByteType.High, value);
+            get => Data.Read<byte>(11);
+            set => Data.Set<byte>(11, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ .....L.. ........ ........
         public byte HandSize
         {
-            get => Data.Read(13, ByteType.Low);
-            set => Data?.Set(13, ByteType.Low, value);
+            get => Data.Read<byte>(12);
+            set => Data.Set<byte>(12, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ XXXXX... ........
+        public PokerHand AttackType
+        {
+            get => (PokerHand)Data.Read<byte>(13);
+            set => Data.Set<byte>(13, (byte)value);
+        }
+
+        public ushort AttackScore
+        {
+            get => Data.Read<ushort>(14);
+            set => Data.Set<ushort>(14, value);
+        }
+
         private byte[] AttackHand
         {
             get => Data.Read(16, 5);
             set => Data.Set(16, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ .....H.. ........
-        public PokerHand AttackType
-        {
-            get => (PokerHand)Data.Read(21, ByteType.High);
-            set => Data?.Set(21, ByteType.High, (byte)value);
-        }
-
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ......XX ........
-        public ushort AttackScore
-        {
-            get => Data.ReadValue<ushort>(22);
-            set => Data.SetValue<ushort>(22, value);
-        }
-
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ .H......
         public byte MaxPlayerEndurance
         {
-            get => Data.Read(25, ByteType.High);
-            set => Data?.Set(25, ByteType.High, value);
+            get => Data.Read<byte>(21);
+            set => Data.Set<byte>(21, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ .L......
         public byte PlayerEndurance
         {
-            get => Data.Read(25, ByteType.Low);
-            set => Data?.Set(25, ByteType.Low, value);
+            get => Data.Read<byte>(22);
+            set => Data.Set<byte>(22, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ ..XX....
         public ushort MaxPlayerHealth
         {
-            get => Data.ReadValue<ushort>(26);
-            set => Data?.SetValue<ushort>(26, value);
+            get => Data.Read<ushort>(23);
+            set => Data.Set<ushort>(23, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ ....XX..
         public ushort PlayerDamage
         {
-            get => Data.ReadValue<ushort>(28);
-            set => Data?.SetValue<ushort>(28, value);
+            get => Data.Read<ushort>(25);
+            set => Data?.Set<ushort>(25, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ ......XX
         public ushort FatigueDamage
         {
-            get => Data.ReadValue<ushort>(30);
-            set => Data?.SetValue<ushort>(30, value);
+            get => Data.Read<ushort>(27);
+            set => Data?.Set<ushort>(27, value);
         }
     }
 

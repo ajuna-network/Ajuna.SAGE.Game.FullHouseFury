@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 
 namespace Ajuna.SAGE.Game.FullHouseFury.Model
 {
-
     /// <summary>
     /// Tower asset class for the FullHouseFury game.
     /// </summary>
@@ -19,61 +18,42 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         }
 
         public TowerAsset(IAsset asset)
-            : base(asset)
-        { }
+            : base(asset) { }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ....XXXX XXXX.... ........ ........
         public ulong TowerLevel
         {
-            get => BitConverter.ToUInt32(Data.Read(04, 8), 0);
-            set => Data.Set(04, BitConverter.GetBytes(value));
+            get => Data.Read<ulong>(4);
+            set => Data.Set<ulong>(4, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ....XXXX ........ ........
         public uint BoonsAndBanes
         {
-            get => BitConverter.ToUInt32(Data.Read(12, 4), 0);
-            set => Data.Set(12, BitConverter.GetBytes(value));
+            get => Data.Read<uint>(12);
+            set => Data.Set<uint>(12, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ XXXX.... ........
         public uint SingleBoons
         {
-            get => BitConverter.ToUInt32(Data.Read(16, 4), 0);
-            set => Data.Set(16, BitConverter.GetBytes(value));
+            get => Data.Read<uint>(16);
+            set => Data.Set<uint>(16, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ....XXXX ........
         public uint MultiBoons
         {
-            get => BitConverter.ToUInt32(Data.Read(20, 4), 0);
-            set => Data.Set(20, BitConverter.GetBytes(value));
+            get => Data.Read<uint>(20);
+            set => Data.Set<uint>(20, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ XXXX....
         public uint SingleBanes
         {
-            get => BitConverter.ToUInt32(Data.Read(24, 4), 0);
-            set => Data.Set(24, BitConverter.GetBytes(value));
+            get => Data.Read<uint>(24);
+            set => Data.Set<uint>(24, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ ....XXXX
         public uint MultiBanes
         {
-            get => BitConverter.ToUInt32(Data.Read(28, 4), 0);
-            set => Data.Set(28, BitConverter.GetBytes(value));
+            get => Data.Read<uint>(28);
+            set => Data.Set<uint>(28, value);
         }
     }
 
