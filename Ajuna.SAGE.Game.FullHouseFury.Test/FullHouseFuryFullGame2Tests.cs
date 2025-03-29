@@ -83,7 +83,7 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
                 Assert.That(outAsset, Is.Not.Null);
             }
 
-            Assert.That(game.Round, Is.EqualTo(17), "Round is not correct.");
+            Assert.That(game.Round, Is.EqualTo(18), "Round is not correct.");
             Assert.That(game.IsBossAlive, Is.EqualTo(true), "Boss should be alive.");
             Assert.That(game.IsPlayerAlive, Is.EqualTo(false), "Player should be dead.");
 

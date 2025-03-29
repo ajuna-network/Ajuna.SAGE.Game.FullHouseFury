@@ -413,7 +413,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
                     game.PlayerDamage = (ushort)Math.Min(game.PlayerDamage + game.FatigueDamage, ushort.MaxValue);
                     //fxManager.TriggerEvent(GameEvent.OnPlayerDamage, game, deck, towr, game.FatigueDamage);
 
-                    game.FatigueDamage = (ushort)Math.Min(game.FatigueDamage * 2, ushort.MaxValue);
+                    game.FatigueDamage = (ushort)Math.Min((game.FatigueDamage * 1.5) + 1, ushort.MaxValue);
 
                 }
 
