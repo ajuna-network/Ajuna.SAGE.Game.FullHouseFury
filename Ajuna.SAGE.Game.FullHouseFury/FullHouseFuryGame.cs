@@ -4,7 +4,6 @@ using Ajuna.SAGE.Core.Model;
 using Ajuna.SAGE.Game.FullHouseFury.Effects;
 using Ajuna.SAGE.Game.FullHouseFury.Manager;
 using Ajuna.SAGE.Game.FullHouseFury.Model;
-using Ajuna.SAGE.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,8 +139,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 
                                 var baseAsset = a[i] as BaseAsset;
                                 if (baseAsset == null
-                                || (byte)baseAsset.AssetType != assetType
-                                || (assetSubType != (byte)AssetSubType.None && (byte)baseAsset.AssetSubType != assetSubType))
+                                || (byte)baseAsset.AssetType != assetType)
                                 {
                                     return false;
                                 }

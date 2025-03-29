@@ -8,10 +8,10 @@
 	<!--Set this to true if you want to generate all necessary/dependent DLLs in order to use them in Unity Project for example-->
 	<PropertyGroup>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<UserSecretsId>f53b0b1f-43b1-47d6-bd11-7e6955993738</UserSecretsId>
 	</PropertyGroup>
-
 	<ItemGroup>
-		<PackageReference Include="Ajuna.SAGE.Core" Version="0.0.4" />
+	  <PackageReference Include="Ajuna.SAGE.Core" Version="0.0.6" />
 	</ItemGroup>
 
 </Project>

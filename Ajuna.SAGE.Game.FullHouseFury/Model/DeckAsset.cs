@@ -27,100 +27,48 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         }
 
         public DeckAsset(IAsset asset)
-            : base(asset)
-        { }
+            : base(asset) { }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ....H... ........ ........ ........
         public byte DeckRefill
         {
-            get => Data.Read(4, ByteType.High);
-            set => Data?.Set(4, ByteType.High, value);
+            get => Data.Read<byte>(1);
+            set => Data.Set<byte>(1, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// .....X.. ........ ........ ........
         public byte DrawRarity
         {
-            get => Data.Read(5, ByteType.Full);
-            set => Data?.Set(5, ByteType.Full, value);
+            get => Data.Read<byte>(2);
+            set => Data.Set<byte>(2, value);
         }
-
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ......X. ........ ........ ........
 
         public byte MaxDeckSize
         {
-            get => Data.Read(6, ByteType.Full);
-            set => Data.Set(6, ByteType.Full, value);
+            get => Data.Read<byte>(3);
+            set => Data.Set<byte>(3, value);
         }
-
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// .......X ........ ........ ........
 
         public byte DeckSize
         {
-            get => Data.Read(7, ByteType.Full);
-            set => Data.Set(7, ByteType.Full, value);
+            get => Data.Read<byte>(4);
+            set => Data.Set<byte>(4, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ XXXXXXXX ........ ........
-        public ulong Deck
+        private ulong Deck
         {
-            get
-            {
-                byte[] bytes = Data.Read(8, 8);
-                return BitConverter.ToUInt64(bytes, 0);
-            }
-            set
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < 8; i++)
-                {
-                    Data.Set((byte)(8 + i), ByteType.Full, bytes[i]);
-                }
-            }
+            get => Data.Read<ulong>(5);
+            set => Data.Set<ulong>(5, value);
         }
 
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ XXXXXXXX ........
-        private byte[] Hand
+        private ulong Hand
         {
-            get => Data.Read(16, 8);
-            set => Data.Set(16, value);
+            get => Data.Read<ulong>(13);
+            set => Data.Set<ulong>(13, value);
         }
 
-        /// Encodes 10 poker hand levels in 30 bits (stored in 4 bytes).
-        /// Each level uses 3 bits (values 0–7).
-        /// The 2 highest bits remain unused.
-        /// </summary>
-        /// 00000000 00111111 11112222 22222233
-        /// 01234567 89012345 67890123 45678901
-        /// ........ ........ ........ XXXX....
-        /// <summary>
-        public uint PokerHandLevel
+        private uint PokerHandLevel
         {
-            get
-            {
-                // Read exactly 4 bytes from offset 24.
-                byte[] levelBytes = Data.Read(24, 4);
-                return BitConverter.ToUInt32(levelBytes, 0);
-            }
-            set
-            {
-                byte[] levelBytes = BitConverter.GetBytes(value);
-                for (int i = 0; i < 4; i++)
-                {
-                    Data.Set((byte)(24 + i), ByteType.Full, levelBytes[i]);
-                }
-            }
+            get => Data.Read<uint>(21);
+            set => Data.Set<uint>(21, value);
         }
     }
 
@@ -306,9 +254,9 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
                 throw new ArgumentOutOfRangeException(nameof(position), $"Hand position must be between 0 and {HAND_LIMIT_SIZE - 1}.");
             }
 
-            var hand = Hand;
-            hand[position] = encodedCard;
-            Hand = hand;
+            var bytes = BitConverter.GetBytes(Hand);
+            bytes[position] = encodedCard;
+            Hand = BitConverter.ToUInt64(bytes);
         }
 
         /// <summary>
@@ -321,13 +269,14 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public byte GetHandCard(int pos, out byte cardIndex, out byte rarity)
         {
+            var bytes = BitConverter.GetBytes(Hand);
             if (pos < 0 || pos >= HAND_LIMIT_SIZE)
             {
                 throw new ArgumentOutOfRangeException(nameof(pos), $"Hand position must be between 0 and {HAND_LIMIT_SIZE - 1}.");
             }
 
-            FullHouseFuryUtil.DecodeCardByte(Hand[pos], out cardIndex, out rarity);
-            return Hand[pos];
+            FullHouseFuryUtil.DecodeCardByte(bytes[pos], out cardIndex, out rarity);
+            return bytes[pos];
         }
 
 
@@ -342,7 +291,7 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Model
 
                 empty[i] = FullHouseFuryUtil.EncodeCardByte(EMPTY_SLOT, 0);
             }
-            Hand = empty;
+            Hand = BitConverter.ToUInt64(empty);
         }
 
         /// <summary>

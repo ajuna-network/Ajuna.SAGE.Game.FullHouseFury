@@ -49,9 +49,9 @@ namespace Ajuna.SAGE.Core.HeroJam.Test
         public void Test_FullGameLoop_TillWin_ScoreLevel()
         {
             // Retrieve current game and deck assets.
-            GameAsset game = GetAsset<GameAsset>(_user, AssetType.Game, AssetSubType.None);
-            DeckAsset deck = GetAsset<DeckAsset>(_user, AssetType.Deck, AssetSubType.None);
-            TowerAsset towr = GetAsset<TowerAsset>(_user, AssetType.Tower, AssetSubType.None);
+            GameAsset game = GetAsset<GameAsset>(_user, AssetType.Game);
+            DeckAsset deck = GetAsset<DeckAsset>(_user, AssetType.Deck);
+            TowerAsset towr = GetAsset<TowerAsset>(_user, AssetType.Tower);
 
             IAsset[] inAsset = [game, deck, towr];
             IAsset[] outAsset = null;

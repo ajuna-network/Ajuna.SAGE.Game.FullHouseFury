@@ -13,6 +13,8 @@ namespace Ajuna.SAGE.Game.FullHouseFury
 {
     public partial class FullHouseFuryUtil
     {
+        public const byte DATA_SIZE = 32;
+
         public const byte COLLECTION_ID = 1;
 
         public const byte BLOCKTIME_SEC = 6;
