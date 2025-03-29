@@ -173,19 +173,28 @@ namespace Ajuna.SAGE.Game.FullHouseFury.Effects
         {
             public string Name => "Deck Refill";
 
-            public string Description =>
-                "At the start of each round, the deck is refilled back to its maximum size.";
+            public string Description => "Deck refills, when empty for each refill you have.";
 
-            // Trigger at the start of the round
             public IEnumerable<GameEvent> Triggers => Array.Empty<GameEvent>();
 
-            // No instant changes to stats, so empty
-            public void Add(GameAsset game, DeckAsset deck, TowerAsset tower, byte level, object? context) { }
-            public void Remove(GameAsset game, DeckAsset deck, TowerAsset tower, byte level, object? context) { }
-
-            public void Apply(GameEvent gameEvent, GameAsset game, DeckAsset deck, TowerAsset tower, byte level, object? context)
+            public void Add(GameAsset game, DeckAsset deck, TowerAsset tower, byte level, object? context) 
             {
+                if (context is ModifyContext ctx)
+                {
+                    var change = ctx.NewLvl - ctx.OldLvl;
+                    deck.DeckRefill = (byte)Math.Min(deck.DeckRefill + change, byte.MaxValue);
+               }
             }
+
+            public void Remove(GameAsset game, DeckAsset deck, TowerAsset tower, byte level, object? context) 
+            {
+                if (context is ModifyContext ctx)
+                {
+                    var change = ctx.NewLvl - ctx.OldLvl;
+                    deck.DeckRefill = (byte)Math.Max(deck.DeckRefill + change, byte.MinValue);
+                }
+            }
+
         }
     }
 }
